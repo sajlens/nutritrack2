@@ -14,29 +14,25 @@ export default function Layout() {
         name="index"
         options={{
           title: 'Dziś',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="add"
         options={{
           title: 'Dodaj',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="add-circle-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: 'Historia',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="calendar-outline" size={size} color={color} />,
         }}
       />
+      <Tabs.Screen name="edit-meal" options={{ href: null }} />
+      <Tabs.Screen name="add-product" options={{ href: null, title: 'Nowy produkt' }} />
     </Tabs>
   );
 }

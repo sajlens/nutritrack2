@@ -1,0 +1,628 @@
+[
+  {
+    "id": "leczo",
+    "name": "Leczo",
+    "items": [
+      {
+        "name": "kielbasa_slaska",
+        "weight_grams": 150
+      },
+      {
+        "name": "papryka_czerwona",
+        "weight_grams": 150
+      },
+      {
+        "name": "cukinia",
+        "weight_grams": 100
+      },
+      {
+        "name": "passata",
+        "weight_grams": 200
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 50
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 10
+      },
+      {
+        "name": "oliwa_z_oliwek_extra_virgin",
+        "weight_grams": 5
+      }
+    ]
+  },
+  {
+    "id": "hindus",
+    "name": "Hindus",
+    "items": [
+      {
+        "name": "kalafior",
+        "weight_grams": 250
+      },
+      {
+        "name": "piers_kurczaka_surowa",
+        "weight_grams": 200
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 100
+      },
+      {
+        "name": "passata",
+        "weight_grams": 100
+      },
+      {
+        "name": "maslo_klarowane",
+        "weight_grams": 30
+      }
+    ]
+  },
+  {
+    "id": "zielone_curry",
+    "name": "Zielone curry",
+    "items": [
+      {
+        "name": "piers_kurczaka_surowa",
+        "weight_grams": 150
+      },
+      {
+        "name": "cukinia",
+        "weight_grams": 200
+      },
+      {
+        "name": "papryka_zielona",
+        "weight_grams": 50
+      },
+      {
+        "name": "groszek",
+        "weight_grams": 50
+      },
+      {
+        "name": "mleczko_kokosowe",
+        "weight_grams": 200
+      },
+      {
+        "name": "olej_kokosowy",
+        "weight_grams": 3
+      }
+    ]
+  },
+  {
+    "id": "poledwiczka_w_sosie_pieprzowym",
+    "name": "Polędwiczka w sosie pieprzowym",
+    "items": [
+      {
+        "name": "poledwiczka_wieprzowa",
+        "weight_grams": 200
+      },
+      {
+        "name": "maslo_klarowane",
+        "weight_grams": 25
+      },
+      {
+        "name": "wino_biale_wytrawne",
+        "weight_grams": 80
+      },
+      {
+        "name": "musztarda_zolta",
+        "weight_grams": 20
+      },
+      {
+        "name": "pieprz_bialy",
+        "weight_grams": 2.5
+      },
+      {
+        "name": "pieprz_zielony",
+        "weight_grams": 2.5
+      },
+      {
+        "name": "pieprz_czerwony",
+        "weight_grams": 5
+      },
+      {
+        "name": "maka_poznanska",
+        "weight_grams": 6
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 2
+      }
+    ]
+  },
+  {
+    "id": "galaretka_truskawkowa",
+    "name": "Galaretka truskawkowa",
+    "items": [
+      {
+        "name": "sok_truskawkowy_nfc",
+        "weight_grams": 125
+      },
+      {
+        "name": "zelatyna_wolowa",
+        "weight_grams": 5
+      }
+    ]
+  },
+  {
+    "id": "chili",
+    "name": "Chili",
+    "items": [
+      {
+        "name": "mielona_wolowina_20_tluszczu",
+        "weight_grams": 150
+      },
+      {
+        "name": "czekolada_ciemna",
+        "weight_grams": 5
+      },
+      {
+        "name": "papryka_czerwona",
+        "weight_grams": 100
+      },
+      {
+        "name": "chorizo",
+        "weight_grams": 30
+      },
+      {
+        "name": "kukurydza_z_puszki",
+        "weight_grams": 45
+      },
+      {
+        "name": "fasola_czarna_z_puszki",
+        "weight_grams": 80
+      },
+      {
+        "name": "passata",
+        "weight_grams": 200
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 50
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 6
+      },
+      {
+        "name": "wino_czerwone_wytrawne",
+        "weight_grams": 30
+      },
+      {
+        "name": "papryka_wedzona",
+        "weight_grams": 3
+      },
+      {
+        "name": "kumin",
+        "weight_grams": 2
+      },
+      {
+        "name": "oregano_suszone",
+        "weight_grams": 2
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 1
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 1
+      },
+      {
+        "name": "cheddar",
+        "weight_grams": 20
+      },
+      {
+        "name": "skyr",
+        "weight_grams": 10
+      }
+    ]
+  },
+  {
+    "id": "cezar",
+    "name": "Cezar",
+    "items": [
+      {
+        "name": "piers_kurczaka_surowa",
+        "weight_grams": 150
+      },
+      {
+        "name": "salata_lodowa",
+        "weight_grams": 200
+      },
+      {
+        "name": "szynka_szwarcwaldzka",
+        "weight_grams": 20
+      },
+      {
+        "name": "skyr",
+        "weight_grams": 25
+      },
+      {
+        "name": "musztarda_dijon",
+        "weight_grams": 20
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 2
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 1
+      },
+      {
+        "name": "sos_worcestershire",
+        "weight_grams": 5
+      },
+      {
+        "name": "sok_z_cytryny",
+        "weight_grams": 20
+      },
+      {
+        "name": "dziugas",
+        "weight_grams": 15
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 6
+      }
+    ]
+  },
+  {
+    "id": "makaron_w_sosie_serowym",
+    "name": "Makaron w sosie serowym",
+    "items": [
+      {
+        "name": "makaron_niski_ig",
+        "weight_grams": 150
+      },
+      {
+        "name": "gorgonzola",
+        "weight_grams": 50
+      },
+      {
+        "name": "smietanka_30",
+        "weight_grams": 50
+      },
+      {
+        "name": "galka_muszkatolowa",
+        "weight_grams": 1
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 2
+      },
+      {
+        "name": "mozzarella",
+        "weight_grams": 20
+      },
+      {
+        "name": "cheddar",
+        "weight_grams": 20
+      }
+    ]
+  },
+  {
+    "id": "limonkowy_indyk",
+    "name": "Limonkowy indyk",
+    "items": [
+      {
+        "name": "piers_indyka_surowa",
+        "weight_grams": 200
+      },
+      {
+        "name": "maslo_klarowane",
+        "weight_grams": 10
+      },
+      {
+        "name": "chlorella",
+        "weight_grams": 5
+      },
+      {
+        "name": "mleczko_kokosowe",
+        "weight_grams": 150
+      },
+      {
+        "name": "maka_kokosowa",
+        "weight_grams": 5
+      },
+      {
+        "name": "sok_z_limonki",
+        "weight_grams": 15
+      },
+      {
+        "name": "skorka_z_limonki",
+        "weight_grams": 3
+      },
+      {
+        "name": "sos_sojowy",
+        "weight_grams": 5
+      },
+      {
+        "name": "brokul_surowy",
+        "weight_grams": 200
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 2
+      }
+    ]
+  },
+  {
+    "id": "losos_na_parze",
+    "name": "Łosoś na parze",
+    "items": [
+      {
+        "name": "losos_atlantycki_hodowlany",
+        "weight_grams": 150
+      },
+      {
+        "name": "skyr",
+        "weight_grams": 100
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 3
+      },
+      {
+        "name": "majonez",
+        "weight_grams": 15
+      },
+      {
+        "name": "przyprawa_kuchni_wloskiej",
+        "weight_grams": 2
+      }
+    ]
+  },
+  {
+    "id": "dobrus",
+    "name": "Dobruś",
+    "items": [
+      {
+        "name": "parowki_dobrusie",
+        "weight_grams": 20
+      },
+      {
+        "name": "cheddar",
+        "weight_grams": 5
+      },
+      {
+        "name": "kabanos_wieprzowy_cienki",
+        "weight_grams": 10
+      },
+      {
+        "name": "szynka_szwarcwaldzka",
+        "weight_grams": 9
+      }
+    ]
+  },
+  {
+    "id": "skyr_z_granola",
+    "name": "Skyr z granolą",
+    "items": [
+      {
+        "name": "skyr",
+        "weight_grams": 150
+      },
+      {
+        "name": "granola_zwykla",
+        "weight_grams": 30
+      },
+      {
+        "name": "maliny_liofilizowane",
+        "weight_grams": 10
+      }
+    ]
+  },
+  {
+    "id": "fasolka_po_bretonsku",
+    "name": "Fasolka po bretońsku",
+    "items": [
+      {
+        "name": "fasola_jas_sucha",
+        "weight_grams": 150
+      },
+      {
+        "name": "boczek_wieprzowy",
+        "weight_grams": 30
+      },
+      {
+        "name": "kielbasa_slaska",
+        "weight_grams": 150
+      },
+      {
+        "name": "pomidory_krojone_z_puszki",
+        "weight_grams": 200
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 50
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 6
+      },
+      {
+        "name": "majeranek_suszony",
+        "weight_grams": 2
+      },
+      {
+        "name": "czaber",
+        "weight_grams": 2
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 2
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 2
+      }
+    ]
+  },
+  {
+    "id": "strogonov",
+    "name": "Stroganow",
+    "items": [
+      {
+        "name": "prega_wolowa",
+        "weight_grams": 300
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 100
+      },
+      {
+        "name": "czosnek",
+        "weight_grams": 6
+      },
+      {
+        "name": "papryka_czerwona",
+        "weight_grams": 75
+      },
+      {
+        "name": "papryka_zielona",
+        "weight_grams": 60
+      },
+      {
+        "name": "marchew_surowa",
+        "weight_grams": 60
+      },
+      {
+        "name": "pieczarki_brazowe",
+        "weight_grams": 50
+      },
+      {
+        "name": "cukinia",
+        "weight_grams": 100
+      },
+      {
+        "name": "wino_czerwone_wytrawne",
+        "weight_grams": 80
+      },
+      {
+        "name": "papryka_wedzona",
+        "weight_grams": 7
+      },
+      {
+        "name": "chili_w_proszku",
+        "weight_grams": 2
+      },
+      {
+        "name": "majeranek_suszony",
+        "weight_grams": 2
+      },
+      {
+        "name": "kminek",
+        "weight_grams": 2
+      },
+      {
+        "name": "koncentrat_pomidorowy",
+        "weight_grams": 15
+      }
+    ]
+  },
+  {
+    "id": "watrobka",
+    "name": "Wątróbka",
+    "items": [
+      {
+        "name": "watrobka_drobiowa",
+        "weight_grams": 150
+      },
+      {
+        "name": "cebula",
+        "weight_grams": 200
+      },
+      {
+        "name": "maka_poznanska",
+        "weight_grams": 5
+      },
+      {
+        "name": "maslo_klarowane",
+        "weight_grams": 20
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 1
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 1
+      }
+    ]
+  },
+  {
+    "id": "buraczki",
+    "name": "Buraczki",
+    "items": [
+      {
+        "name": "cwikla_z_chrzanem",
+        "weight_grams": 170
+      },
+      {
+        "name": "chrzan",
+        "weight_grams": 50
+      }
+    ]
+  },
+  {
+    "id": "kogel_mogel",
+    "name": "Kogel mogel",
+    "items": [
+      {
+        "name": "zoltko_jaja",
+        "weight_grams": 36
+      },
+      {
+        "name": "miod_wielokwiatowy",
+        "weight_grams": 21
+      }
+    ]
+  },
+  {
+    "id": "jajko_sadzone",
+    "name": "Jajko sadzone na kiełbasce",
+    "items": [
+      {
+        "name": "jajko_cale",
+        "weight_grams": 165
+      },
+      {
+        "name": "kielbasa_krakowska",
+        "weight_grams": 30
+      },
+      {
+        "name": "olej_kokosowy",
+        "weight_grams": 1
+      },
+      {
+        "name": "sol_himalajska",
+        "weight_grams": 1
+      },
+      {
+        "name": "pieprz_czarny",
+        "weight_grams": 1
+      }
+    ]
+  },
+  {
+    "id": "mango_lassi",
+    "name": "Mango lassi",
+    "items": [
+      {
+        "name": "pulpa_mango",
+        "weight_grams": 200
+      },
+      {
+        "name": "maslanka",
+        "weight_grams": 100
+      },
+      {
+        "name": "bialko_w_proszku",
+        "weight_grams": 30
+      }
+    ]
+  }
+]

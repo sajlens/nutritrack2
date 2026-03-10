@@ -1,0 +1,40 @@
+{
+  "supplements": [
+    {
+      "id": "supl_d3k2",
+      "name": "Witamina D3+K2",
+      "nutrient_key": "suplement_d3k2",
+      "weight_grams": 1
+    },
+    {
+      "id": "supl_omega3",
+      "name": "Omega-3 (2 kapsułki)",
+      "nutrient_key": "suplement_omega3",
+      "weight_grams": 2
+    },
+    {
+      "id": "supl_drozdzowe",
+      "name": "Płatki drożdżowe (łyżeczka)",
+      "nutrient_key": "platki_drozdzowe",
+      "weight_grams": 5
+    },
+    {
+      "id": "supl_orzech_brazil",
+      "name": "Pół orzecha brazylijskiego",
+      "nutrient_key": "orzechy_brazylijskie",
+      "weight_grams": 5
+    },
+    {
+      "id": "supl_magnez",
+      "name": "Magnez (glicynian)",
+      "nutrient_key": "suplement_magnez",
+      "weight_grams": 1
+    },
+    {
+      "id": "supl_q10",
+      "name": "Koenzym Q10",
+      "nutrient_key": "suplement_q10",
+      "weight_grams": 1
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { NutrientValues } from '../types';
-import { searchFood, calculateNutrients, getFoodByKey } from './nutrients';
-import { getNutrientsFromClaude, ParsedFood } from './claude';
+import { searchFoodAll, getFoodByKeyAll, calculateNutrients } from './nutrients';
+import { ParsedFood } from './claude';
 import { MealItem } from '../types';
 
 export async function resolveMealItems(parsedFoods: ParsedFood[]): Promise<MealItem[]> {
@@ -8,11 +8,25 @@ export async function resolveMealItems(parsedFoods: ParsedFood[]): Promise<MealI
 
   for (const food of parsedFoods) {
     const id = Math.random().toString(36).slice(2);
-    
-    // Szukaj w lokalnej bazie
-    const results = searchFood(food.name);
-    
-    if (results.length > 0 && results[0].score >= 50) {
+
+    // Najpierw spróbuj bezpośredniego lookup po kluczu (szablony używają kluczy)
+    const directItem = await getFoodByKeyAll(food.name);
+    if (directItem) {
+      const nutrients = calculateNutrients(directItem.per_100g, food.weight_grams);
+      items.push({
+        id,
+        name: directItem.name_pl,
+        weight_grams: food.weight_grams,
+        nutrients,
+        confirmed: true,
+        nutrient_key: food.name,
+      });
+      continue;
+    }
+
+    const results = await searchFoodAll(food.name);
+
+    if (results.length > 0) {
       const { key, item } = results[0];
       const nutrients = calculateNutrients(item.per_100g, food.weight_grams);
       items.push({
@@ -24,14 +38,12 @@ export async function resolveMealItems(parsedFoods: ParsedFood[]): Promise<MealI
         nutrient_key: key,
       });
     } else {
-      // Fallback do Claude API
-      const nutrients = await getNutrientsFromClaude(food.name, food.weight_grams);
       items.push({
         id,
         name: food.name,
         weight_grams: food.weight_grams,
-        nutrients: nutrients as NutrientValues,
-        confirmed: true,
+        nutrients: {} as NutrientValues,
+        confirmed: false,
       });
     }
   }

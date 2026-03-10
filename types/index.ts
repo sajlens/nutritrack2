@@ -5,6 +5,14 @@ export interface NutrientValues {
   fat?: number;
   carbs?: number;
   fiber?: number;
+  sugar_g?: number;
+  water_g?: number;
+  // Tłuszcze szczegółowe
+  saturated_fat_g?: number;
+  monounsaturated_fat_g?: number;
+  polyunsaturated_fat_g?: number;
+  omega3_g?: number;
+  omega6_g?: number;
   // Witaminy
   vitamin_a_ug?: number;
   vitamin_b1_mg?: number;
@@ -33,6 +41,21 @@ export interface NutrientValues {
   selenium_ug?: number;
   iodine_ug?: number;
   choline_mg?: number;
+  // Karotenoidy i antyoksydanty
+  beta_carotene_ug?: number;
+  lutein_zeaxanthin_ug?: number;
+  lycopene_ug?: number;
+  // Fitoskładniki
+  polyphenols_mg?: number;
+  quercetin_mg?: number;
+  anthocyanins_mg?: number;
+  chlorogenic_acid_mg?: number;
+  // Inne
+  betaine_mg?: number;
+  caffeine_mg?: number;
+  coenzyme_q10_mg?: number;
+  carnitine_mg?: number;
+  collagen_g?: number;
 }
 
 // Produkt w bazie danych
@@ -41,6 +64,8 @@ export interface FoodItem {
   name_en: string;
   category: string;
   per_100g: NutrientValues;
+  serving_g?: number;
+  source?: string;
   aliases?: string[];
 }
 
@@ -48,6 +73,7 @@ export interface FoodItem {
 export interface NutrientsDB {
   version: string;
   source: string;
+  note?: string;
   items: Record<string, FoodItem>;
 }
 
