@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, A
 import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
 import { NUTRIENTS, DASHBOARD_NUTRIENTS } from '../constants/nutrients';
+import { calculateDayScore } from '../lib/score';
 
 function NutrientBar({ nutrientKey, value }: { nutrientKey: string; value: number }) {
   const meta = NUTRIENTS[nutrientKey];
@@ -51,6 +52,7 @@ function formatDateLabel(dateStr: string): string {
 export default function Dashboard() {
   const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal } = useNutriStore();
   const totals = getTodayTotals();
+  const dayScore = calculateDayScore(totals);
 
   useEffect(() => {
     loadTodayMeals();
@@ -99,8 +101,11 @@ export default function Dashboard() {
         <TouchableOpacity style={styles.dateArrow} onPress={goToPrevDay}>
           <Text style={styles.dateArrowText}>‹</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={loadTodayMeals}>
+        <TouchableOpacity onPress={loadTodayMeals} style={styles.dateLabelRow}>
           <Text style={styles.dateLabel}>{formatDateLabel(selectedDate)}</Text>
+          <View style={[styles.scoreBadge, { backgroundColor: dayScore >= 80 ? '#16a34a' : dayScore >= 50 ? '#f59e0b' : '#ef4444' }]}>
+            <Text style={styles.scoreText}>{dayScore}%</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.dateArrow, isToday && styles.dateArrowDisabled]} onPress={goToNextDay}>
           <Text style={[styles.dateArrowText, isToday && styles.dateArrowDisabledText]}>›</Text>
@@ -184,6 +189,9 @@ const styles = StyleSheet.create({
   dateArrowText: { fontSize: 28, color: '#16a34a', lineHeight: 30 },
   dateArrowDisabledText: { color: '#9ca3af' },
   dateLabel: { fontSize: 17, fontWeight: '600', color: '#111827' },
+  dateLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  scoreBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
+  scoreText: { fontSize: 13, fontWeight: '700', color: '#fff' },
   macroRow: { flexDirection: 'row', backgroundColor: '#fff', padding: 16, gap: 8 },
   macroBox: { flex: 1, alignItems: 'center', backgroundColor: '#f0fdf4', borderRadius: 12, padding: 10 },
   macroValue: { fontSize: 20, fontWeight: '700', color: '#16a34a' },
