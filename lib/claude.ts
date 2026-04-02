@@ -1,5 +1,5 @@
-const ANTHROPIC_API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY!;
-
+import Constants from 'expo-constants';
+const ANTHROPIC_API_KEY = Constants.expoConfig?.extra?.anthropicApiKey ?? '';
 export interface ParsedFood {
   name: string;
   weight_grams: number;
