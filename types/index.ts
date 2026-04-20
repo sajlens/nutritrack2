@@ -56,6 +56,7 @@ export interface NutrientValues {
   coenzyme_q10_mg?: number;
   carnitine_mg?: number;
   collagen_g?: number;
+  creatine_g?: number;
 }
 
 // Produkt w bazie danych

@@ -16,13 +16,9 @@ export default function EditMeal() {
   const isTemplate = !!templateId;
   const { todayMeals, updateMeal, deleteMeal } = useNutriStore();
 
-  const meal = todayMeals.find(m => m.id === mealId);
-
-  const [items, setItems] = useState<MealItem[]>(meal?.items ?? []);
-  const [weightInputs, setWeightInputs] = useState<Record<string, string>>(
-    Object.fromEntries((meal?.items ?? []).map(i => [i.id, String(i.weight_grams)]))
-  );
-  const [rawInput, setRawInput] = useState(isTemplate ? (templateNameParam ?? '') : (meal?.raw_input ?? ''));
+  const [items, setItems] = useState<MealItem[]>([]);
+  const [weightInputs, setWeightInputs] = useState<Record<string, string>>({});
+  const [rawInput, setRawInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
   const [searchModal, setSearchModal] = useState<{ visible: boolean; itemId: string | null }>({ visible: false, itemId: null });
@@ -35,6 +31,7 @@ export default function EditMeal() {
   const [addWeight, setAddWeight] = useState('100');
   const [addSelected, setAddSelected] = useState<any | null>(null);
 
+  // Reset state when mealId or templateId changes (component stays mounted in Tabs)
   useEffect(() => {
     if (isTemplate) {
       supabase.from('meal_templates').select('*').eq('id', templateId).single().then(async ({ data }) => {
@@ -46,11 +43,23 @@ export default function EditMeal() {
         setWeightInputs(weights);
         setRawInput(data.name);
       });
-    } else if (!meal) {
-      Alert.alert('Błąd', 'Nie znaleziono posiłku.');
-      router.back();
+    } else {
+      const meal = todayMeals.find(m => m.id === mealId);
+      if (!meal) {
+        Alert.alert('Błąd', 'Nie znaleziono posiłku.');
+        router.back();
+        return;
+      }
+      setItems(meal.items);
+      setWeightInputs(Object.fromEntries(meal.items.map(i => [i.id, String(i.weight_grams)])));
+      setRawInput(meal.raw_input);
     }
-  }, []);
+    // Reset modal states
+    setIsSaving(false);
+    setSearchModal({ visible: false, itemId: null });
+    setAddModal(false);
+    setAddSelected(null);
+  }, [mealId, templateId]);
 
   const updateWeight = (id: string, newWeight: string) => {
     setWeightInputs(prev => ({ ...prev, [id]: newWeight }));
@@ -174,7 +183,7 @@ export default function EditMeal() {
   const totalCals = Math.round(items.reduce((s, i) => s + (i.nutrients.calories ?? 0), 0));
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 200 }} keyboardShouldPersistTaps="handled">
       <Text style={styles.heading}>{isTemplate ? 'Edytuj ulubiony' : 'Edytuj posiłek'}</Text>
 
       <TextInput

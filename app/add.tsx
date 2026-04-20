@@ -13,6 +13,13 @@ import { NUTRIENTS } from '../constants/nutrients';
 import { supabase } from '../lib/supabase';
 
 export default function AddMeal() {
+  const TEMPLATE_CATEGORIES = [
+    { key: 'napoje', label: 'Napoje' },
+    { key: 'obiady', label: 'Obiady' },
+    { key: 'przekaski', label: 'Przekąski' },
+    { key: 'inne', label: 'Inne' },
+  ];
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [items, setItems] = useState<MealItem[]>([]);
@@ -26,6 +33,7 @@ export default function AddMeal() {
   const [templatesModal, setTemplatesModal] = useState(false);
   const [templates, setTemplates] = useState<any[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   const [portionsModal, setPortionsModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
@@ -33,11 +41,19 @@ export default function AddMeal() {
 
   const [saveTemplateModal, setSaveTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState('');
+  const [templateCategory, setTemplateCategory] = useState('inne');
 
   const [supplementsModal, setSupplementsModal] = useState(false);
   const [supplements, setSupplements] = useState<any[]>([]);
   const [suppLoading, setSuppLoading] = useState(false);
   const [selectedSupplements, setSelectedSupplements] = useState<Set<string>>(new Set());
+
+  const [quickAddModal, setQuickAddModal] = useState(false);
+  const [quickAddQuery, setQuickAddQuery] = useState('');
+  const [quickAddResults, setQuickAddResults] = useState<any[]>([]);
+  const [quickAddSelected, setQuickAddSelected] = useState<any | null>(null);
+  const [quickAddWeight, setQuickAddWeight] = useState('');
+  const [quickAddItems, setQuickAddItems] = useState<{ result: any; weight: number; id: string }[]>([]);
 
   const [manageSuppModal, setManageSuppModal] = useState(false);
   const [editSuppModal, setEditSuppModal] = useState(false);
@@ -47,6 +63,61 @@ export default function AddMeal() {
   const [editSuppWeight, setEditSuppWeight] = useState('');
 
   const { addMeal } = useNutriStore();
+
+  const handleQuickSearch = async (q: string) => {
+    setQuickAddQuery(q);
+    if (q.trim().length < 2) { setQuickAddResults([]); return; }
+    const results = await searchFoodAll(q);
+    setQuickAddResults(results);
+  };
+
+  const selectQuickProduct = (result: any) => {
+    setQuickAddSelected(result);
+    setQuickAddWeight(String(result.item.serving_g ?? 100));
+  };
+
+  const addQuickItem = () => {
+    if (!quickAddSelected) return;
+    const w = parseFloat(quickAddWeight.replace(',', '.'));
+    if (isNaN(w) || w <= 0) { Alert.alert('Błąd', 'Podaj prawidłową wagę.'); return; }
+    setQuickAddItems(prev => [...prev, {
+      result: quickAddSelected,
+      weight: w,
+      id: Math.random().toString(36).slice(2),
+    }]);
+    setQuickAddSelected(null);
+    setQuickAddQuery('');
+    setQuickAddResults([]);
+    setQuickAddWeight('');
+  };
+
+  const removeQuickItem = (id: string) => {
+    setQuickAddItems(prev => prev.filter(i => i.id !== id));
+  };
+
+  const handleSaveQuickAdd = async () => {
+    if (quickAddItems.length === 0) return;
+    setIsLoading(true);
+    try {
+      const mealItems: MealItem[] = quickAddItems.map(({ result, weight, id }) => ({
+        id,
+        name: result.item.name_pl,
+        weight_grams: weight,
+        nutrients: calculateNutrients(result.item.per_100g, weight),
+        confirmed: true,
+        nutrient_key: result.key,
+      }));
+      const label = quickAddItems.map(i => `${i.result.item.name_pl} ${i.weight}g`).join(', ');
+      await addMeal(label, mealItems);
+      setQuickAddItems([]);
+      setQuickAddModal(false);
+      router.replace('/');
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się zapisać.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const loadTemplates = async () => {
     setTemplatesLoading(true);
@@ -129,13 +200,14 @@ export default function AddMeal() {
       weight_grams: item.weight_grams,
       nutrient_key: item.nutrient_key,
     }));
-    const { error } = await supabase.from('meal_templates').insert({ name, items: templateItems });
+    const { error } = await supabase.from('meal_templates').insert({ name, items: templateItems, category: templateCategory });
     if (error) {
       Alert.alert('Błąd', 'Nie udało się zapisać.');
     } else {
       Alert.alert('Zapisano!', '"' + name + '" dodany do ulubionych.');
       setSaveTemplateModal(false);
       setTemplateName('');
+      setTemplateCategory('inne');
     }
   };
 
@@ -286,7 +358,7 @@ export default function AddMeal() {
 
   if (step === 'confirm') {
     return (
-      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 200 }} keyboardShouldPersistTaps="handled">
         <Text style={styles.heading}>Potwierdź posiłek</Text>
         <Text style={styles.subheading}>{input}</Text>
 
@@ -364,6 +436,18 @@ export default function AddMeal() {
             <View style={styles.modalBody}>
               <Text style={styles.fieldLabel}>Nazwa ulubionego posiłku:</Text>
               <TextInput style={styles.searchInputPadded} value={templateName} onChangeText={setTemplateName} placeholder="np. Śniadanie z owsianką..." autoFocus />
+              <Text style={styles.fieldLabel}>Kategoria:</Text>
+              <View style={styles.categoryRow}>
+                {TEMPLATE_CATEGORIES.map(cat => (
+                  <TouchableOpacity
+                    key={cat.key}
+                    style={[styles.categoryChip, templateCategory === cat.key && styles.categoryChipSelected]}
+                    onPress={() => setTemplateCategory(cat.key)}
+                  >
+                    <Text style={[styles.categoryChipText, templateCategory === cat.key && styles.categoryChipTextSelected]}>{cat.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
               <TouchableOpacity style={styles.btnBlock} onPress={handleSaveTemplate}>
                 <Text style={styles.btnPrimaryText}>Zapisz</Text>
               </TouchableOpacity>
@@ -400,6 +484,10 @@ export default function AddMeal() {
         <Text style={styles.btnSupplementsText}>💊 Dodaj suplementy</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.btnQuickAdd} onPress={() => setQuickAddModal(true)}>
+        <Text style={styles.btnQuickAddText}>🔍 Szybkie dodanie z bazy</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.btnAddProduct} onPress={() => router.push('/add-product')}>
         <Text style={styles.btnAddProductText}>🥦 Dodaj produkt do bazy</Text>
       </TouchableOpacity>
@@ -415,30 +503,55 @@ export default function AddMeal() {
           </View>
           {templatesLoading ? (
             <ActivityIndicator style={{ marginTop: 40 }} color="#16a34a" />
+          ) : templates.length === 0 ? (
+            <Text style={styles.searchEmpty}>{'Brak ulubionych.\nDodaj posiłek i zapisz go jako ulubiony ⭐'}</Text>
           ) : (
-            <FlatList
-              data={templates}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.templateItem} onPress={() => openPortionsPicker(item)}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.templateName}>{item.name}</Text>
-                    <Text style={styles.templateMeta}>{item.items.length} składników</Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => { setTemplatesModal(false); router.push({ pathname: '/edit-meal', params: { templateId: item.id, templateName: item.name } }); }}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    style={{ marginRight: 12 }}
-                  >
-                    <Text style={{ fontSize: 16 }}>✏️</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDeleteTemplate(item.id, item.name)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Text style={{ fontSize: 16 }}>🗑️</Text>
-                  </TouchableOpacity>
-                </TouchableOpacity>
-              )}
-              ListEmptyComponent={<Text style={styles.searchEmpty}>{'Brak ulubionych.\nDodaj posiłek i zapisz go jako ulubiony ⭐'}</Text>}
-            />
+            <ScrollView>
+              {TEMPLATE_CATEGORIES
+                .map(cat => ({
+                  key: cat.key,
+                  label: cat.label,
+                  data: templates.filter(t => (t.category || 'inne') === cat.key),
+                }))
+                .filter(s => s.data.length > 0)
+                .map(section => {
+                  const collapsed = collapsedSections.has(section.key);
+                  return (
+                    <View key={section.key}>
+                      <TouchableOpacity
+                        style={styles.sectionHeader}
+                        onPress={() => setCollapsedSections(prev => {
+                          const next = new Set(prev);
+                          next.has(section.key) ? next.delete(section.key) : next.add(section.key);
+                          return next;
+                        })}
+                      >
+                        <Text style={styles.sectionHeaderText}>{section.label}</Text>
+                        <Text style={styles.sectionHeaderArrow}>{collapsed ? '›' : '⌄'}</Text>
+                      </TouchableOpacity>
+                      {!collapsed && section.data.map(item => (
+                        <TouchableOpacity key={item.id} style={styles.templateItem} onPress={() => openPortionsPicker(item)}>
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.templateName}>{item.name}</Text>
+                            <Text style={styles.templateMeta}>{item.items.length} składników</Text>
+                          </View>
+                          <TouchableOpacity
+                            onPress={() => { setTemplatesModal(false); router.push({ pathname: '/edit-meal', params: { templateId: item.id, templateName: item.name } }); }}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            style={{ marginRight: 12 }}
+                          >
+                            <Text style={{ fontSize: 16 }}>✏️</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={() => handleDeleteTemplate(item.id, item.name)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                            <Text style={{ fontSize: 16 }}>🗑️</Text>
+                          </TouchableOpacity>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  );
+                })
+              }
+            </ScrollView>
           )}
         </View>
       </Modal>
@@ -480,6 +593,89 @@ export default function AddMeal() {
           </View>
         </View>
       </Modal>
+      {/* Modal: szybkie dodanie z bazy */}
+      <Modal visible={quickAddModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Szybkie dodanie</Text>
+            <TouchableOpacity onPress={() => { setQuickAddModal(false); setQuickAddSelected(null); setQuickAddQuery(''); setQuickAddResults([]); setQuickAddItems([]); }}>
+              <Text style={styles.modalClose}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
+
+          {quickAddSelected ? (
+            <View style={styles.modalBody}>
+              <Text style={styles.quickSelectedName}>{quickAddSelected.item.name_pl}</Text>
+              <Text style={styles.quickSelectedMeta}>
+                {Math.round(quickAddSelected.item.per_100g.calories ?? 0)} kcal · {Math.round(quickAddSelected.item.per_100g.protein ?? 0)}g B · {Math.round(quickAddSelected.item.per_100g.fat ?? 0)}g T · {Math.round(quickAddSelected.item.per_100g.carbs ?? 0)}g W / 100g
+              </Text>
+              <Text style={styles.fieldLabel}>Waga (g):</Text>
+              <TextInput
+                style={styles.searchInputPadded}
+                value={quickAddWeight}
+                onChangeText={setQuickAddWeight}
+                keyboardType="numeric"
+                selectTextOnFocus
+                autoFocus
+              />
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.btnSecondary} onPress={() => { setQuickAddSelected(null); setQuickAddQuery(''); }}>
+                  <Text style={styles.btnSecondaryText}>Wróć</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnPrimary} onPress={addQuickItem}>
+                  <Text style={styles.btnPrimaryText}>Dodaj</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <>
+              <TextInput
+                value={quickAddQuery}
+                onChangeText={handleQuickSearch}
+                placeholder="Szukaj produktu..."
+                autoFocus
+                style={[styles.searchInputPadded, { margin: 16, marginBottom: 8 }]}
+              />
+              <FlatList
+                data={quickAddResults}
+                keyExtractor={item => item.key}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.searchResult} onPress={() => selectQuickProduct(item)}>
+                    <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                    <Text style={styles.searchResultMeta}>
+                      {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                ListHeaderComponent={quickAddItems.length > 0 ? (
+                  <View style={styles.quickItemsList}>
+                    {quickAddItems.map(qi => (
+                      <View key={qi.id} style={styles.quickItem}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.quickItemName}>{qi.result.item.name_pl}</Text>
+                          <Text style={styles.quickItemMeta}>{qi.weight}g · {Math.round(calculateNutrients(qi.result.item.per_100g, qi.weight).calories ?? 0)} kcal</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => removeQuickItem(qi.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                          <Text style={{ fontSize: 16 }}>✕</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                    <TouchableOpacity
+                      style={[styles.btnBlock, styles.btnBlockMargin, isLoading && styles.btnDisabled]}
+                      onPress={handleSaveQuickAdd}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Zapisz ({quickAddItems.length})</Text>}
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
+                ListEmptyComponent={<Text style={styles.searchEmpty}>{quickAddQuery.length >= 2 ? 'Brak wyników.' : 'Wpisz min. 2 znaki.'}</Text>}
+              />
+            </>
+          )}
+        </View>
+      </Modal>
+
       {/* Modal: suplementy */}
       <Modal visible={supplementsModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
@@ -630,6 +826,14 @@ const styles = StyleSheet.create({
   templateItem: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', alignItems: 'center' },
   templateName: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 2 },
   templateMeta: { fontSize: 12, color: '#9ca3af' },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f3f4f6', paddingHorizontal: 16, paddingVertical: 10 },
+  sectionHeaderText: { fontSize: 14, fontWeight: '700', color: '#6b7280' },
+  sectionHeaderArrow: { fontSize: 16, color: '#9ca3af' },
+  categoryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  categoryChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
+  categoryChipSelected: { backgroundColor: '#dcfce7', borderColor: '#16a34a' },
+  categoryChipText: { fontSize: 14, color: '#374151' },
+  categoryChipTextSelected: { color: '#15803d', fontWeight: '600' },
   fieldLabel: { fontSize: 14, color: '#374151', marginBottom: 4 },
   suppTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12 },
   supplementHint: { fontSize: 14, color: '#6b7280' },
@@ -646,6 +850,14 @@ const styles = StyleSheet.create({
   addSuppBtnText: { color: '#16a34a', fontSize: 15, fontWeight: '600' },
   btnAddProduct: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#bbf7d0' },
   btnAddProductText: { color: '#15803d', fontSize: 16, fontWeight: '600' },
+  btnQuickAdd: { backgroundColor: '#fefce8', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#fde68a' },
+  btnQuickAddText: { color: '#a16207', fontSize: 16, fontWeight: '600' },
+  quickSelectedName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
+  quickSelectedMeta: { fontSize: 13, color: '#6b7280', marginBottom: 16 },
+  quickItemsList: { backgroundColor: '#f0fdf4', margin: 16, borderRadius: 12, padding: 12 },
+  quickItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#d1fae5' },
+  quickItemName: { fontSize: 14, fontWeight: '600', color: '#111827' },
+  quickItemMeta: { fontSize: 12, color: '#6b7280' },
   portionsOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   portionsBox: { backgroundColor: '#fff', borderRadius: 16, padding: 24, width: '80%' },
   portionsTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 4, textAlign: 'center' },

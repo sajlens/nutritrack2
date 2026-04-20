@@ -21,7 +21,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 28,   category: 'macro' },
   sugar_g:                { label: 'Cukry',                unit: 'g',    rda_personal: 25,   limit: true, category: 'macro' },
   // Woda: +500ml przy treningu
-  water_g:                { label: 'Woda',                 unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 3000, category: 'macro' },
+  water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 800,  category: 'macro' },
 
   // Tłuszcze szczegółowe
   saturated_fat_g:        { label: 'Tłuszcze nasycone',        unit: 'g',  rda_personal: 20,   limit: true, category: 'macro' },
@@ -94,6 +94,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   coenzyme_q10_mg:        { label: 'Koenzym Q10',          unit: 'mg',  rda_personal: 100,  category: 'other' },
   carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 500,  category: 'other' },
   collagen_g:             { label: 'Kolagen',              unit: 'g',   rda_personal: 10,   category: 'other' },
+  creatine_g:             { label: 'Kreatyna',             unit: 'g',   rda_personal: 5,    category: 'other' },
 };
 
 // Wszystkie składniki pogrupowane kategoriami
@@ -150,4 +151,5 @@ export const DASHBOARD_NUTRIENTS = [
   'coenzyme_q10_mg',
   'carnitine_mg',
   'collagen_g',
+  'creatine_g',
 ];
