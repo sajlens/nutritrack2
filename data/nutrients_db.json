@@ -1086,7 +1086,7 @@
         "mozarella",
         "ser mozzarella"
       ],
-      "serving_g": 30
+      "serving_g": 10
     },
     "jogurt_grecki_chudy": {
       "name_pl": "jogurt grecki chudy",
@@ -1239,8 +1239,8 @@
         "carnitine_mg": null,
         "collagen_g": 2,
         "creatine_g": 0.25,
-        "biotin_ug": 2.5,
-        "vitamin_k2_ug": 22
+        "vitamin_k2_ug": 22,
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "podudzie kurczaka"
@@ -1293,8 +1293,8 @@
         "carnitine_mg": 6,
         "collagen_g": null,
         "creatine_g": 0.25,
-        "biotin_ug": 1.8,
-        "vitamin_k2_ug": 8
+        "vitamin_k2_ug": 8,
+        "vitamin_b7_ug": 1.8
       },
       "aliases": [
         "kurczak pierś"
@@ -1542,7 +1542,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.35,
-        "biotin_ug": 2.5
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "tuńczyk z puszki"
@@ -2245,7 +2245,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 1.5
+        "vitamin_b7_ug": 1.5
       },
       "aliases": [
         "mleko 0%"
@@ -3483,8 +3483,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": 0.8,
         "collagen_g": null,
-        "biotin_ug": 20,
-        "vitamin_k2_ug": 32
+        "vitamin_k2_ug": 32,
+        "vitamin_b7_ug": 20
       },
       "aliases": [
         "jajko",
@@ -4108,7 +4108,7 @@
         "vitamin_b6_mg": 0.209,
         "selenium_ug": 0,
         "vitamin_k1_ug": 0.1,
-        "vitamin_b7_ug": 0,
+        "vitamin_b7_ug": 1.4,
         "iodine_ug": 0,
         "vitamin_k2_ug": 0,
         "saturated_fat_g": null,
@@ -4129,13 +4129,12 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 1.4
+        "collagen_g": null
       },
       "aliases": [
         "banany"
       ],
-      "serving_g": 120
+      "serving_g": 100
     },
     "jablko_czerwone": {
       "name_pl": "jabłko czerwone",
@@ -7215,8 +7214,7 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 9.6
+        "collagen_g": null
       },
       "aliases": [
         "włoskie"
@@ -7320,8 +7318,7 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 7.8
+        "collagen_g": null
       },
       "aliases": [
         "owsiane płatki"
@@ -7984,8 +7981,7 @@
         "anthocyanins_mg": 21,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 1.5
+        "collagen_g": null
       },
       "aliases": [
         "truskawka"
@@ -8030,8 +8026,7 @@
         "anthocyanins_mg": 38,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 2
+        "collagen_g": null
       },
       "aliases": [
         "malina"
@@ -8645,7 +8640,6 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 4,
         "choline_mg": 20
       },
       "aliases": [
@@ -8864,8 +8858,8 @@
         "carnitine_mg": 87,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3,
-        "choline_mg": 67
+        "choline_mg": 67,
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "mielona wołowina"
@@ -8917,7 +8911,7 @@
         "carnitine_mg": 85,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "mielona wołowina tłusta"
@@ -8962,7 +8956,7 @@
         "carnitine_mg": 20,
         "collagen_g": null,
         "creatine_g": 0.4,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "mielona wieprzowina"
@@ -9048,7 +9042,7 @@
         "carnitine_mg": 11,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2.5
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "mielony indyk"
@@ -9094,12 +9088,12 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 3.5
+        "vitamin_b7_ug": 3.5
       },
       "aliases": [
         "orzech brazylijski"
       ],
-      "serving_g": 15
+      "serving_g": 30
     },
     "nerkowce_surowe": {
       "name_pl": "nerkowce surowe",
@@ -9185,7 +9179,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 10
+        "vitamin_b7_ug": 10
       },
       "aliases": [
         "laskowe"
@@ -9317,7 +9311,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 2.5
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "makadamia"
@@ -9938,9 +9932,9 @@
         "carnitine_mg": 28,
         "collagen_g": null,
         "creatine_g": 0.4,
-        "biotin_ug": 4,
         "vitamin_b12_ug": 0.7,
-        "choline_mg": 62
+        "choline_mg": 62,
+        "vitamin_b7_ug": 4
       },
       "aliases": [
         "polędwica wieprzowa"
@@ -9985,8 +9979,8 @@
         "carnitine_mg": 25,
         "collagen_g": null,
         "creatine_g": 0.4,
-        "biotin_ug": 4,
-        "vitamin_b12_ug": 0.6
+        "vitamin_b12_ug": 0.6,
+        "vitamin_b7_ug": 4
       },
       "serving_g": 150
     },
@@ -10028,10 +10022,10 @@
         "carnitine_mg": 7.5,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2,
         "vitamin_b12_ug": 0.3,
         "vitamin_k2_ug": 9,
-        "choline_mg": 65
+        "choline_mg": 65,
+        "vitamin_b7_ug": 2
       },
       "aliases": [
         "kurczak pierś surowy",
@@ -10078,9 +10072,9 @@
         "carnitine_mg": 10,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 3,
         "vitamin_b12_ug": 0.4,
-        "vitamin_k2_ug": 25
+        "vitamin_k2_ug": 25,
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "kurczak udo"
@@ -10132,8 +10126,8 @@
         "carnitine_mg": 95,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3,
-        "choline_mg": 78
+        "choline_mg": 78,
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "ribeye"
@@ -10185,7 +10179,7 @@
         "carnitine_mg": 80,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "serving_g": 150
     },
@@ -10234,7 +10228,7 @@
         "carnitine_mg": 70,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "serving_g": 150
     },
@@ -10457,7 +10451,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 5
+        "vitamin_b7_ug": 5
       },
       "aliases": [
         "łosoś sockeye"
@@ -10509,8 +10503,8 @@
         "carnitine_mg": 3,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 5,
-        "choline_mg": 65
+        "choline_mg": 65,
+        "vitamin_b7_ug": 5
       },
       "aliases": [
         "łosoś"
@@ -10611,8 +10605,8 @@
         "carnitine_mg": 5.6,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2,
-        "choline_mg": 84
+        "choline_mg": 84,
+        "vitamin_b7_ug": 2
       },
       "aliases": [
         "dorsz"
@@ -10918,8 +10912,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 1.5,
-        "choline_mg": 39
+        "choline_mg": 39,
+        "vitamin_b7_ug": 1.5
       },
       "aliases": [
         "kalafior surowy"
@@ -11554,8 +11548,7 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 4
+        "collagen_g": null
       },
       "aliases": [
         "chia"
@@ -11809,7 +11802,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": 1.2,
         "collagen_g": null,
-        "biotin_ug": 3.6
+        "vitamin_b7_ug": 3.6
       },
       "aliases": [
         "awokado hass"
@@ -12539,7 +12532,7 @@
         "carnitine_mg": null,
         "collagen_g": 2.5,
         "creatine_g": 0.3,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "serving_g": 130
     },
@@ -12625,7 +12618,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2
+        "vitamin_b7_ug": 2
       },
       "serving_g": 180
     },
@@ -12716,7 +12709,7 @@
         "carnitine_mg": 80,
         "collagen_g": null,
         "creatine_g": 0.45,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "NY strip"
@@ -12854,7 +12847,7 @@
         "carnitine_mg": 15,
         "collagen_g": 1,
         "creatine_g": 0.35,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "boczek"
@@ -13599,8 +13592,8 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2,
-        "iodine_ug": 100
+        "iodine_ug": 100,
+        "vitamin_b7_ug": 2
       },
       "aliases": [
         "dorsz"
@@ -14823,7 +14816,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 6
+        "vitamin_b7_ug": 6
       },
       "aliases": [
         "len",
@@ -15166,7 +15159,7 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 5
+        "vitamin_b7_ug": 5
       },
       "aliases": [
         "sezam"
@@ -15788,8 +15781,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "biotin_ug": 2.5,
-        "vitamin_k2_ug": 1
+        "vitamin_k2_ug": 1,
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "kefir naturalny"
@@ -19527,7 +19520,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.4,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "tuńczyk bluefin"
@@ -19642,7 +19635,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.65,
-        "biotin_ug": 4
+        "vitamin_b7_ug": 4
       },
       "aliases": [
         "śledź"
@@ -19703,7 +19696,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.55,
-        "biotin_ug": 3.5
+        "vitamin_b7_ug": 3.5
       },
       "serving_g": 100
     },
@@ -19760,8 +19753,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": 1,
-        "biotin_ug": 5,
-        "iodine_ug": 20
+        "iodine_ug": 20,
+        "vitamin_b7_ug": 5
       },
       "aliases": [
         "sardynki"
@@ -19822,7 +19815,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.35,
-        "biotin_ug": 2.5
+        "vitamin_b7_ug": 2.5
       },
       "aliases": [
         "tuńczyk albacore"
@@ -19883,7 +19876,7 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.4,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "tuńczyk yellowfin"
@@ -19945,7 +19938,7 @@
         "anthocyanins_mg": 0,
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0.45,
-        "biotin_ug": 3
+        "vitamin_b7_ug": 3
       },
       "aliases": [
         "polędwica wołowa",
@@ -21176,7 +21169,7 @@
         "kabanos gruby",
         "kabanos wieprzowy"
       ],
-      "serving_g": 30
+      "serving_g": 15
     },
     "kabanos_wieprzowy_cienki": {
       "name_pl": "kabanos wieprzowy cienki",
@@ -21237,7 +21230,7 @@
         "kabanos wieprzowy cienki",
         "kabanos cienki"
       ],
-      "serving_g": 15
+      "serving_g": 7.5
     },
     "kielbasa_slaska": {
       "name_pl": "kiełbasa śląska",
@@ -24168,57 +24161,10 @@
       "name_pl": "suplement D3+K2 MK7",
       "name_en": "Supplement, Vitamin D3 2000IU + K2 MK7 50mcg, per serving (1/2 tablet)",
       "category": "Supplements",
-      "serving_g": null,
+      "serving_g": 1,
       "per_100g": {
-        "calories": 0,
-        "fat": 0,
-        "saturated_fat_g": 0,
-        "monounsaturated_fat_g": 0,
-        "polyunsaturated_fat_g": 0,
-        "omega3_g": 0,
-        "omega6_g": 0,
-        "carbs": 0,
-        "sugar_g": 0,
-        "protein": 0,
-        "fiber": 0,
-        "sodium_mg": 0,
-        "water_g": 0,
-        "potassium_mg": 0,
-        "phosphorus_mg": 0,
-        "calcium_mg": 0,
-        "magnesium_mg": 0,
-        "iron_mg": 0,
-        "zinc_mg": 0,
-        "copper_mg": 0,
-        "manganese_mg": 0,
-        "selenium_ug": 0,
-        "vitamin_b1_mg": 0,
-        "vitamin_b2_mg": 0,
-        "vitamin_b3_mg": 0,
-        "vitamin_b5_mg": 0,
-        "vitamin_b6_mg": 0,
-        "vitamin_b9_ug": 0,
-        "vitamin_b12_ug": 0,
-        "vitamin_a_ug": 0,
-        "vitamin_c_mg": 0,
-        "vitamin_d_ug": 50,
-        "vitamin_e_mg": 0,
-        "vitamin_k1_ug": 0,
-        "vitamin_k2_ug": 50,
-        "choline_mg": 0,
-        "iodine_ug": 0,
-        "coenzyme_q10_mg": 0,
-        "carnitine_mg": 0,
-        "collagen_g": 0,
-        "beta_carotene_ug": 0,
-        "lutein_zeaxanthin_ug": 0,
-        "lycopene_ug": 0,
-        "betaine_mg": 0,
-        "caffeine_mg": 0,
-        "polyphenols_mg": 0,
-        "quercetin_mg": 0,
-        "anthocyanins_mg": 0,
-        "chlorogenic_acid_mg": 0
+        "vitamin_d_ug": 10000,
+        "vitamin_k2_ug": 10000
       },
       "aliases": [
         "suplement d3 k2",
@@ -24232,193 +24178,55 @@
       "name_en": "Supplement, Magnesium glycinate 375mg, per serving (3 capsules)",
       "category": "Supplements",
       "per_100g": {
-        "calories": 0,
-        "fat": 0,
-        "saturated_fat_g": 0,
-        "monounsaturated_fat_g": 0,
-        "polyunsaturated_fat_g": 0,
-        "omega3_g": 0,
-        "omega6_g": 0,
-        "carbs": 0,
-        "sugar_g": 0,
-        "protein": 0,
-        "fiber": 0,
-        "sodium_mg": 0,
-        "water_g": 0,
-        "potassium_mg": 0,
-        "phosphorus_mg": 0,
-        "calcium_mg": 0,
-        "magnesium_mg": 375,
-        "iron_mg": 0,
-        "zinc_mg": 0,
-        "copper_mg": 0,
-        "manganese_mg": 0,
-        "selenium_ug": 0,
-        "vitamin_b1_mg": 0,
-        "vitamin_b2_mg": 0,
-        "vitamin_b3_mg": 0,
-        "vitamin_b5_mg": 0,
-        "vitamin_b6_mg": 0,
-        "vitamin_b9_ug": 0,
-        "vitamin_b12_ug": 0,
-        "vitamin_a_ug": 0,
-        "vitamin_c_mg": 0,
-        "vitamin_d_ug": 0,
-        "vitamin_e_mg": 0,
-        "vitamin_k1_ug": 0,
-        "vitamin_k2_ug": 0,
-        "choline_mg": 0,
-        "iodine_ug": 0,
-        "coenzyme_q10_mg": 0,
-        "carnitine_mg": 0,
-        "collagen_g": 0,
-        "beta_carotene_ug": 0,
-        "lutein_zeaxanthin_ug": 0,
-        "lycopene_ug": 0,
-        "betaine_mg": 0,
-        "caffeine_mg": 0,
-        "polyphenols_mg": 0,
-        "quercetin_mg": 0,
-        "anthocyanins_mg": 0,
-        "chlorogenic_acid_mg": 0
+        "magnesium_mg": 12500
       },
       "aliases": [
         "suplement magnez",
         "glicynian magnezu",
         "magnez glicynian",
         "magnesium glycinate"
-      ]
+      ],
+      "serving_g": 1
     },
     "suplement_omega3": {
       "name_pl": "suplement omega-3",
       "name_en": "Supplement, Omega-3 fish oil concentrate, EPA 700mg + DHA 500mg + DPA 50mg, per serving (4 capsules)",
       "category": "Supplements",
       "per_100g": {
-        "calories": 25,
-        "fat": 2.5,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": 2.5,
-        "omega3_g": 1.25,
-        "omega6_g": 0,
-        "carbs": 0,
-        "sugar_g": 0,
-        "protein": 0,
-        "fiber": 0,
-        "sodium_mg": 0,
-        "water_g": 0,
-        "potassium_mg": 0,
-        "phosphorus_mg": 0,
-        "calcium_mg": 0,
-        "magnesium_mg": 0,
-        "iron_mg": 0,
-        "zinc_mg": 0,
-        "copper_mg": 0,
-        "manganese_mg": 0,
-        "selenium_ug": 0,
-        "vitamin_b1_mg": 0,
-        "vitamin_b2_mg": 0,
-        "vitamin_b3_mg": 0,
-        "vitamin_b5_mg": 0,
-        "vitamin_b6_mg": 0,
-        "vitamin_b9_ug": 0,
-        "vitamin_b12_ug": 0,
-        "vitamin_a_ug": 0,
-        "vitamin_c_mg": 0,
-        "vitamin_d_ug": 0,
-        "vitamin_e_mg": null,
-        "vitamin_k1_ug": 0,
-        "vitamin_k2_ug": 0,
-        "choline_mg": 0,
-        "iodine_ug": 0,
-        "coenzyme_q10_mg": 0,
-        "carnitine_mg": 0,
-        "collagen_g": 0,
-        "beta_carotene_ug": 0,
-        "lutein_zeaxanthin_ug": 0,
-        "lycopene_ug": 0,
-        "betaine_mg": 0,
-        "caffeine_mg": 0,
-        "polyphenols_mg": 19.5,
-        "quercetin_mg": 0,
-        "anthocyanins_mg": 0,
-        "chlorogenic_acid_mg": 0
+        "calories": 625,
+        "fat": 62.5,
+        "omega3_g": 31.25,
+        "polyphenols_mg": 487.5
       },
       "aliases": [
         "suplement omega-3",
         "omega 3 rybi",
         "fish oil omega",
         "EPA DHA suplement"
-      ]
+      ],
+      "serving_g": 2
     },
     "suplement_q10": {
       "name_pl": "suplement Q10 ubichinol",
       "name_en": "Supplement, Ubiquinol CoQ10 100mg Kaneka, per serving (2 gummies)",
       "category": "Supplements",
       "per_100g": {
-        "calories": 0,
-        "fat": 0,
-        "saturated_fat_g": 0,
-        "monounsaturated_fat_g": 0,
-        "polyunsaturated_fat_g": 0,
-        "omega3_g": 0,
-        "omega6_g": 0,
-        "carbs": 0,
-        "sugar_g": 0,
-        "protein": 0,
-        "fiber": 0,
-        "sodium_mg": 0,
-        "water_g": 0,
-        "potassium_mg": 0,
-        "phosphorus_mg": 0,
-        "calcium_mg": 0,
-        "magnesium_mg": 0,
-        "iron_mg": 0,
-        "zinc_mg": 0,
-        "copper_mg": 0,
-        "manganese_mg": 0,
-        "selenium_ug": 0,
-        "vitamin_b1_mg": 0,
-        "vitamin_b2_mg": 0,
-        "vitamin_b3_mg": 0,
-        "vitamin_b5_mg": 0,
-        "vitamin_b6_mg": 0,
-        "vitamin_b9_ug": 0,
-        "vitamin_b12_ug": 0,
-        "vitamin_a_ug": 0,
-        "vitamin_c_mg": 0,
-        "vitamin_d_ug": 0,
-        "vitamin_e_mg": 0,
-        "vitamin_k1_ug": 0,
-        "vitamin_k2_ug": 0,
-        "choline_mg": 0,
-        "iodine_ug": 0,
-        "coenzyme_q10_mg": 100,
-        "carnitine_mg": 0,
-        "collagen_g": 0,
-        "beta_carotene_ug": 0,
-        "lutein_zeaxanthin_ug": 0,
-        "lycopene_ug": 0,
-        "betaine_mg": 0,
-        "caffeine_mg": 0,
-        "polyphenols_mg": 0,
-        "quercetin_mg": 0,
-        "anthocyanins_mg": 0,
-        "chlorogenic_acid_mg": 0
+        "coenzyme_q10_mg": 3000
       },
       "aliases": [
         "suplement q10",
         "ubichinol q10",
         "coq10 suplement",
         "kaneka ubiquinol"
-      ]
+      ],
+      "serving_g": 1
     },
     "cebula": {
       "name_pl": "cebula",
       "name_en": "Onions, yellow, raw",
       "category": "Vegetables and Vegetable Products",
       "per_100g": {
-        "vitamin_b7_ug": 0,
+        "vitamin_b7_ug": 0.9,
         "fiber": 1.9,
         "iodine_ug": 0,
         "manganese_mg": 0.144,
@@ -24458,8 +24266,7 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 0.9
+        "collagen_g": null
       },
       "aliases": [
         "cebula"
@@ -25776,7 +25583,7 @@
         "carnitine_mg": 12,
         "collagen_g": null,
         "creatine_g": 0.3,
-        "biotin_ug": 2
+        "vitamin_b7_ug": 2
       },
       "aliases": [
         "pierś indyka",
@@ -26959,8 +26766,7 @@
         "chlorogenic_acid_mg": null,
         "caffeine_mg": null,
         "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
-        "biotin_ug": 170
+        "lycopene_ug": null
       },
       "aliases": [
         "wątróbka z kurczaka",
@@ -27018,8 +26824,7 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "biotin_ug": 1.2
+        "collagen_g": null
       },
       "aliases": [
         "pomidor roma",
@@ -27072,10 +26877,10 @@
         "omega6_g": 0.12,
         "beta_carotene_ug": 27,
         "water_g": 79,
-        "biotin_ug": 2.5,
         "monounsaturated_fat_g": 1.2,
         "polyunsaturated_fat_g": 0.1,
-        "carnitine_mg": 1.5
+        "carnitine_mg": 1.5,
+        "vitamin_b7_ug": 2.5
       }
     },
     "bulka_do_burgera": {
@@ -27304,7 +27109,7 @@
       "name_pl": "opłatek wigilijny",
       "name_en": "Communion wafer",
       "category": "Inne",
-      "serving_g": 5,
+      "serving_g": 1,
       "aliases": [
         "opłatek"
       ],

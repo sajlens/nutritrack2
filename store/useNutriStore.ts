@@ -7,6 +7,22 @@ const EXCLUDED_KEYS = new Set([
   'id', 'meal_id', 'name', 'weight_grams', 'confirmed', 'nutrient_key', 'created_at'
 ]);
 
+const VALID_NUTRIENT_COLS = new Set([
+  'calories','protein','fat','carbs','fiber',
+  'vitamin_a_ug','vitamin_b1_mg','vitamin_b2_mg','vitamin_b3_mg','vitamin_b5_mg',
+  'vitamin_b6_mg','vitamin_b7_ug','vitamin_b9_ug','vitamin_b12_ug',
+  'vitamin_c_mg','vitamin_d_ug','vitamin_e_mg','vitamin_k1_ug','vitamin_k2_ug',
+  'calcium_mg','iron_mg','magnesium_mg','phosphorus_mg','potassium_mg',
+  'sodium_mg','zinc_mg','copper_mg','manganese_mg','selenium_ug','iodine_ug','choline_mg',
+  'sugar_g','water_g','saturated_fat_g','monounsaturated_fat_g','polyunsaturated_fat_g',
+  'omega3_g','omega6_g','beta_carotene_ug','lutein_zeaxanthin_ug','lycopene_ug',
+  'polyphenols_mg','quercetin_mg','anthocyanins_mg','chlorogenic_acid_mg',
+  'betaine_mg','caffeine_mg','coenzyme_q10_mg','carnitine_mg','collagen_g','creatine_g',
+]);
+
+const filterNutrients = (nutrients: any) =>
+  Object.fromEntries(Object.entries(nutrients).filter(([k]) => VALID_NUTRIENT_COLS.has(k)));
+
 function extractNutrients(row: any): NutrientValues {
   return Object.fromEntries(
     Object.entries(row)
@@ -96,7 +112,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
       nutrient_key: item.nutrient_key,
       weight_grams: item.weight_grams,
       confirmed: item.confirmed,
-      ...item.nutrients,
+      ...filterNutrients(item.nutrients),
     }));
 
     await supabase.from('meal_items').insert(mealItemsToInsert);
@@ -126,7 +142,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
       nutrient_key: item.nutrient_key,
       weight_grams: item.weight_grams,
       confirmed: item.confirmed,
-      ...item.nutrients,
+      ...filterNutrients(item.nutrients),
     }));
 
     await supabase.from('meal_items').insert(mealItemsToInsert);
