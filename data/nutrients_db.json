@@ -628,7 +628,7 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 8.4,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -645,7 +645,8 @@
       },
       "aliases": [
         "brzoskwinie"
-      ]
+      ],
+      "serving_g": 150
     },
     "pestki_slonecznika_prazone": {
       "name_pl": "pestki słonecznika prażone",
@@ -1084,7 +1085,8 @@
         "mozzarella",
         "mozarella",
         "ser mozzarella"
-      ]
+      ],
+      "serving_g": 30
     },
     "jogurt_grecki_chudy": {
       "name_pl": "jogurt grecki chudy",
@@ -1164,13 +1166,13 @@
         "magnesium_mg": 0,
         "phosphorus_mg": 0,
         "sodium_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 82.5,
+        "monounsaturated_fat_g": 6.3,
+        "polyunsaturated_fat_g": 1.7,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 0,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
@@ -1186,7 +1188,8 @@
       },
       "aliases": [
         "kokosowy"
-      ]
+      ],
+      "serving_g": 10
     },
     "udko_kurczaka_gotowane": {
       "name_pl": "udko kurczaka gotowane",
@@ -1234,12 +1237,15 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "creatine_g": 0.25
+        "collagen_g": 2,
+        "creatine_g": 0.25,
+        "biotin_ug": 2.5,
+        "vitamin_k2_ug": 22
       },
       "aliases": [
         "podudzie kurczaka"
-      ]
+      ],
+      "serving_g": 100
     },
     "piers_kurczaka_gotowana": {
       "name_pl": "pierś kurczaka gotowana",
@@ -1267,12 +1273,12 @@
         "manganese_mg": 0.012,
         "vitamin_b1_mg": 0.098,
         "vitamin_b2_mg": 0.187,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 0.4,
+        "monounsaturated_fat_g": 0.5,
+        "polyunsaturated_fat_g": 0.4,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 0,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -1284,13 +1290,16 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 6,
         "collagen_g": null,
-        "creatine_g": 0.25
+        "creatine_g": 0.25,
+        "biotin_ug": 1.8,
+        "vitamin_k2_ug": 8
       },
       "aliases": [
         "kurczak pierś"
-      ]
+      ],
+      "serving_g": 150
     },
     "sos_marinara": {
       "name_pl": "sos marinara",
@@ -1465,9 +1474,9 @@
         "omega6_g": null,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 270,
+        "lutein_zeaxanthin_ug": 80,
+        "lycopene_ug": 9500,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -1480,7 +1489,8 @@
       },
       "aliases": [
         "pomidory konserwowe"
-      ]
+      ],
+      "serving_g": 100
     },
     "tunczyk_w_wodzie": {
       "name_pl": "tuńczyk w wodzie",
@@ -1508,15 +1518,15 @@
         "copper_mg": 0.048,
         "manganese_mg": 0.019,
         "carbs": 0.08,
-        "iodine_ug": 0,
+        "iodine_ug": 12,
         "vitamin_k1_ug": 0,
         "vitamin_a_ug": 16,
         "vitamin_c_mg": 0,
         "saturated_fat_g": null,
         "monounsaturated_fat_g": null,
         "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "omega3_g": 0.2,
+        "omega6_g": 0.01,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -1531,11 +1541,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.35
+        "creatine_g": 0.35,
+        "biotin_ug": 2.5
       },
       "aliases": [
         "tuńczyk z puszki"
-      ]
+      ],
+      "serving_g": 80
     },
     "chleb_pelnoziarnisty": {
       "name_pl": "chleb pełnoziarnisty",
@@ -1843,8 +1855,8 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
-        "water_g": null,
+        "sugar_g": 47.9,
+        "water_g": 30,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
@@ -1860,7 +1872,8 @@
       },
       "aliases": [
         "figi"
-      ]
+      ],
+      "serving_g": 30
     },
     "salata_rzymska": {
       "name_pl": "sałata rzymska",
@@ -1953,10 +1966,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 8,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 2020,
+        "lutein_zeaxanthin_ug": 26,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -1970,7 +1983,8 @@
       },
       "aliases": [
         "melon"
-      ]
+      ],
+      "serving_g": 150
     },
     "pomarancza": {
       "name_pl": "pomarańcza",
@@ -2009,16 +2023,16 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 9.4,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 71,
+        "lutein_zeaxanthin_ug": 129,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 50,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 0.3,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
@@ -2026,7 +2040,8 @@
       },
       "aliases": [
         "pomarańcze"
-      ]
+      ],
+      "serving_g": 180
     },
     "mleko_1": {
       "name_pl": "mleko 1%",
@@ -2119,16 +2134,16 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 9.8,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 69,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 0.3,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
@@ -2136,7 +2151,8 @@
       },
       "aliases": [
         "gruszki"
-      ]
+      ],
+      "serving_g": 170
     },
     "sol_jodowana": {
       "name_pl": "sól jodowana",
@@ -2215,7 +2231,7 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 5.1,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -2228,11 +2244,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 1.5
       },
       "aliases": [
         "mleko 0%"
-      ]
+      ],
+      "serving_g": 250
     },
     "salsa": {
       "name_pl": "salsa",
@@ -2695,7 +2713,8 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.25
-      }
+      },
+      "serving_g": 150
     },
     "szynka_restauracyjna": {
       "name_pl": "szynka restauracyjna",
@@ -3268,20 +3287,20 @@
         "calcium_mg": 0,
         "magnesium_mg": 0,
         "zinc_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 7.4,
+        "monounsaturated_fat_g": 63.3,
+        "polyunsaturated_fat_g": 28.1,
+        "omega3_g": 9.1,
+        "omega6_g": 18.6,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 0,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 0.7,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
@@ -3291,7 +3310,8 @@
       "aliases": [
         "rzepakowy",
         "canola"
-      ]
+      ],
+      "serving_g": 10
     },
     "olej_kukurydziany": {
       "name_pl": "olej kukurydziany",
@@ -3444,30 +3464,33 @@
         "iodine_ug": 49.1,
         "fiber": 0,
         "choline_mg": 335,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 3.1,
+        "monounsaturated_fat_g": 3.7,
+        "polyunsaturated_fat_g": 1.9,
+        "omega3_g": 0.1,
+        "omega6_g": 1.6,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 65,
+        "lutein_zeaxanthin_ug": 503,
         "lycopene_ug": null,
-        "betaine_mg": null,
+        "betaine_mg": 0.3,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 0.1,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
-        "collagen_g": null
+        "carnitine_mg": 0.8,
+        "collagen_g": null,
+        "biotin_ug": 20,
+        "vitamin_k2_ug": 32
       },
       "aliases": [
         "jajko",
         "jajka"
-      ]
+      ],
+      "serving_g": 60
     },
     "bekon_smazony": {
       "name_pl": "bekon smażony",
@@ -3869,7 +3892,8 @@
       },
       "aliases": [
         "czosnek surowy"
-      ]
+      ],
+      "serving_g": 3
     },
     "maka_sojowa_odtluszczona": {
       "name_pl": "mąka sojowa odtłuszczona",
@@ -4092,7 +4116,7 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 12.2,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -4105,11 +4129,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 1.4
       },
       "aliases": [
         "banany"
-      ]
+      ],
+      "serving_g": 120
     },
     "jablko_czerwone": {
       "name_pl": "jabłko czerwone",
@@ -4413,13 +4439,13 @@
         "calcium_mg": 0,
         "magnesium_mg": 0,
         "zinc_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 10.3,
+        "monounsaturated_fat_g": 19.5,
+        "polyunsaturated_fat_g": 65.7,
+        "omega3_g": 0.1,
+        "omega6_g": 65.7,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 0,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
@@ -4435,7 +4461,8 @@
       },
       "aliases": [
         "słonecznikowy"
-      ]
+      ],
+      "serving_g": 10
     },
     "olej_szafranowy": {
       "name_pl": "olej szafranowy",
@@ -5877,10 +5904,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 2.4,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 208,
+        "lutein_zeaxanthin_ug": 341,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -5894,7 +5921,8 @@
       },
       "aliases": [
         "papryka"
-      ]
+      ],
+      "serving_g": 120
     },
     "papryka_zolta": {
       "name_pl": "papryka żółta",
@@ -5986,10 +6014,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.2,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 1624,
+        "lutein_zeaxanthin_ug": 51,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -6000,7 +6028,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null
-      }
+      },
+      "serving_g": 120
     },
     "papryka_pomaranczowa": {
       "name_pl": "papryka pomarańczowa",
@@ -6523,7 +6552,8 @@
       },
       "aliases": [
         "masło arachidowe"
-      ]
+      ],
+      "serving_g": 15
     },
     "tahini": {
       "name_pl": "tahini",
@@ -6575,7 +6605,8 @@
       "aliases": [
         "pasta sezamowa",
         "masło sezamowe"
-      ]
+      ],
+      "serving_g": 15
     },
     "maslo_migdalowe": {
       "name_pl": "masło migdałowe",
@@ -7166,29 +7197,31 @@
         "calories": 730,
         "vitamin_k2_ug": 0,
         "vitamin_k1_ug": 1.7,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
-        "sugar_g": null,
+        "saturated_fat_g": 6.1,
+        "monounsaturated_fat_g": 8.9,
+        "polyunsaturated_fat_g": 47.2,
+        "omega3_g": 9.1,
+        "omega6_g": 38.1,
+        "sugar_g": 2.6,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "polyphenols_mg": 1556,
+        "coenzyme_q10_mg": 1.3,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 9.6
       },
       "aliases": [
         "włoskie"
-      ]
+      ],
+      "serving_g": 30
     },
     "orzeszki_pekan": {
       "name_pl": "orzeszki pekan",
@@ -7274,12 +7307,12 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 0.5,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
-        "betaine_mg": null,
+        "betaine_mg": 4,
         "caffeine_mg": null,
         "polyphenols_mg": null,
         "coenzyme_q10_mg": null,
@@ -7287,11 +7320,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 7.8
       },
       "aliases": [
         "owsiane płatki"
-      ]
+      ],
+      "serving_g": 40
     },
     "kasza_owsiana": {
       "name_pl": "kasza owsiana",
@@ -7375,7 +7410,7 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 9.9,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -7392,7 +7427,8 @@
       },
       "aliases": [
         "ananas surowy"
-      ]
+      ],
+      "serving_g": 100
     },
     "wisnie_czeresnie": {
       "name_pl": "wiśnie/czereśnie",
@@ -7737,10 +7773,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 1.3,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 270,
+        "lutein_zeaxanthin_ug": 283,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -7754,7 +7790,8 @@
       },
       "aliases": [
         "seler"
-      ]
+      ],
+      "serving_g": 40
     },
     "ogorek_ze_skorka": {
       "name_pl": "ogórek ze skórką",
@@ -7934,24 +7971,26 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.9,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 7,
+        "lutein_zeaxanthin_ug": 26,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 235,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
-        "anthocyanins_mg": null,
+        "quercetin_mg": 1,
+        "anthocyanins_mg": 21,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 1.5
       },
       "aliases": [
         "truskawka"
-      ]
+      ],
+      "serving_g": 100
     },
     "maliny": {
       "name_pl": "maliny",
@@ -7978,24 +8017,26 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.4,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 12,
+        "lutein_zeaxanthin_ug": 136,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 310,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
-        "anthocyanins_mg": null,
+        "quercetin_mg": 1,
+        "anthocyanins_mg": 38,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 2
       },
       "aliases": [
         "malina"
-      ]
+      ],
+      "serving_g": 60
     },
     "jagody": {
       "name_pl": "jagody",
@@ -8022,17 +8063,17 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 10,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 32,
+        "lutein_zeaxanthin_ug": 80,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 560,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
-        "anthocyanins_mg": null,
+        "quercetin_mg": 8,
+        "anthocyanins_mg": 163,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null
@@ -8040,7 +8081,8 @@
       "aliases": [
         "borówki",
         "jagody amerykańskie"
-      ]
+      ],
+      "serving_g": 75
     },
     "winogrona_czerwone": {
       "name_pl": "winogrona czerwone",
@@ -8589,25 +8631,28 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 0.9,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
-        "betaine_mg": null,
+        "betaine_mg": 11,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 200,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 23,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 4,
+        "choline_mg": 20
       },
       "aliases": [
         "gryka",
         "buckwheat"
-      ]
+      ],
+      "serving_g": 80
     },
     "proso_kasza_jaglana": {
       "name_pl": "proso/kasza jaglana",
@@ -8799,9 +8844,9 @@
         "iodine_ug": 8,
         "vitamin_a_ug": 0,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 3.9,
+        "monounsaturated_fat_g": 4.4,
+        "polyunsaturated_fat_g": 0.4,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
@@ -8812,17 +8857,20 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 3,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 87,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 3,
+        "choline_mg": 67
       },
       "aliases": [
         "mielona wołowina"
-      ]
+      ],
+      "serving_g": 150
     },
     "mielona_wolowina_20_tluszczu": {
       "name_pl": "mielona wołowina 20% tłuszczu",
@@ -8849,9 +8897,9 @@
         "iodine_ug": 8,
         "vitamin_a_ug": 0,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 7.6,
+        "monounsaturated_fat_g": 8.8,
+        "polyunsaturated_fat_g": 0.7,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
@@ -8862,17 +8910,19 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 3,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 85,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 3
       },
       "aliases": [
         "mielona wołowina tłusta"
-      ]
+      ],
+      "serving_g": 150
     },
     "mielona_wieprzowina": {
       "name_pl": "mielona wieprzowina",
@@ -8909,13 +8959,15 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 20,
         "collagen_g": null,
-        "creatine_g": 0.4
+        "creatine_g": 0.4,
+        "biotin_ug": 3
       },
       "aliases": [
         "mielona wieprzowina"
-      ]
+      ],
+      "serving_g": 150
     },
     "mielony_kurczak": {
       "name_pl": "mielony kurczak",
@@ -8955,7 +9007,8 @@
         "carnitine_mg": null,
         "collagen_g": null,
         "creatine_g": 0.3
-      }
+      },
+      "serving_g": 150
     },
     "mielony_indyk_surowy": {
       "name_pl": "mielony indyk surowy",
@@ -8992,13 +9045,15 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 11,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 2.5
       },
       "aliases": [
         "mielony indyk"
-      ]
+      ],
+      "serving_g": 150
     },
     "orzechy_brazylijskie": {
       "name_pl": "orzechy brazylijskie",
@@ -9020,12 +9075,12 @@
         "protein": 15,
         "carbs": 21.6,
         "calories": 664,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 15.1,
+        "monounsaturated_fat_g": 24.5,
+        "polyunsaturated_fat_g": 20.6,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 2.3,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -9038,11 +9093,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 3.5
       },
       "aliases": [
         "orzech brazylijski"
-      ]
+      ],
+      "serving_g": 15
     },
     "nerkowce_surowe": {
       "name_pl": "nerkowce surowe",
@@ -9109,29 +9166,31 @@
         "protein": 13.5,
         "carbs": 26.5,
         "calories": 641,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 4.5,
+        "monounsaturated_fat_g": 46,
+        "polyunsaturated_fat_g": 7.9,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.3,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 495,
         "coenzyme_q10_mg": null,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 10
       },
       "aliases": [
         "laskowe"
-      ]
+      ],
+      "serving_g": 30
     },
     "orzeszki_ziemne_surowe": {
       "name_pl": "orzeszki ziemne surowe",
@@ -9257,11 +9316,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 2.5
       },
       "aliases": [
         "makadamia"
-      ]
+      ],
+      "serving_g": 30
     },
     "pistacje_surowe": {
       "name_pl": "pistacje surowe",
@@ -9857,9 +9918,9 @@
         "protein": 21.1,
         "carbs": 0,
         "calories": 168,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 1.4,
+        "monounsaturated_fat_g": 1.6,
+        "polyunsaturated_fat_g": 0.5,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
@@ -9870,17 +9931,21 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 4.1,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 28,
         "collagen_g": null,
-        "creatine_g": 0.4
+        "creatine_g": 0.4,
+        "biotin_ug": 4,
+        "vitamin_b12_ug": 0.7,
+        "choline_mg": 62
       },
       "aliases": [
         "polędwica wieprzowa"
-      ]
+      ],
+      "serving_g": 150
     },
     "poledwiczka_wieprzowa": {
       "name_pl": "polędwiczka wieprzowa",
@@ -9913,14 +9978,17 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 3.9,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 25,
         "collagen_g": null,
-        "creatine_g": 0.4
-      }
+        "creatine_g": 0.4,
+        "biotin_ug": 4,
+        "vitamin_b12_ug": 0.6
+      },
+      "serving_g": 150
     },
     "piers_kurczaka_surowa": {
       "name_pl": "pierś kurczaka surowa",
@@ -9940,32 +10008,37 @@
         "protein": 22.5,
         "carbs": 0,
         "calories": 106,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 0.3,
+        "monounsaturated_fat_g": 0.4,
+        "polyunsaturated_fat_g": 0.3,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 0,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
-        "betaine_mg": null,
+        "betaine_mg": 8,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 1.4,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 7.5,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 2,
+        "vitamin_b12_ug": 0.3,
+        "vitamin_k2_ug": 9,
+        "choline_mg": 65
       },
       "aliases": [
         "kurczak pierś surowy",
         "piersi z kurczaka",
         "piers z kurczaka"
-      ]
+      ],
+      "serving_g": 180
     },
     "udko_kurczaka_bez_kosci_surowe": {
       "name_pl": "udko kurczaka bez kości surowe",
@@ -9985,9 +10058,9 @@
         "calories": 144,
         "protein": 18.6,
         "carbs": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 1.2,
+        "monounsaturated_fat_g": 1.6,
+        "polyunsaturated_fat_g": 0.9,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
@@ -9998,17 +10071,21 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 2.5,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 10,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 3,
+        "vitamin_b12_ug": 0.4,
+        "vitamin_k2_ug": 25
       },
       "aliases": [
         "kurczak udo"
-      ]
+      ],
+      "serving_g": 120
     },
     "antrykot_wolowy": {
       "name_pl": "antrykot wołowy",
@@ -10035,30 +10112,33 @@
         "iodine_ug": 8,
         "vitamin_a_ug": 0,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 4.5,
+        "monounsaturated_fat_g": 4.8,
+        "polyunsaturated_fat_g": 0.4,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 0,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
-        "betaine_mg": null,
+        "betaine_mg": 10,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 3.1,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 95,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 3,
+        "choline_mg": 78
       },
       "aliases": [
         "ribeye"
-      ]
+      ],
+      "serving_g": 200
     },
     "zrazowa_wolowina": {
       "name_pl": "zrazowa wołowina",
@@ -10098,14 +10178,16 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 3,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 80,
         "collagen_g": null,
-        "creatine_g": 0.45
-      }
+        "creatine_g": 0.45,
+        "biotin_ug": 3
+      },
+      "serving_g": 150
     },
     "lopatka_wolowa": {
       "name_pl": "łopatka wołowa",
@@ -10149,10 +10231,12 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 70,
         "collagen_g": null,
-        "creatine_g": 0.45
-      }
+        "creatine_g": 0.45,
+        "biotin_ug": 3
+      },
+      "serving_g": 150
     },
     "boczek_wolowy": {
       "name_pl": "boczek wołowy",
@@ -10202,7 +10286,8 @@
       },
       "aliases": [
         "flank steak"
-      ]
+      ],
+      "serving_g": 150
     },
     "jogurt_naturalny_chudy": {
       "name_pl": "jogurt naturalny chudy",
@@ -10352,12 +10437,12 @@
         "vitamin_d_ug": 15,
         "vitamin_a_ug": 15,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
-        "sugar_g": null,
+        "saturated_fat_g": 1,
+        "monounsaturated_fat_g": 1.8,
+        "polyunsaturated_fat_g": 1.6,
+        "omega3_g": 1.2,
+        "omega6_g": 0.2,
+        "sugar_g": 0,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -10371,11 +10456,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 5
       },
       "aliases": [
         "łosoś sockeye"
-      ]
+      ],
+      "serving_g": 150
     },
     "losos_atlantycki_hodowlany": {
       "name_pl": "łosoś atlantycki hodowlany",
@@ -10402,12 +10489,12 @@
         "vitamin_d_ug": 11,
         "vitamin_a_ug": 12,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
-        "sugar_g": null,
+        "saturated_fat_g": 2.5,
+        "monounsaturated_fat_g": 3.8,
+        "polyunsaturated_fat_g": 3.9,
+        "omega3_g": 2.1,
+        "omega6_g": 0.6,
+        "sugar_g": 0,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -10415,17 +10502,20 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 0.6,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 3,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 5,
+        "choline_mg": 65
       },
       "aliases": [
         "łosoś"
-      ]
+      ],
+      "serving_g": 150
     },
     "krewetki_hodowlane": {
       "name_pl": "krewetki hodowlane",
@@ -10501,11 +10591,11 @@
         "vitamin_d_ug": 1,
         "vitamin_a_ug": 12,
         "vitamin_c_mg": 0,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 0.1,
+        "monounsaturated_fat_g": 0.1,
+        "polyunsaturated_fat_g": 0.2,
+        "omega3_g": 0.15,
+        "omega6_g": 0.01,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -10518,13 +10608,16 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 5.6,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 2,
+        "choline_mg": 84
       },
       "aliases": [
         "dorsz"
-      ]
+      ],
+      "serving_g": 150
     },
     "cukinia": {
       "name_pl": "cukinia",
@@ -10558,10 +10651,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 2.5,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 200,
+        "lutein_zeaxanthin_ug": 2125,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -10575,7 +10668,8 @@
       },
       "aliases": [
         "zucchini"
-      ]
+      ],
+      "serving_g": 150
     },
     "cukinia_zolta": {
       "name_pl": "cukinia żółta",
@@ -10810,10 +10904,10 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 1.9,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 0,
+        "lutein_zeaxanthin_ug": 1,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -10823,11 +10917,14 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 1.5,
+        "choline_mg": 39
       },
       "aliases": [
         "kalafior surowy"
-      ]
+      ],
+      "serving_g": 100
     },
     "collard_greens": {
       "name_pl": "collard greens",
@@ -11067,9 +11164,9 @@
         "omega6_g": null,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 400,
+        "lutein_zeaxanthin_ug": 120,
+        "lycopene_ug": 15900,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -11082,7 +11179,8 @@
       },
       "aliases": [
         "passata"
-      ]
+      ],
+      "serving_g": 60
     },
     "koncentrat_pomidorowy": {
       "name_pl": "koncentrat pomidorowy",
@@ -11117,9 +11215,9 @@
         "omega6_g": null,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 1250,
+        "lutein_zeaxanthin_ug": 300,
+        "lycopene_ug": 28764,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -11132,7 +11230,8 @@
       },
       "aliases": [
         "pasta pomidorowa"
-      ]
+      ],
+      "serving_g": 15
     },
     "pomidory_kruszone_z_puszki": {
       "name_pl": "pomidory kruszone z puszki",
@@ -11167,9 +11266,9 @@
         "omega6_g": null,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 300,
+        "lutein_zeaxanthin_ug": 100,
+        "lycopene_ug": 10000,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -11179,7 +11278,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null
-      }
+      },
+      "serving_g": 100
     },
     "puree_pomidorowe": {
       "name_pl": "puree pomidorowe",
@@ -11226,7 +11326,8 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null
-      }
+      },
+      "serving_g": 60
     },
     "morela": {
       "name_pl": "morela",
@@ -11435,11 +11536,11 @@
         "iodine_ug": 1,
         "vitamin_a_ug": 0,
         "vitamin_c_mg": 1.6,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 3.3,
+        "monounsaturated_fat_g": 2.3,
+        "polyunsaturated_fat_g": 23.7,
+        "omega3_g": 17.8,
+        "omega6_g": 5.8,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -11453,11 +11554,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 4
       },
       "aliases": [
         "chia"
-      ]
+      ],
+      "serving_g": 10
     },
     "bulgur": {
       "name_pl": "bulgur",
@@ -11687,15 +11790,15 @@
         "protein": 1.81,
         "carbs": 8.32,
         "calories": 223,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
-        "sugar_g": null,
+        "saturated_fat_g": 2.1,
+        "monounsaturated_fat_g": 10,
+        "polyunsaturated_fat_g": 1.8,
+        "omega3_g": 0.1,
+        "omega6_g": 1.7,
+        "sugar_g": 0.7,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 62,
+        "lutein_zeaxanthin_ug": 271,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -11704,12 +11807,14 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
-        "collagen_g": null
+        "carnitine_mg": 1.2,
+        "collagen_g": null,
+        "biotin_ug": 3.6
       },
       "aliases": [
         "awokado hass"
-      ]
+      ],
+      "serving_g": 80
     },
     "ryz_czarny": {
       "name_pl": "ryż czarny",
@@ -12062,16 +12167,16 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 13.7,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 640,
+        "lutein_zeaxanthin_ug": 23,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 70,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 1,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
@@ -12079,7 +12184,8 @@
       },
       "aliases": [
         "mango tommy"
-      ]
+      ],
+      "serving_g": 150
     },
     "mango_ataulfo": {
       "name_pl": "mango ataulfo",
@@ -12390,9 +12496,10 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
+        "collagen_g": 3,
         "creatine_g": 0.3
-      }
+      },
+      "serving_g": 100
     },
     "udko_kurczaka_ze_skora": {
       "name_pl": "udko kurczaka ze skórą",
@@ -12430,9 +12537,11 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
-        "creatine_g": 0.3
-      }
+        "collagen_g": 2.5,
+        "creatine_g": 0.3,
+        "biotin_ug": 3
+      },
+      "serving_g": 130
     },
     "skrzydelko_kurczaka": {
       "name_pl": "skrzydełko kurczaka",
@@ -12470,12 +12579,13 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null,
+        "collagen_g": 4,
         "creatine_g": 0.25
       },
       "aliases": [
         "skrzydełka"
-      ]
+      ],
+      "serving_g": 30
     },
     "piers_kurczaka_ze_skora": {
       "name_pl": "pierś kurczaka ze skórą",
@@ -12514,8 +12624,10 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.3
-      }
+        "creatine_g": 0.3,
+        "biotin_ug": 2
+      },
+      "serving_g": 180
     },
     "mielona_jagniecina": {
       "name_pl": "mielona jagnięcina",
@@ -12601,13 +12713,15 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 80,
         "collagen_g": null,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 3
       },
       "aliases": [
         "NY strip"
-      ]
+      ],
+      "serving_g": 200
     },
     "stek_z_rostbefu": {
       "name_pl": "stek z rostbefu",
@@ -12699,7 +12813,8 @@
       },
       "aliases": [
         "kark wieprzowy"
-      ]
+      ],
+      "serving_g": 150
     },
     "boczek_wieprzowy": {
       "name_pl": "boczek wieprzowy",
@@ -12719,9 +12834,9 @@
         "protein": 15.2,
         "carbs": -0.705,
         "calories": 380,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
+        "saturated_fat_g": 14,
+        "monounsaturated_fat_g": 16,
+        "polyunsaturated_fat_g": 4.5,
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
@@ -12736,13 +12851,15 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
-        "collagen_g": null,
-        "creatine_g": 0.35
+        "carnitine_mg": 15,
+        "collagen_g": 1,
+        "creatine_g": 0.35,
+        "biotin_ug": 3
       },
       "aliases": [
         "boczek"
-      ]
+      ],
+      "serving_g": 30
     },
     "pawpaw": {
       "name_pl": "pawpaw",
@@ -12818,8 +12935,8 @@
         "omega6_g": null,
         "sugar_g": null,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
+        "beta_carotene_ug": 3100,
+        "lutein_zeaxanthin_ug": 1500,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
@@ -12833,7 +12950,8 @@
       },
       "aliases": [
         "dynia pieczna"
-      ]
+      ],
+      "serving_g": 100
     },
     "dynia_spaghetti": {
       "name_pl": "dynia spaghetti",
@@ -13480,11 +13598,14 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 2,
+        "iodine_ug": 100
       },
       "aliases": [
         "dorsz"
-      ]
+      ],
+      "serving_g": 150
     },
     "fenkul": {
       "name_pl": "fenkuł",
@@ -14035,7 +14156,8 @@
       },
       "aliases": [
         "tuńczyk ahi"
-      ]
+      ],
+      "serving_g": 150
     },
     "rzepa": {
       "name_pl": "rzepa",
@@ -14109,11 +14231,11 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 6.2,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 303,
+        "lutein_zeaxanthin_ug": 8,
+        "lycopene_ug": 4532,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -14126,7 +14248,8 @@
       },
       "aliases": [
         "kawon"
-      ]
+      ],
+      "serving_g": 200
     },
     "kalarepa": {
       "name_pl": "kalarepa",
@@ -14681,11 +14804,11 @@
         "carbs": 28.9,
         "calories": 534,
         "choline_mg": 78.7,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 3.7,
+        "monounsaturated_fat_g": 7.5,
+        "polyunsaturated_fat_g": 28.7,
+        "omega3_g": 22.8,
+        "omega6_g": 5.9,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -14693,18 +14816,20 @@
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 1528,
         "coenzyme_q10_mg": null,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 6
       },
       "aliases": [
         "len",
         "linseed"
-      ]
+      ],
+      "serving_g": 10
     },
     "teff_surowy": {
       "name_pl": "teff surowy",
@@ -15035,16 +15160,18 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 1.7,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 5
       },
       "aliases": [
         "sezam"
-      ]
+      ],
+      "serving_g": 10
     },
     "sezam_prazony": {
       "name_pl": "sezam prażony",
@@ -15647,7 +15774,7 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.5,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
@@ -15660,11 +15787,14 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 2.5,
+        "vitamin_k2_ug": 1
       },
       "aliases": [
         "kefir naturalny"
-      ]
+      ],
+      "serving_g": 250
     },
     "lisc_laurowy": {
       "name_pl": "liść laurowy",
@@ -17935,13 +18065,13 @@
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 99,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
-        "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "caffeine_mg": 40,
+        "polyphenols_mg": 200,
         "coenzyme_q10_mg": null,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
@@ -17951,7 +18081,8 @@
       },
       "aliases": [
         "kawa"
-      ]
+      ],
+      "serving_g": 250
     },
     "espresso": {
       "name_pl": "espresso",
@@ -17993,13 +18124,13 @@
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 98,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
-        "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "caffeine_mg": 212,
+        "polyphenols_mg": 500,
         "coenzyme_q10_mg": null,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
@@ -18009,7 +18140,8 @@
       },
       "aliases": [
         "kawa espresso"
-      ]
+      ],
+      "serving_g": 30
     },
     "ser_kozi_twardy": {
       "name_pl": "ser kozi twardy",
@@ -18863,15 +18995,15 @@
         "omega3_g": null,
         "omega6_g": null,
         "sugar_g": null,
-        "water_g": null,
+        "water_g": 99.7,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
-        "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "caffeine_mg": 20,
+        "polyphenols_mg": 100,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 2,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
@@ -18879,7 +19011,8 @@
       },
       "aliases": [
         "herbata"
-      ]
+      ],
+      "serving_g": 250
     },
     "ser_kozi_miekki": {
       "name_pl": "ser kozi miękki",
@@ -18996,7 +19129,8 @@
       },
       "aliases": [
         "ocet z jabłek"
-      ]
+      ],
+      "serving_g": 15
     },
     "tymianek_swiezy": {
       "name_pl": "tymianek świeży",
@@ -19376,8 +19510,8 @@
         "saturated_fat_g": null,
         "monounsaturated_fat_g": null,
         "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "omega3_g": 1.3,
+        "omega6_g": 0.05,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -19392,11 +19526,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.4
+        "creatine_g": 0.4,
+        "biotin_ug": 3
       },
       "aliases": [
         "tuńczyk bluefin"
-      ]
+      ],
+      "serving_g": 150
     },
     "tempeh_surowy": {
       "name_pl": "tempeh surowy",
@@ -19486,11 +19622,11 @@
         "potassium_mg": 327,
         "zinc_mg": 0.99,
         "selenium_ug": 36.5,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 2.6,
+        "monounsaturated_fat_g": 3.7,
+        "polyunsaturated_fat_g": 2.1,
+        "omega3_g": 1.7,
+        "omega6_g": 0.2,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -19505,11 +19641,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.65
+        "creatine_g": 0.65,
+        "biotin_ug": 4
       },
       "aliases": [
         "śledź"
-      ]
+      ],
+      "serving_g": 100
     },
     "sledz_pieczony": {
       "name_pl": "śledź pieczony",
@@ -19548,8 +19686,8 @@
         "saturated_fat_g": null,
         "monounsaturated_fat_g": null,
         "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "omega3_g": 1.4,
+        "omega6_g": 0.2,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -19564,8 +19702,10 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.55
-      }
+        "creatine_g": 0.55,
+        "biotin_ug": 3.5
+      },
+      "serving_g": 100
     },
     "sardynki_w_oleju": {
       "name_pl": "sardynki w oleju",
@@ -19601,11 +19741,11 @@
         "vitamin_b2_mg": 0.227,
         "vitamin_b12_ug": 8.94,
         "selenium_ug": 52.7,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 3.3,
+        "monounsaturated_fat_g": 3.4,
+        "polyunsaturated_fat_g": 5,
+        "omega3_g": 1.5,
+        "omega6_g": 3.5,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -19614,16 +19754,19 @@
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
-        "coenzyme_q10_mg": null,
+        "coenzyme_q10_mg": 6.4,
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": 1,
+        "biotin_ug": 5,
+        "iodine_ug": 20
       },
       "aliases": [
         "sardynki"
-      ]
+      ],
+      "serving_g": 55
     },
     "tunczyk_bialy_w_wodzie": {
       "name_pl": "tuńczyk biały w wodzie",
@@ -19678,11 +19821,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.35
+        "creatine_g": 0.35,
+        "biotin_ug": 2.5
       },
       "aliases": [
         "tuńczyk albacore"
-      ]
+      ],
+      "serving_g": 80
     },
     "tunczyk_zoltopletwy_surowy": {
       "name_pl": "tuńczyk żółtopłetwy surowy",
@@ -19718,11 +19863,11 @@
         "carbs": 0,
         "fiber": 0,
         "vitamin_b9_ug": 2,
-        "saturated_fat_g": null,
-        "monounsaturated_fat_g": null,
-        "polyunsaturated_fat_g": null,
-        "omega3_g": null,
-        "omega6_g": null,
+        "saturated_fat_g": 0.3,
+        "monounsaturated_fat_g": 0.1,
+        "polyunsaturated_fat_g": 0.2,
+        "omega3_g": 0.3,
+        "omega6_g": 0.01,
         "sugar_g": null,
         "water_g": null,
         "beta_carotene_ug": null,
@@ -19737,11 +19882,13 @@
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
         "collagen_g": null,
-        "creatine_g": 0.4
+        "creatine_g": 0.4,
+        "biotin_ug": 3
       },
       "aliases": [
         "tuńczyk yellowfin"
-      ]
+      ],
+      "serving_g": 150
     },
     "poledwica_wolowa": {
       "name_pl": "polędwica wołowa",
@@ -19797,13 +19944,15 @@
         "quercetin_mg": 0,
         "anthocyanins_mg": 0,
         "chlorogenic_acid_mg": 0,
-        "creatine_g": 0.45
+        "creatine_g": 0.45,
+        "biotin_ug": 3
       },
       "aliases": [
         "polędwica wołowa",
         "filet wołowy",
         "tenderloin"
-      ]
+      ],
+      "serving_g": 180
     },
     "ligawa_wolowa": {
       "name_pl": "ligawa wołowa",
@@ -19865,7 +20014,8 @@
         "ligawa",
         "zrazówka górna",
         "top round"
-      ]
+      ],
+      "serving_g": 150
     },
     "herbata_zielona": {
       "name_pl": "herbata zielona",
@@ -19925,7 +20075,8 @@
       "aliases": [
         "zielona herbata",
         "green tea"
-      ]
+      ],
+      "serving_g": 250
     },
     "herbata_biala": {
       "name_pl": "herbata biała",
@@ -19985,7 +20136,8 @@
       "aliases": [
         "biała herbata",
         "white tea"
-      ]
+      ],
+      "serving_g": 250
     },
     "kuskus": {
       "name_pl": "kuskus",
@@ -20167,7 +20319,8 @@
         "olej lniany",
         "olej z siemienia lnianego",
         "flaxseed oil"
-      ]
+      ],
+      "serving_g": 5
     },
     "olej_z_rokitnika": {
       "name_pl": "olej z rokitnika",
@@ -21022,7 +21175,8 @@
         "kabanos wieprzowy gruby",
         "kabanos gruby",
         "kabanos wieprzowy"
-      ]
+      ],
+      "serving_g": 30
     },
     "kabanos_wieprzowy_cienki": {
       "name_pl": "kabanos wieprzowy cienki",
@@ -21082,7 +21236,8 @@
       "aliases": [
         "kabanos wieprzowy cienki",
         "kabanos cienki"
-      ]
+      ],
+      "serving_g": 15
     },
     "kielbasa_slaska": {
       "name_pl": "kiełbasa śląska",
@@ -21432,7 +21587,8 @@
         "czekolada mleczna",
         "milk chocolate",
         "czekolada bez cukru mleczna"
-      ]
+      ],
+      "serving_g": 25
     },
     "maslo_pistacjowe": {
       "name_pl": "masło pistacjowe",
@@ -22286,7 +22442,8 @@
         "ghee",
         "butter ghee",
         "maslo klarowane"
-      ]
+      ],
+      "serving_g": 10
     },
     "piwo_bezalk_okocim": {
       "name_pl": "piwo bezalkoholowe Okocim",
@@ -23205,7 +23362,8 @@
         "sok truskawkowy nfc",
         "sok truskawkowy",
         "strawberry juice nfc"
-      ]
+      ],
+      "serving_g": 250
     },
     "sok_malinowy_nfc": {
       "name_pl": "sok malinowy NFC",
@@ -23511,7 +23669,8 @@
         "soy sauce",
         "shoyu",
         "tamari"
-      ]
+      ],
+      "serving_g": 15
     },
     "makaron_niski_ig": {
       "name_pl": "makaron niski IG",
@@ -23633,7 +23792,8 @@
       "aliases": [
         "sok pomidorowy",
         "tomato juice"
-      ]
+      ],
+      "serving_g": 250
     },
     "suszone_pomidory": {
       "name_pl": "suszone pomidory",
@@ -23756,7 +23916,8 @@
         "passata pomidorowa",
         "przecier pomidorowy",
         "tomato passata"
-      ]
+      ],
+      "serving_g": 100
     },
     "kapusta_kiszona": {
       "name_pl": "kapusta kiszona",
@@ -24284,24 +24445,26 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 4.2,
         "water_g": null,
         "beta_carotene_ug": null,
         "lutein_zeaxanthin_ug": null,
         "lycopene_ug": null,
         "betaine_mg": null,
         "caffeine_mg": null,
-        "polyphenols_mg": null,
+        "polyphenols_mg": 64,
         "coenzyme_q10_mg": null,
-        "quercetin_mg": null,
+        "quercetin_mg": 20,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 0.9
       },
       "aliases": [
         "cebula"
-      ]
+      ],
+      "serving_g": 80
     },
     "groszek": {
       "name_pl": "groszek",
@@ -24883,7 +25046,8 @@
         "dark chocolate",
         "gorzka czekolada",
         "czekolada gorzka"
-      ]
+      ],
+      "serving_g": 25
     },
     "kukurydza_z_puszki": {
       "name_pl": "kukurydza z puszki",
@@ -25313,7 +25477,8 @@
         "cytryna sok",
         "lemon juice",
         "świeży sok z cytryny"
-      ]
+      ],
+      "serving_g": 15
     },
     "smietanka_30": {
       "name_pl": "śmietanka 30%",
@@ -25608,15 +25773,17 @@
         "quercetin_mg": null,
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
-        "carnitine_mg": null,
+        "carnitine_mg": 12,
         "collagen_g": null,
-        "creatine_g": 0.3
+        "creatine_g": 0.3,
+        "biotin_ug": 2
       },
       "aliases": [
         "pierś indyka",
         "piers indyka",
         "filet z indyka"
-      ]
+      ],
+      "serving_g": 180
     },
     "chlorella": {
       "name_pl": "chlorella",
@@ -26358,7 +26525,8 @@
         "prega wolowa",
         "beef shank",
         "wołowina pręga"
-      ]
+      ],
+      "serving_g": 150
     },
     "platki_drozdzowe": {
       "name_pl": "płatki drożdżowe nieaktywne",
@@ -26417,7 +26585,8 @@
         "drożdże nieaktywne",
         "płatki drożdżowe",
         "drożdże odżywcze"
-      ]
+      ],
+      "serving_g": 5
     },
     "bialko_w_proszku": {
       "name_pl": "białko w proszku",
@@ -26759,7 +26928,7 @@
         "vitamin_d_ug": 0.5,
         "vitamin_e_mg": 0.3,
         "vitamin_k1_ug": 0.0,
-        "vitamin_k2_ug": null,
+        "vitamin_k2_ug": 14,
         "vitamin_b1_mg": 0.19,
         "vitamin_b2_mg": 1.76,
         "vitamin_b3_mg": 9.73,
@@ -26781,8 +26950,8 @@
         "selenium_ug": 54.6,
         "iodine_ug": 5.0,
         "carnitine_mg": null,
-        "coenzyme_q10_mg": null,
-        "collagen_g": null,
+        "coenzyme_q10_mg": 11.6,
+        "collagen_g": 0.5,
         "betaine_mg": null,
         "polyphenols_mg": null,
         "quercetin_mg": null,
@@ -26790,12 +26959,14 @@
         "chlorogenic_acid_mg": null,
         "caffeine_mg": null,
         "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null
+        "lycopene_ug": null,
+        "biotin_ug": 170
       },
       "aliases": [
         "wątróbka z kurczaka",
         "wątroba drobiowa"
-      ]
+      ],
+      "serving_g": 100
     },
     "pomidor": {
       "name_pl": "pomidor",
@@ -26834,11 +27005,11 @@
         "polyunsaturated_fat_g": null,
         "omega3_g": null,
         "omega6_g": null,
-        "sugar_g": null,
+        "sugar_g": 2.6,
         "water_g": null,
-        "beta_carotene_ug": null,
-        "lutein_zeaxanthin_ug": null,
-        "lycopene_ug": null,
+        "beta_carotene_ug": 449,
+        "lutein_zeaxanthin_ug": 123,
+        "lycopene_ug": 2573,
         "betaine_mg": null,
         "caffeine_mg": null,
         "polyphenols_mg": null,
@@ -26847,13 +27018,15 @@
         "anthocyanins_mg": null,
         "chlorogenic_acid_mg": null,
         "carnitine_mg": null,
-        "collagen_g": null
+        "collagen_g": null,
+        "biotin_ug": 1.2
       },
       "aliases": [
         "pomidor roma",
         "pomidory",
         "pomidor zwykły"
-      ]
+      ],
+      "serving_g": 120
     },
     "serek_wiejski": {
       "name_pl": "serek wiejski",
@@ -26898,7 +27071,11 @@
         "omega3_g": 0.04,
         "omega6_g": 0.12,
         "beta_carotene_ug": 27,
-        "water_g": 79
+        "water_g": 79,
+        "biotin_ug": 2.5,
+        "monounsaturated_fat_g": 1.2,
+        "polyunsaturated_fat_g": 0.1,
+        "carnitine_mg": 1.5
       }
     },
     "bulka_do_burgera": {
@@ -27189,6 +27366,126 @@
       "per_100g": {
         "creatine_g": 100,
         "water_g": 0
+      }
+    },
+    "papryka_marynowana": {
+      "name_pl": "papryka marynowana",
+      "name_en": "Pickled peppers",
+      "category": "Warzywa",
+      "serving_g": 50,
+      "aliases": [
+        "papryka konserwowa",
+        "papryka w zalewie",
+        "papryka ze słoika"
+      ],
+      "per_100g": {
+        "calories": 40,
+        "protein": 0.8,
+        "fat": 0.8,
+        "carbs": 7.5,
+        "sugar_g": 5.2,
+        "saturated_fat_g": 0.2,
+        "fiber": 1.5,
+        "sodium_mg": 440,
+        "water_g": 88,
+        "calcium_mg": 10,
+        "magnesium_mg": 10,
+        "phosphorus_mg": 20,
+        "potassium_mg": 150,
+        "iron_mg": 0.5,
+        "zinc_mg": 0.15,
+        "vitamin_a_ug": 30,
+        "vitamin_c_mg": 40,
+        "vitamin_e_mg": 0.8,
+        "vitamin_b1_mg": 0.03,
+        "vitamin_b2_mg": 0.03,
+        "vitamin_b3_mg": 0.4,
+        "vitamin_b6_mg": 0.15,
+        "vitamin_b9_ug": 10,
+        "beta_carotene_ug": 350,
+        "lutein_zeaxanthin_ug": 500
+      }
+    },
+    "pork_jerky": {
+      "name_pl": "pork jerky",
+      "name_en": "Protein Pork Jerky",
+      "category": "Przekąski",
+      "serving_g": 40,
+      "aliases": [
+        "jerky wieprzowe",
+        "suszona wieprzowina",
+        "tarczyński jerky"
+      ],
+      "per_100g": {
+        "calories": 198,
+        "protein": 40,
+        "fat": 2.8,
+        "carbs": 3.2,
+        "sugar_g": 3.2,
+        "saturated_fat_g": 0.9,
+        "fiber": 0,
+        "sodium_mg": 1800,
+        "water_g": 25,
+        "calcium_mg": 15,
+        "magnesium_mg": 25,
+        "phosphorus_mg": 250,
+        "potassium_mg": 400,
+        "iron_mg": 2.5,
+        "zinc_mg": 4,
+        "selenium_ug": 20,
+        "copper_mg": 0.1,
+        "choline_mg": 60,
+        "vitamin_b1_mg": 0.4,
+        "vitamin_b2_mg": 0.2,
+        "vitamin_b3_mg": 5,
+        "vitamin_b5_mg": 0.6,
+        "vitamin_b6_mg": 0.4,
+        "vitamin_b9_ug": 5,
+        "vitamin_b12_ug": 1,
+        "vitamin_e_mg": 0.3,
+        "creatine_g": 0.35,
+        "omega3_g": 0.02,
+        "omega6_g": 0.5,
+        "collagen_g": 2
+      }
+    },
+    "suplement_elektrolity_kapsulki": {
+      "name_pl": "elektrolity (kapsułki)",
+      "name_en": "Electrolyte capsules",
+      "category": "Suplementy",
+      "serving_g": 2,
+      "aliases": [
+        "elektrolity kapsułki",
+        "elektrolity tabs",
+        "elektrolity tabletki"
+      ],
+      "per_100g": {
+        "sodium_mg": 13550,
+        "calcium_mg": 10400,
+        "magnesium_mg": 13150,
+        "potassium_mg": 5000,
+        "zinc_mg": 860.0
+      }
+    },
+    "suplement_elektrolity_plyn": {
+      "name_pl": "elektrolity (w płynie)",
+      "name_en": "Electrolyte drink tablets",
+      "category": "Suplementy",
+      "serving_g": 10,
+      "aliases": [
+        "elektrolity musujące",
+        "elektrolity zero cukru",
+        "elektrolity w wodzie"
+      ],
+      "per_100g": {
+        "potassium_mg": 3740,
+        "sodium_mg": 5360,
+        "magnesium_mg": 1340,
+        "iodine_ug": 450,
+        "manganese_mg": 6.2,
+        "selenium_ug": 170,
+        "zinc_mg": 31.2,
+        "copper_mg": 3.2
       }
     }
   }

@@ -17,6 +17,7 @@ export default function AddMeal() {
     { key: 'napoje', label: 'Napoje' },
     { key: 'obiady', label: 'Obiady' },
     { key: 'przekaski', label: 'Przekąski' },
+    { key: 'restauracja', label: 'Restauracja' },
     { key: 'inne', label: 'Inne' },
   ];
 
@@ -54,6 +55,19 @@ export default function AddMeal() {
   const [quickAddSelected, setQuickAddSelected] = useState<any | null>(null);
   const [quickAddWeight, setQuickAddWeight] = useState('');
   const [quickAddItems, setQuickAddItems] = useState<{ result: any; weight: number; id: string }[]>([]);
+
+  const [restaurantModal, setRestaurantModal] = useState(false);
+  const [restMode, setRestMode] = useState<'choose' | 'manual' | 'ai'>('choose');
+  const [restName, setRestName] = useState('');
+  const [restWeight, setRestWeight] = useState('');
+  const [restCalories, setRestCalories] = useState('');
+  const [restProtein, setRestProtein] = useState('');
+  const [restCarbs, setRestCarbs] = useState('');
+  const [restFat, setRestFat] = useState('');
+  const [restFiber, setRestFiber] = useState('');
+  const [restSugar, setRestSugar] = useState('');
+  const [restSodium, setRestSodium] = useState('');
+  const [restDesc, setRestDesc] = useState('');
 
   const [manageSuppModal, setManageSuppModal] = useState(false);
   const [editSuppModal, setEditSuppModal] = useState(false);
@@ -114,6 +128,73 @@ export default function AddMeal() {
       router.replace('/');
     } catch {
       Alert.alert('Błąd', 'Nie udało się zapisać.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetRestaurantModal = () => {
+    setRestaurantModal(false);
+    setRestMode('choose');
+    setRestName(''); setRestWeight(''); setRestCalories(''); setRestProtein('');
+    setRestCarbs(''); setRestFat(''); setRestFiber(''); setRestSugar('');
+    setRestSodium(''); setRestDesc('');
+  };
+
+  const handleRestaurantManualSave = async () => {
+    const name = restName.trim();
+    if (!name) { Alert.alert('Błąd', 'Podaj nazwę dania.'); return; }
+    const cal = parseFloat(restCalories.replace(',', '.'));
+    if (isNaN(cal) || cal <= 0) { Alert.alert('Błąd', 'Podaj prawidłowe kalorie.'); return; }
+
+    const nutrients: any = { calories: cal };
+    const prot = parseFloat(restProtein.replace(',', '.'));
+    if (!isNaN(prot)) nutrients.protein = prot;
+    const carb = parseFloat(restCarbs.replace(',', '.'));
+    if (!isNaN(carb)) nutrients.carbs = carb;
+    const fat = parseFloat(restFat.replace(',', '.'));
+    if (!isNaN(fat)) nutrients.fat = fat;
+    const fib = parseFloat(restFiber.replace(',', '.'));
+    if (!isNaN(fib)) nutrients.fiber = fib;
+    const sug = parseFloat(restSugar.replace(',', '.'));
+    if (!isNaN(sug)) nutrients.sugar_g = sug;
+    const sod = parseFloat(restSodium.replace(',', '.'));
+    if (!isNaN(sod)) nutrients.sodium_mg = sod;
+
+    const w = parseFloat(restWeight.replace(',', '.'));
+    const weight = !isNaN(w) && w > 0 ? w : 0;
+
+    const mealItem: MealItem = {
+      id: Math.random().toString(36).slice(2),
+      name,
+      weight_grams: weight,
+      nutrients,
+      confirmed: true,
+    };
+
+    setInput(name);
+    setItems([mealItem]);
+    setWeightInputs({ [mealItem.id]: String(weight) });
+    setStep('confirm');
+    resetRestaurantModal();
+  };
+
+  const handleRestaurantAI = async () => {
+    const desc = restDesc.trim();
+    if (!desc) { Alert.alert('Błąd', 'Opisz danie.'); return; }
+    setIsLoading(true);
+    try {
+      const parsed = await parseMealDescription(desc);
+      const resolved = await resolveMealItems(parsed);
+      const weights: Record<string, string> = {};
+      resolved.forEach(i => { weights[i.id] = String(i.weight_grams); });
+      setInput(desc);
+      setItems(resolved);
+      setWeightInputs(weights);
+      setStep('confirm');
+      resetRestaurantModal();
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się przeanalizować.');
     } finally {
       setIsLoading(false);
     }
@@ -278,7 +359,7 @@ export default function AddMeal() {
         if (!supp) continue;
         const foodItem = getFoodByKey(supp.nutrient_key);
         if (!foodItem) continue;
-        const nutrients = calculateNutrients(foodItem.per_100g, supp.weight_grams, isSupplementKey(supp.nutrient_key));
+        const nutrients = calculateNutrients(foodItem.per_100g, supp.weight_grams);
         mealItems.push({
           id: Math.random().toString(36).slice(2),
           name: supp.name,
@@ -366,9 +447,17 @@ export default function AddMeal() {
           <View key={item.id} style={styles.itemCard}>
             <View style={styles.itemHeader}>
               <Text style={styles.itemName}>{item.name}</Text>
-              <TouchableOpacity style={styles.changeBtn} onPress={() => openSearch(item.id, item.name)}>
-                <Text style={styles.changeBtnText}>zmień</Text>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <TouchableOpacity style={styles.changeBtn} onPress={() => openSearch(item.id, item.name)}>
+                  <Text style={styles.changeBtnText}>zmień</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.changeBtn} onPress={() => {
+                  setItems(prev => prev.filter(i => i.id !== item.id));
+                  setWeightInputs(prev => { const next = { ...prev }; delete next[item.id]; return next; });
+                }}>
+                  <Text style={[styles.changeBtnText, { color: '#ef4444' }]}>usuń</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={styles.weightRow}>
               <TextInput
@@ -488,6 +577,10 @@ export default function AddMeal() {
         <Text style={styles.btnQuickAddText}>🔍 Szybkie dodanie z bazy</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.btnRestaurant} onPress={() => setRestaurantModal(true)}>
+        <Text style={styles.btnRestaurantText}>🍽 Posiłek z restauracji</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.btnAddProduct} onPress={() => router.push('/add-product')}>
         <Text style={styles.btnAddProductText}>🥦 Dodaj produkt do bazy</Text>
       </TouchableOpacity>
@@ -593,6 +686,94 @@ export default function AddMeal() {
           </View>
         </View>
       </Modal>
+      {/* Modal: posiłek z restauracji */}
+      <Modal visible={restaurantModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Posiłek z restauracji</Text>
+            <TouchableOpacity onPress={resetRestaurantModal}>
+              <Text style={styles.modalClose}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
+
+          {restMode === 'choose' ? (
+            <View style={styles.modalBody}>
+              <Text style={styles.restModeHint}>Jak chcesz dodać danie?</Text>
+              <TouchableOpacity style={styles.restModeBtn} onPress={() => setRestMode('manual')}>
+                <Text style={styles.restModeBtnTitle}>Wpisz wartości ręcznie</Text>
+                <Text style={styles.restModeBtnDesc}>Masz tabelę odżywczą z restauracji</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.restModeBtn} onPress={() => setRestMode('ai')}>
+                <Text style={styles.restModeBtnTitle}>Oszacuj przez AI</Text>
+                <Text style={styles.restModeBtnDesc}>Opisz danie i składniki, Claude oszacuje wartości</Text>
+              </TouchableOpacity>
+            </View>
+          ) : restMode === 'manual' ? (
+            <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
+              <Text style={styles.fieldLabel}>Nazwa dania *</Text>
+              <TextInput style={styles.searchInputPadded} value={restName} onChangeText={setRestName} placeholder="np. Burger wołowy" autoFocus />
+
+              <Text style={styles.fieldLabel}>Waga porcji (g) — opcjonalnie</Text>
+              <TextInput style={styles.searchInputPadded} value={restWeight} onChangeText={setRestWeight} keyboardType="numeric" placeholder="np. 350" />
+
+              <Text style={styles.fieldLabel}>Kalorie (kcal) *</Text>
+              <TextInput style={styles.searchInputPadded} value={restCalories} onChangeText={setRestCalories} keyboardType="numeric" placeholder="np. 650" />
+
+              <View style={styles.restRow}>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Białko (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restProtein} onChangeText={setRestProtein} keyboardType="numeric" placeholder="0" />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Węgle (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restCarbs} onChangeText={setRestCarbs} keyboardType="numeric" placeholder="0" />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Tłuszcz (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restFat} onChangeText={setRestFat} keyboardType="numeric" placeholder="0" />
+                </View>
+              </View>
+
+              <View style={styles.restRow}>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Błonnik (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restFiber} onChangeText={setRestFiber} keyboardType="numeric" placeholder="0" />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Cukry (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restSugar} onChangeText={setRestSugar} keyboardType="numeric" placeholder="0" />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Sód (mg)</Text>
+                  <TextInput style={styles.searchInputPadded} value={restSodium} onChangeText={setRestSodium} keyboardType="numeric" placeholder="0" />
+                </View>
+              </View>
+
+              <TouchableOpacity style={[styles.btnBlock, styles.btnBlockMargin, isLoading && styles.btnDisabled]} onPress={handleRestaurantManualSave} disabled={isLoading}>
+                {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Zapisz</Text>}
+              </TouchableOpacity>
+            </ScrollView>
+          ) : (
+            <View style={styles.modalBody}>
+              <Text style={styles.fieldLabel}>Opisz danie i składniki</Text>
+              <TextInput
+                style={[styles.textArea, { marginBottom: 16 }]}
+                value={restDesc}
+                onChangeText={setRestDesc}
+                placeholder="np. Burger wołowy 200g, bułka, sałata, pomidor, sos, frytki 150g"
+                multiline
+                numberOfLines={5}
+                textAlignVertical="top"
+                autoFocus
+              />
+              <TouchableOpacity style={[styles.btnBlock, isLoading && styles.btnDisabled]} onPress={handleRestaurantAI} disabled={isLoading}>
+                {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Analizuj przez AI</Text>}
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Modal>
+
       {/* Modal: szybkie dodanie z bazy */}
       <Modal visible={quickAddModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
@@ -691,6 +872,7 @@ export default function AddMeal() {
               <Text style={styles.manageSuppBtn}>Zarządzaj</Text>
             </TouchableOpacity>
           </View>
+          <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
           {suppLoading ? (
             <ActivityIndicator style={{ marginTop: 20 }} color="#16a34a" />
           ) : (
@@ -717,6 +899,7 @@ export default function AddMeal() {
           >
             {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Zapisz ({selectedSupplements.size})</Text>}
           </TouchableOpacity>
+          </ScrollView>
         </View>
       </Modal>
 
@@ -852,6 +1035,14 @@ const styles = StyleSheet.create({
   btnAddProductText: { color: '#15803d', fontSize: 16, fontWeight: '600' },
   btnQuickAdd: { backgroundColor: '#fefce8', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#fde68a' },
   btnQuickAddText: { color: '#a16207', fontSize: 16, fontWeight: '600' },
+  btnRestaurant: { backgroundColor: '#fef2f2', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 10, borderWidth: 1, borderColor: '#fecaca' },
+  btnRestaurantText: { color: '#b91c1c', fontSize: 16, fontWeight: '600' },
+  restModeHint: { fontSize: 15, color: '#6b7280', marginBottom: 16 },
+  restModeBtn: { backgroundColor: '#f9fafb', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e5e7eb' },
+  restModeBtnTitle: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
+  restModeBtnDesc: { fontSize: 13, color: '#6b7280' },
+  restRow: { flexDirection: 'row', gap: 10, marginBottom: 4 },
+  restField: { flex: 1 },
   quickSelectedName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
   quickSelectedMeta: { fontSize: 13, color: '#6b7280', marginBottom: 16 },
   quickItemsList: { backgroundColor: '#f0fdf4', margin: 16, borderRadius: 12, padding: 12 },
