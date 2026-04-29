@@ -5,10 +5,11 @@ import {
 } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
 import { supabase } from '../lib/supabase';
 import { NUTRIENTS } from '../constants/nutrients';
 
-const ANTHROPIC_API_KEY = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY!;
+const ANTHROPIC_API_KEY = Constants.expoConfig?.extra?.anthropicApiKey ?? '';
 
 const MANUAL_FIELDS = [
   'calories', 'protein', 'fat', 'carbs', 'fiber', 'sugar_g',

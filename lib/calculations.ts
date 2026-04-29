@@ -3,11 +3,29 @@ import { searchFoodAll, getFoodByKeyAll, calculateNutrients } from './nutrients'
 import { ParsedFood } from './claude';
 import { MealItem } from '../types';
 
-export async function resolveMealItems(parsedFoods: ParsedFood[]): Promise<MealItem[]> {
+// `custom_nutrients` to wartości odżywcze zapisane wprost (np. ręcznie wpisane
+// danie restauracyjne, dla którego nie istnieje rekord w bazie produktów).
+// W szablonach pole jest opcjonalne — występuje tylko dla itemów bez nutrient_key.
+type ResolvableFood = ParsedFood & { custom_nutrients?: NutrientValues };
+
+export async function resolveMealItems(parsedFoods: ResolvableFood[]): Promise<MealItem[]> {
   const items: MealItem[] = [];
 
   for (const food of parsedFoods) {
     const id = Math.random().toString(36).slice(2);
+
+    // Custom nutrients — bierzemy wartości wprost, nie szukamy w bazie.
+    // Tym sposobem szablony dań restauracyjnych zachowują swoje kalorie/białko/itd.
+    if (food.custom_nutrients) {
+      items.push({
+        id,
+        name: food.name,
+        weight_grams: food.weight_grams,
+        nutrients: food.custom_nutrients,
+        confirmed: true,
+      });
+      continue;
+    }
 
     // Najpierw spróbuj bezpośredniego lookup po kluczu (szablony używają kluczy)
     const directItem = await getFoodByKeyAll(food.name);

@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
 import { NUTRIENTS, DASHBOARD_NUTRIENTS } from '../constants/nutrients';
 import { calculateDayScore } from '../lib/score';
+import { localDateString, addDays, isToday as isTodayDate } from '../lib/dates';
 
 function NutrientBar({ nutrientKey, value }: { nutrientKey: string; value: number }) {
   const meta = NUTRIENTS[nutrientKey];
@@ -41,8 +42,8 @@ function NutrientBar({ nutrientKey, value }: { nutrientKey: string; value: numbe
 }
 
 function formatDateLabel(dateStr: string): string {
-  const today = new Date().toISOString().split('T')[0];
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const today = localDateString();
+  const yesterday = addDays(today, -1);
   if (dateStr === today) return 'Dziś';
   if (dateStr === yesterday) return 'Wczoraj';
   const [year, month, day] = dateStr.split('-');
@@ -59,20 +60,15 @@ export default function Dashboard() {
   }, []);
 
   const goToPrevDay = () => {
-    const d = new Date(selectedDate);
-    d.setDate(d.getDate() - 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(addDays(selectedDate, -1));
   };
 
   const goToNextDay = () => {
-    const today = new Date().toISOString().split('T')[0];
-    if (selectedDate >= today) return;
-    const d = new Date(selectedDate);
-    d.setDate(d.getDate() + 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    if (isTodayDate(selectedDate)) return;
+    setSelectedDate(addDays(selectedDate, 1));
   };
 
-  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+  const isToday = isTodayDate(selectedDate);
 
   const handleDelete = (mealId: string) => {
     Alert.alert('Usuń posiłek', 'Czy na pewno chcesz usunąć ten posiłek?', [

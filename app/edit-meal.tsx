@@ -67,6 +67,12 @@ export default function EditMeal() {
     if (isNaN(w) || w <= 0) return;
     setItems(prev => prev.map(item => {
       if (item.id !== id) return item;
+      // Custom item (bez klucza w bazie, np. danie restauracyjne) — wartości
+      // odżywcze są absolutne dla wagi porcji. Skalujemy je proporcjonalnie do
+      // nowej wagi. Guard przeciw dzieleniu przez 0, gdy oryginalna waga była 0.
+      if (!item.nutrient_key && item.weight_grams === 0) {
+        return { ...item, weight_grams: w };
+      }
       const per100g = Object.fromEntries(
         Object.entries(item.nutrients).map(([k, v]) => [k, typeof v === 'number' ? v / item.weight_grams * 100 : v])
       ) as any;
@@ -149,6 +155,9 @@ export default function EditMeal() {
           name: item.nutrient_key ?? item.name,
           weight_grams: item.weight_grams,
           nutrient_key: item.nutrient_key,
+          // Zachowaj wartości odżywcze dla itemów bez klucza w bazie
+          // (np. ręcznie wpisane dania restauracyjne).
+          custom_nutrients: !item.nutrient_key ? item.nutrients : undefined,
         }));
         await supabase.from('meal_templates').update({ name: rawInput, items: templateItems }).eq('id', templateId);
       } else {

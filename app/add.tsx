@@ -57,6 +57,11 @@ export default function AddMeal() {
   const [quickAddItems, setQuickAddItems] = useState<{ result: any; weight: number; id: string }[]>([]);
 
   const [restaurantModal, setRestaurantModal] = useState(false);
+  const [addExtraModal, setAddExtraModal] = useState(false);
+  const [addExtraQuery, setAddExtraQuery] = useState('');
+  const [addExtraResults, setAddExtraResults] = useState<any[]>([]);
+  const [addExtraSelected, setAddExtraSelected] = useState<any | null>(null);
+  const [addExtraWeight, setAddExtraWeight] = useState('');
   const [restMode, setRestMode] = useState<'choose' | 'manual' | 'ai'>('choose');
   const [restName, setRestName] = useState('');
   const [restWeight, setRestWeight] = useState('');
@@ -200,6 +205,38 @@ export default function AddMeal() {
     }
   };
 
+  const handleExtraSearch = async (q: string) => {
+    setAddExtraQuery(q);
+    if (q.trim().length < 2) { setAddExtraResults([]); return; }
+    const results = await searchFoodAll(q);
+    setAddExtraResults(results);
+  };
+
+  const selectExtraProduct = (result: any) => {
+    setAddExtraSelected(result);
+    setAddExtraWeight(String(result.item.serving_g ?? 100));
+  };
+
+  const addExtraItem = () => {
+    if (!addExtraSelected) return;
+    const w = parseFloat(addExtraWeight.replace(',', '.'));
+    if (isNaN(w) || w <= 0) { Alert.alert('Błąd', 'Podaj prawidłową wagę.'); return; }
+    const newItem: MealItem = {
+      id: Math.random().toString(36).slice(2),
+      name: addExtraSelected.item.name_pl,
+      weight_grams: w,
+      nutrients: calculateNutrients(addExtraSelected.item.per_100g, w),
+      confirmed: true,
+      nutrient_key: addExtraSelected.key,
+    };
+    setItems(prev => [...prev, newItem]);
+    setWeightInputs(prev => ({ ...prev, [newItem.id]: String(w) }));
+    setAddExtraModal(false);
+    setAddExtraSelected(null);
+    setAddExtraQuery('');
+    setAddExtraResults([]);
+  };
+
   const loadTemplates = async () => {
     setTemplatesLoading(true);
     const { data } = await supabase.from('meal_templates').select('*').order('created_at', { ascending: false });
@@ -243,10 +280,22 @@ export default function AddMeal() {
     setPortionsModal(false);
     setIsLoading(true);
     try {
-      const itemsWithPortions = template.items.map((item: any) => ({
-        ...item,
-        weight_grams: item.weight_grams * portions,
-      }));
+      const itemsWithPortions = template.items.map((item: any) => {
+        // Custom_nutrients (np. dania restauracyjne) skalują się proporcjonalnie
+        // do liczby porcji, podobnie jak weight_grams.
+        let scaledCustom: any = undefined;
+        if (item.custom_nutrients) {
+          scaledCustom = {};
+          for (const [k, v] of Object.entries(item.custom_nutrients)) {
+            if (typeof v === 'number') scaledCustom[k] = v * portions;
+          }
+        }
+        return {
+          ...item,
+          weight_grams: (item.weight_grams ?? 0) * portions,
+          custom_nutrients: scaledCustom,
+        };
+      });
       const resolved = await resolveMealItems(itemsWithPortions);
       const weights: Record<string, string> = {};
       resolved.forEach(i => { weights[i.id] = String(i.weight_grams); });
@@ -280,6 +329,9 @@ export default function AddMeal() {
       name: item.nutrient_key ?? item.name,
       weight_grams: item.weight_grams,
       nutrient_key: item.nutrient_key,
+      // Dla itemów bez nutrient_key (np. ręcznie wpisane danie z restauracji)
+      // zapisujemy wartości odżywcze wprost — inaczej przepadną przy ładowaniu szablonu.
+      custom_nutrients: !item.nutrient_key ? item.nutrients : undefined,
     }));
     const { error } = await supabase.from('meal_templates').insert({ name, items: templateItems, category: templateCategory });
     if (error) {
@@ -478,6 +530,10 @@ export default function AddMeal() {
           </View>
         ))}
 
+        <TouchableOpacity style={styles.btnAddExtra} onPress={() => setAddExtraModal(true)}>
+          <Text style={styles.btnAddExtraText}>➕ Dodaj składnik</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.btnFavorite} onPress={() => { setTemplateName(input); setSaveTemplateModal(true); }}>
           <Text style={styles.btnFavoriteText}>⭐ Zapisz do ulubionych</Text>
         </TouchableOpacity>
@@ -490,6 +546,57 @@ export default function AddMeal() {
             {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Zapisz</Text>}
           </TouchableOpacity>
         </View>
+
+        {/* Modal: dodaj extra składnik */}
+        <Modal visible={addExtraModal} animationType="slide" presentationStyle="pageSheet">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Dodaj składnik</Text>
+              <TouchableOpacity onPress={() => { setAddExtraModal(false); setAddExtraSelected(null); setAddExtraQuery(''); setAddExtraResults([]); }}>
+                <Text style={styles.modalClose}>Anuluj</Text>
+              </TouchableOpacity>
+            </View>
+            {addExtraSelected ? (
+              <View style={styles.modalBody}>
+                <Text style={styles.quickSelectedName}>{addExtraSelected.item.name_pl}</Text>
+                <Text style={styles.quickSelectedMeta}>
+                  {Math.round(addExtraSelected.item.per_100g.calories ?? 0)} kcal · {Math.round(addExtraSelected.item.per_100g.protein ?? 0)}g B · {Math.round(addExtraSelected.item.per_100g.fat ?? 0)}g T · {Math.round(addExtraSelected.item.per_100g.carbs ?? 0)}g W / 100g
+                </Text>
+                <Text style={styles.fieldLabel}>Waga (g):</Text>
+                <TextInput style={styles.searchInputPadded} value={addExtraWeight} onChangeText={setAddExtraWeight} keyboardType="numeric" selectTextOnFocus autoFocus />
+                <View style={styles.buttonRow}>
+                  <TouchableOpacity style={styles.btnSecondary} onPress={() => { setAddExtraSelected(null); setAddExtraQuery(''); }}>
+                    <Text style={styles.btnSecondaryText}>Wróć</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.btnPrimary} onPress={addExtraItem}>
+                    <Text style={styles.btnPrimaryText}>Dodaj</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <>
+                <TextInput
+                  value={addExtraQuery}
+                  onChangeText={handleExtraSearch}
+                  placeholder="Szukaj produktu..."
+                  autoFocus
+                  style={[styles.searchInputPadded, { margin: 16, marginBottom: 8 }]}
+                />
+                <FlatList
+                  data={addExtraResults}
+                  keyExtractor={item => item.key}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity style={styles.searchResult} onPress={() => selectExtraProduct(item)}>
+                      <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                      <Text style={styles.searchResultMeta}>{Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%</Text>
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={<Text style={styles.searchEmpty}>{addExtraQuery.length >= 2 ? 'Brak wyników.' : 'Wpisz min. 2 znaki.'}</Text>}
+                />
+              </>
+            )}
+          </View>
+        </Modal>
 
         <Modal visible={searchModal.visible} animationType="slide" presentationStyle="pageSheet">
           <View style={styles.modalContainer}>
@@ -986,6 +1093,8 @@ const styles = StyleSheet.create({
   itemNutrient: { fontSize: 12, color: '#6b7280', backgroundColor: '#f3f4f6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   btnFavorite: { backgroundColor: '#fffbeb', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 12, borderWidth: 1, borderColor: '#fde68a' },
   btnFavoriteText: { color: '#b45309', fontSize: 15, fontWeight: '600' },
+  btnAddExtra: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 8, borderWidth: 1, borderColor: '#bfdbfe' },
+  btnAddExtraText: { color: '#1d4ed8', fontSize: 15, fontWeight: '600' },
   buttonRow: { flexDirection: 'row', gap: 12, marginBottom: 12 },
   btnPrimary: { flex: 1, backgroundColor: '#16a34a', borderRadius: 12, padding: 16, alignItems: 'center' },
   btnPrimaryText: { color: '#fff', fontSize: 16, fontWeight: '600' },

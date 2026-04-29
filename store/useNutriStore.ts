@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Meal, MealItem, NutrientValues, DailySummary } from '../types';
 import { supabase } from '../lib/supabase';
 import { sumNutrientValues } from '../lib/calculations';
+import { localDateString, localDayRangeUtc } from '../lib/dates';
 
 const EXCLUDED_KEYS = new Set([
   'id', 'meal_id', 'name', 'weight_grams', 'confirmed', 'nutrient_key', 'created_at'
@@ -46,7 +47,7 @@ interface NutriState {
 export const useNutriStore = create<NutriState>((set, get) => ({
   todayMeals: [],
   isLoading: false,
-  selectedDate: new Date().toISOString().split('T')[0],
+  selectedDate: localDateString(),
 
   setSelectedDate: (date: string) => {
     set({ selectedDate: date });
@@ -56,11 +57,13 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   loadMealsForDate: async (date: string) => {
     set({ isLoading: true });
 
+    const { startIso, endIso } = localDayRangeUtc(date);
+
     const { data: meals } = await supabase
       .from('meals')
       .select('*, meal_items(*)')
-      .gte('eaten_at', `${date}T00:00:00`)
-      .lte('eaten_at', `${date}T23:59:59`)
+      .gte('eaten_at', startIso)
+      .lte('eaten_at', endIso)
       .order('eaten_at', { ascending: false });
 
     if (meals) {
@@ -90,7 +93,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   },
 
   loadTodayMeals: async () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateString();
     set({ selectedDate: today });
     return get().loadMealsForDate(today);
   },
@@ -129,12 +132,22 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   },
 
   updateMeal: async (mealId: string, rawInput: string, items: MealItem[]) => {
+    // Backup istniejących itemów na wypadek błędu w trakcie zapisu nowych.
+    const { data: backup } = await supabase
+      .from('meal_items')
+      .select('*')
+      .eq('meal_id', mealId);
+
     await supabase
       .from('meals')
       .update({ raw_input: rawInput })
       .eq('id', mealId);
 
-    await supabase.from('meal_items').delete().eq('meal_id', mealId);
+    const { error: deleteError } = await supabase
+      .from('meal_items')
+      .delete()
+      .eq('meal_id', mealId);
+    if (deleteError) throw deleteError;
 
     const mealItemsToInsert = items.map(item => ({
       meal_id: mealId,
@@ -145,7 +158,21 @@ export const useNutriStore = create<NutriState>((set, get) => ({
       ...filterNutrients(item.nutrients),
     }));
 
-    await supabase.from('meal_items').insert(mealItemsToInsert);
+    const { error: insertError } = await supabase
+      .from('meal_items')
+      .insert(mealItemsToInsert);
+
+    if (insertError) {
+      // Rollback — wstawiamy backup z powrotem żeby nie zostawić pustego posiłku.
+      if (backup && backup.length > 0) {
+        const restored = backup.map((row: any) => {
+          const { id: _id, created_at: _ca, ...rest } = row;
+          return rest;
+        });
+        await supabase.from('meal_items').insert(restored);
+      }
+      throw insertError;
+    }
 
     const total = sumNutrientValues(items);
     set(state => ({
