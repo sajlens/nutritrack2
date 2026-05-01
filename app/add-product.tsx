@@ -8,6 +8,9 @@ import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import { supabase } from '../lib/supabase';
 import { NUTRIENTS } from '../constants/nutrients';
+import nutrientsDB from '../data/nutrients_db.json';
+
+const LOCAL_DB_KEYS = new Set(Object.keys((nutrientsDB as any).items));
 
 const ANTHROPIC_API_KEY = Constants.expoConfig?.extra?.anthropicApiKey ?? '';
 
@@ -117,8 +120,11 @@ Odpowiedz TYLKO w formacie JSON bez żadnego tekstu przed ani po:
 }
 
 function toKey(name: string): string {
+  // ł i Ł nie mają separowalnych diakrytyk w Unicode (NFD ich nie rozkłada),
+  // więc trzeba je podmienić ręcznie zanim odetniemy znaki spoza ASCII.
   return name
     .toLowerCase()
+    .replace(/ł/g, 'l')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '_')
@@ -216,6 +222,18 @@ export default function AddProduct() {
   const handleSave = async () => {
     if (!namePl.trim()) { Alert.alert('Błąd', 'Podaj nazwę produktu.'); return; }
     const key = toKey(namePl);
+
+    // Walidacja: czy klucz nie koliduje z lokalną bazą produktów.
+    // Bez tego mielibyśmy duplikat klucza co psuje FlatList w wyszukiwarce.
+    if (LOCAL_DB_KEYS.has(key)) {
+      const existing = (nutrientsDB as any).items[key];
+      Alert.alert(
+        'Produkt już istnieje',
+        `W bazie aplikacji jest już produkt "${existing.name_pl}" z takim samym kluczem (${key}).\n\nJeśli chcesz dodać wariant — zmień nazwę (np. dopisz markę, "domowy", "bio").`,
+      );
+      return;
+    }
+
     const per100g: Record<string, number> = {};
     for (const [k, v] of Object.entries(values)) {
       const num = parseFloat(v);
@@ -233,7 +251,7 @@ export default function AddProduct() {
       });
       if (error) {
         if (error.code === '23505') {
-          Alert.alert('Błąd', 'Produkt o tej nazwie już istnieje w bazie.');
+          Alert.alert('Błąd', 'Produkt o tej nazwie już istnieje w Twoich produktach.');
         } else {
           Alert.alert('Błąd', 'Nie udało się zapisać produktu.');
         }

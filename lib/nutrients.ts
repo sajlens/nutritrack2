@@ -53,18 +53,24 @@ export async function searchFoodAll(query: string): Promise<Array<{ key: string;
   const q = normalize(query);
   const qWords = q.split(/\s+/).filter(w => w.length > 2);
   const results: Array<{ key: string; item: FoodItem; score: number; custom?: boolean }> = [];
+  const seenKeys = new Set<string>();
 
-  // 1. Lokalna baza
+  // 1. Lokalna baza — ma pierwszeństwo, jej klucze rezerwują pozycję
   for (const [key, item] of Object.entries(DB.items) as [string, FoodItem][]) {
     const score = scoreItem(item.name_pl, item.aliases, q, qWords);
-    if (score > 0) results.push({ key, item, score });
+    if (score > 0) {
+      results.push({ key, item, score });
+      seenKeys.add(key);
+    }
   }
 
-  // 2. Custom products z Supabase — pobierz wszystkie i filtruj lokalnie
+  // 2. Custom products z Supabase — pomijamy klucze już istniejące lokalnie
+  // (zapobiega bugowi "Encountered two children with the same key" w FlatList).
   try {
     const { data } = await supabase.from('custom_products').select('*');
     if (data) {
       for (const row of data) {
+        if (seenKeys.has(row.key)) continue;
         const score = scoreItem(row.name_pl, row.aliases ?? [], q, qWords);
         if (score === 0) continue;
         const item: FoodItem = {
@@ -76,6 +82,7 @@ export async function searchFoodAll(query: string): Promise<Array<{ key: string;
           aliases: row.aliases ?? [],
         };
         results.push({ key: row.key, item, score: Math.max(score, 25), custom: true });
+        seenKeys.add(row.key);
       }
     }
   } catch {

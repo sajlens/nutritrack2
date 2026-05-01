@@ -39,7 +39,7 @@ interface NutriState {
   loadTodayMeals: () => Promise<void>;
   loadMealsForDate: (date: string) => Promise<void>;
   addMeal: (rawInput: string, items: MealItem[]) => Promise<void>;
-  updateMeal: (mealId: string, rawInput: string, items: MealItem[]) => Promise<void>;
+  updateMeal: (mealId: string, rawInput: string, items: MealItem[], newEatenAtIso?: string) => Promise<void>;
   deleteMeal: (mealId: string) => Promise<void>;
   getTodayTotals: () => NutrientValues;
 }
@@ -131,16 +131,18 @@ export const useNutriStore = create<NutriState>((set, get) => ({
     set(state => ({ todayMeals: [newMeal, ...state.todayMeals] }));
   },
 
-  updateMeal: async (mealId: string, rawInput: string, items: MealItem[]) => {
+  updateMeal: async (mealId: string, rawInput: string, items: MealItem[], newEatenAtIso?: string) => {
     // Backup istniejących itemów na wypadek błędu w trakcie zapisu nowych.
     const { data: backup } = await supabase
       .from('meal_items')
       .select('*')
       .eq('meal_id', mealId);
 
+    const updateData: any = { raw_input: rawInput };
+    if (newEatenAtIso) updateData.eaten_at = newEatenAtIso;
     await supabase
       .from('meals')
-      .update({ raw_input: rawInput })
+      .update(updateData)
       .eq('id', mealId);
 
     const { error: deleteError } = await supabase
@@ -172,6 +174,12 @@ export const useNutriStore = create<NutriState>((set, get) => ({
         await supabase.from('meal_items').insert(restored);
       }
       throw insertError;
+    }
+
+    // Jeśli zmieniono datę — posiłek może wypaść z aktualnego widoku, reload.
+    if (newEatenAtIso) {
+      await get().loadMealsForDate(get().selectedDate);
+      return;
     }
 
     const total = sumNutrientValues(items);
