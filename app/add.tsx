@@ -14,9 +14,11 @@ import { supabase } from '../lib/supabase';
 
 export default function AddMeal() {
   const TEMPLATE_CATEGORIES = [
+    { key: 'sniadania', label: 'Śniadania' },
     { key: 'napoje', label: 'Napoje' },
     { key: 'obiady', label: 'Obiady' },
     { key: 'przekaski', label: 'Przekąski' },
+    { key: 'dodatki', label: 'Dodatki' },
     { key: 'restauracja', label: 'Restauracja' },
     { key: 'inne', label: 'Inne' },
   ];
@@ -43,6 +45,9 @@ export default function AddMeal() {
   const [saveTemplateModal, setSaveTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState('');
   const [templateCategory, setTemplateCategory] = useState('inne');
+
+  const [changeCategoryModal, setChangeCategoryModal] = useState(false);
+  const [changeCategoryTemplate, setChangeCategoryTemplate] = useState<any | null>(null);
 
   const [supplementsModal, setSupplementsModal] = useState(false);
   const [supplements, setSupplements] = useState<any[]>([]);
@@ -320,6 +325,19 @@ export default function AddMeal() {
         }
       }
     ]);
+  };
+
+  const openChangeCategoryModal = (item: any) => {
+    setChangeCategoryTemplate(item);
+    setChangeCategoryModal(true);
+  };
+
+  const handleChangeCategory = async (newCategory: string) => {
+    if (!changeCategoryTemplate) return;
+    await supabase.from('meal_templates').update({ category: newCategory }).eq('id', changeCategoryTemplate.id);
+    setTemplates(prev => prev.map(t => t.id === changeCategoryTemplate.id ? { ...t, category: newCategory } : t));
+    setChangeCategoryModal(false);
+    setChangeCategoryTemplate(null);
   };
 
   const handleSaveTemplate = async () => {
@@ -736,6 +754,13 @@ export default function AddMeal() {
                             <Text style={styles.templateMeta}>{item.items.length} składników</Text>
                           </View>
                           <TouchableOpacity
+                            onPress={() => openChangeCategoryModal(item)}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            style={{ marginRight: 12 }}
+                          >
+                            <Text style={{ fontSize: 16 }}>📁</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
                             onPress={() => { setTemplatesModal(false); router.push({ pathname: '/edit-meal', params: { templateId: item.id, templateName: item.name } }); }}
                             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                             style={{ marginRight: 12 }}
@@ -756,6 +781,31 @@ export default function AddMeal() {
         </View>
       </Modal>
 
+
+      {/* Modal: zmiana kategorii ulubionego */}
+      <Modal visible={changeCategoryModal} animationType="fade" transparent onRequestClose={() => setChangeCategoryModal(false)}>
+        <View style={styles.portionsOverlay}>
+          <View style={styles.portionsBox}>
+            <Text style={styles.portionsTitle}>{changeCategoryTemplate?.name}</Text>
+            <Text style={[styles.portionsHint, { marginBottom: 12 }]}>Wybierz kategorię:</Text>
+            {TEMPLATE_CATEGORIES.map(cat => {
+              const isCurrent = (changeCategoryTemplate?.category || 'inne') === cat.key;
+              return (
+                <TouchableOpacity
+                  key={cat.key}
+                  style={[styles.categoryChip, isCurrent && styles.categoryChipSelected, { marginBottom: 8, width: '100%', justifyContent: 'center' }]}
+                  onPress={() => handleChangeCategory(cat.key)}
+                >
+                  <Text style={[styles.categoryChipText, isCurrent && styles.categoryChipTextSelected]}>{cat.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+            <TouchableOpacity style={[styles.btnSecondary, { marginTop: 8 }]} onPress={() => setChangeCategoryModal(false)}>
+              <Text style={styles.btnSecondaryText}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Modal: wybór porcji */}
       <Modal visible={portionsModal} animationType="fade" transparent>
