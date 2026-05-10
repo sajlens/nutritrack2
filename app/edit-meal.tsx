@@ -4,7 +4,7 @@ import {
   StyleSheet, ActivityIndicator, Alert, Modal, FlatList
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { searchFoodAll, calculateNutrients } from '../lib/nutrients';
+import { searchFoodAll, calculateNutrients, setProductOverride, deleteProductOverride } from '../lib/nutrients';
 import { useNutriStore } from '../store/useNutriStore';
 import { MealItem } from '../types';
 import { NUTRIENTS } from '../constants/nutrients';
@@ -33,6 +33,11 @@ export default function EditMeal() {
   const [addResults, setAddResults] = useState<any[]>([]);
   const [addWeight, setAddWeight] = useState('100');
   const [addSelected, setAddSelected] = useState<any | null>(null);
+
+  const [editServingModal, setEditServingModal] = useState(false);
+  const [editServingProduct, setEditServingProduct] = useState<any | null>(null);
+  const [editServingG, setEditServingG] = useState('');
+  const [editServingNote, setEditServingNote] = useState('');
 
   // Reset state when mealId or templateId changes (component stays mounted in Tabs)
   useEffect(() => {
@@ -105,6 +110,47 @@ export default function EditMeal() {
     if (q.trim().length < 2) { setSearchResults([]); return; }
     const results = await searchFoodAll(q);
     setSearchResults(results);
+  };
+
+  const openEditServing = (result: any) => {
+    setEditServingProduct(result);
+    setEditServingG(result.item.serving_g ? String(result.item.serving_g) : '');
+    setEditServingNote(result.item.serving_note ?? '');
+    setEditServingModal(true);
+  };
+
+  const handleSaveServing = async () => {
+    if (!editServingProduct) return;
+    const g = parseFloat(editServingG.replace(',', '.'));
+    if (isNaN(g) || g <= 0) { Alert.alert('Błąd', 'Podaj poprawną wagę.'); return; }
+    const note = editServingNote.trim() || null;
+    try {
+      await setProductOverride(editServingProduct.key, g, note);
+      const refreshed = await searchFoodAll(searchQuery || addQuery);
+      if (searchQuery) setSearchResults(refreshed);
+      if (addQuery) setAddResults(refreshed);
+      setEditServingModal(false);
+      setEditServingProduct(null);
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się zapisać porcji.');
+    }
+  };
+
+  const handleResetServing = () => {
+    if (!editServingProduct) return;
+    Alert.alert('Reset porcji', 'Przywrócić domyślną porcję?', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Reset', style: 'destructive', onPress: async () => {
+          await deleteProductOverride(editServingProduct.key);
+          const refreshed = await searchFoodAll(searchQuery || addQuery);
+          if (searchQuery) setSearchResults(refreshed);
+          if (addQuery) setAddResults(refreshed);
+          setEditServingModal(false);
+          setEditServingProduct(null);
+        }
+      }
+    ]);
   };
 
   const selectFood = (result: any) => {
@@ -319,12 +365,22 @@ export default function EditMeal() {
             data={searchResults}
             keyExtractor={item => item.key}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.searchResult} onPress={() => selectFood(item)}>
-                <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
-                <Text style={styles.searchResultMeta}>
-                  {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.searchResultRow}>
+                <TouchableOpacity style={styles.searchResultMain} onPress={() => selectFood(item)}>
+                  <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                  <Text style={styles.searchResultMeta}>
+                    {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
+                    {item.item.serving_g ? ` · porcja: ${item.item.serving_g}g${item.item.serving_note ? ` (${item.item.serving_note})` : ""}` : ""}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => openEditServing(item)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  style={styles.searchResultEdit}
+                >
+                  <Text style={{ fontSize: 16 }}>✏️</Text>
+                </TouchableOpacity>
+              </View>
             )}
             ListEmptyComponent={
               <Text style={styles.searchEmpty}>
@@ -363,7 +419,17 @@ export default function EditMeal() {
                 />
                 <Text style={styles.weightUnit}>g</Text>
               </View>
-              <TouchableOpacity style={styles.btnPrimary} onPress={confirmAddItem}>
+              {addSelected.item.serving_g ? (
+                <TouchableOpacity
+                  style={styles.servingHint}
+                  onPress={() => setAddWeight(String(addSelected.item.serving_g))}
+                >
+                  <Text style={styles.servingHintText}>
+                    🍽️ {addSelected.item.serving_note ?? '1 porcja'} = {addSelected.item.serving_g}g
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
+              <TouchableOpacity style={[styles.btnPrimary, { flex: 0 }]} onPress={confirmAddItem}>
                 <Text style={styles.btnPrimaryText}>Dodaj do posiłku</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{ marginTop: 8, alignItems: 'center' }} onPress={() => setAddSelected(null)}>
@@ -375,12 +441,22 @@ export default function EditMeal() {
               data={addResults}
               keyExtractor={item => item.key}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.searchResult} onPress={() => setAddSelected(item)}>
-                  <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
-                  <Text style={styles.searchResultMeta}>
-                    {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
-                  </Text>
-                </TouchableOpacity>
+                <View style={styles.searchResultRow}>
+                  <TouchableOpacity style={styles.searchResultMain} onPress={() => setAddSelected(item)}>
+                    <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                    <Text style={styles.searchResultMeta}>
+                      {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
+                      {item.item.serving_g ? ` · porcja: ${item.item.serving_g}g${item.item.serving_note ? ` (${item.item.serving_note})` : ''}` : ''}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => openEditServing(item)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    style={styles.searchResultEdit}
+                  >
+                    <Text style={{ fontSize: 16 }}>✏️</Text>
+                  </TouchableOpacity>
+                </View>
               )}
               ListEmptyComponent={
                 <Text style={styles.searchEmpty}>
@@ -389,6 +465,47 @@ export default function EditMeal() {
               }
             />
           )}
+        </View>
+      </Modal>
+
+      {/* Modal: edycja standardowej porcji produktu */}
+      <Modal visible={editServingModal} animationType="fade" transparent onRequestClose={() => setEditServingModal(false)}>
+        <View style={styles.portionsOverlay}>
+          <View style={[styles.portionsBox, { maxWidth: 360 }]}>
+            <Text style={styles.portionsTitle}>{editServingProduct?.item.name_pl}</Text>
+            <Text style={[styles.portionsHint, { fontSize: 12, marginBottom: 16 }]}>
+              Ustaw standardową porcję dla tego produktu.
+            </Text>
+
+            <Text style={styles.fieldLabel}>Waga porcji (g):</Text>
+            <TextInput
+              style={styles.searchInputPadded}
+              value={editServingG}
+              onChangeText={setEditServingG}
+              keyboardType="numeric"
+              placeholder="np. 22"
+            />
+
+            <Text style={styles.fieldLabel}>Opis (opcjonalnie):</Text>
+            <TextInput
+              style={styles.searchInputPadded}
+              value={editServingNote}
+              onChangeText={setEditServingNote}
+              placeholder="np. 1 gruby kabanos"
+            />
+
+            <TouchableOpacity style={[styles.btnPrimary, { flex: 0, marginTop: 16 }]} onPress={handleSaveServing}>
+              <Text style={styles.btnPrimaryText}>Zapisz</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.btnSecondary, { flex: 0, marginTop: 8 }]} onPress={handleResetServing}>
+              <Text style={styles.btnSecondaryText}>Reset do domyślnej</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{ marginTop: 12, alignItems: 'center' }} onPress={() => setEditServingModal(false)}>
+              <Text style={{ color: '#6b7280', fontSize: 14 }}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </ScrollView>
@@ -422,7 +539,18 @@ const styles = StyleSheet.create({
   addItemBtn: { borderWidth: 1.5, borderColor: '#16a34a', borderStyle: 'dashed', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 16 },
   addItemBtnText: { color: '#16a34a', fontSize: 15, fontWeight: '600' },
   buttonRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },
-  btnPrimary: { flex: 1, backgroundColor: '#16a34a', borderRadius: 12, padding: 16, alignItems: 'center' },
+  btnPrimary: { flex: 1, backgroundColor: '#16a34a', borderRadius: 12, padding: 16, alignItems: 'center', justifyContent: 'center' },
+  btnSecondary: { flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db' },
+  btnSecondaryText: { color: '#374151', fontWeight: '600', fontSize: 15 },
+  searchResultRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  searchResultMain: { flex: 1, padding: 16 },
+  searchResultEdit: { padding: 16 },
+  portionsOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },
+  portionsBox: { backgroundColor: '#fff', borderRadius: 16, padding: 20, width: '100%' },
+  portionsTitle: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 4, textAlign: 'center' },
+  portionsHint: { fontSize: 14, color: '#6b7280', textAlign: 'center' },
+  fieldLabel: { fontSize: 13, fontWeight: '600', color: '#374151', marginTop: 12, marginBottom: 6 },
+  searchInputPadded: { backgroundColor: '#f9fafb', borderRadius: 10, padding: 12, fontSize: 15, borderWidth: 1, borderColor: '#d1d5db', color: '#111827' },
   btnPrimaryText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   btnDanger: { flex: 1, backgroundColor: '#fee2e2', borderRadius: 12, padding: 16, alignItems: 'center' },
   btnDangerText: { color: '#dc2626', fontSize: 16, fontWeight: '600' },
@@ -437,4 +565,6 @@ const styles = StyleSheet.create({
   searchEmpty: { textAlign: 'center', color: '#9ca3af', marginTop: 40, fontSize: 14 },
   selectedProduct: { margin: 16, backgroundColor: '#fff', borderRadius: 12, padding: 16 },
   selectedProductName: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 12 },
+  servingHint: { backgroundColor: '#f0fdf4', borderRadius: 10, padding: 10, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: '#bbf7d0' },
+  servingHintText: { fontSize: 13, color: '#15803d', fontWeight: '600' },
 });

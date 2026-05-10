@@ -55,17 +55,19 @@ export async function searchFoodAll(query: string): Promise<Array<{ key: string;
   const results: Array<{ key: string; item: FoodItem; score: number; custom?: boolean }> = [];
   const seenKeys = new Set<string>();
 
+  // Załaduj override'y porcji raz
+  await loadOverrides();
+
   // 1. Lokalna baza — ma pierwszeństwo, jej klucze rezerwują pozycję
   for (const [key, item] of Object.entries(DB.items) as [string, FoodItem][]) {
     const score = scoreItem(item.name_pl, item.aliases, q, qWords);
     if (score > 0) {
-      results.push({ key, item, score });
+      results.push({ key, item: applyOverrideSync(key, item), score });
       seenKeys.add(key);
     }
   }
 
   // 2. Custom products z Supabase — pomijamy klucze już istniejące lokalnie
-  // (zapobiega bugowi "Encountered two children with the same key" w FlatList).
   try {
     const { data } = await supabase.from('custom_products').select('*');
     if (data) {
@@ -81,7 +83,7 @@ export async function searchFoodAll(query: string): Promise<Array<{ key: string;
           serving_g: row.serving_g,
           aliases: row.aliases ?? [],
         };
-        results.push({ key: row.key, item, score: Math.max(score, 25), custom: true });
+        results.push({ key: row.key, item: applyOverrideSync(row.key, item), score: Math.max(score, 25), custom: true });
         seenKeys.add(row.key);
       }
     }
@@ -93,16 +95,93 @@ export async function searchFoodAll(query: string): Promise<Array<{ key: string;
 }
 
 export function getFoodByKey(key: string): FoodItem | null {
-  return (DB.items[key] as FoodItem) ?? null;
+  const item = DB.items[key] as FoodItem;
+  if (!item) return null;
+  // Synchroniczny variant nie ma dostępu do override'ów (Supabase = async)
+  // — używaj getFoodByKeyAll gdzie się da.
+  return applyOverrideSync(key, item);
+}
+
+// ============================================================
+// Cache override'ów porcji (product_overrides w Supabase)
+// ============================================================
+type ServingOverride = { serving_g?: number | null; serving_note?: string | null };
+let overridesCache: Record<string, ServingOverride> | null = null;
+let overridesLoading: Promise<void> | null = null;
+
+async function loadOverrides(): Promise<void> {
+  if (overridesCache !== null) return;
+  if (overridesLoading) return overridesLoading;
+  overridesLoading = (async () => {
+    try {
+      const { data } = await supabase.from('product_overrides').select('*');
+      const map: Record<string, ServingOverride> = {};
+      if (data) {
+        for (const row of data) {
+          map[row.key] = { serving_g: row.serving_g, serving_note: row.serving_note };
+        }
+      }
+      overridesCache = map;
+    } catch {
+      overridesCache = {};
+    } finally {
+      overridesLoading = null;
+    }
+  })();
+  return overridesLoading;
+}
+
+function applyOverrideSync(key: string, item: FoodItem): FoodItem {
+  if (!overridesCache) return item;
+  const ov = overridesCache[key];
+  if (!ov) return item;
+  return {
+    ...item,
+    serving_g: ov.serving_g ?? item.serving_g,
+    serving_note: ov.serving_note ?? item.serving_note,
+  };
+}
+
+export async function getProductOverride(key: string): Promise<ServingOverride | null> {
+  await loadOverrides();
+  return overridesCache?.[key] ?? null;
+}
+
+export async function setProductOverride(
+  key: string,
+  serving_g: number | null,
+  serving_note: string | null,
+): Promise<void> {
+  await loadOverrides();
+  // Upsert do Supabase
+  await supabase.from('product_overrides').upsert(
+    { key, serving_g, serving_note },
+    { onConflict: 'key' }
+  );
+  // Aktualizuj cache lokalnie
+  if (overridesCache) {
+    if (serving_g === null && serving_note === null) {
+      delete overridesCache[key];
+    } else {
+      overridesCache[key] = { serving_g, serving_note };
+    }
+  }
+}
+
+export async function deleteProductOverride(key: string): Promise<void> {
+  await loadOverrides();
+  await supabase.from('product_overrides').delete().eq('key', key);
+  if (overridesCache) delete overridesCache[key];
 }
 
 export async function getFoodByKeyAll(key: string): Promise<FoodItem | null> {
+  await loadOverrides();
   const local = DB.items[key] as FoodItem;
-  if (local) return local;
+  if (local) return applyOverrideSync(key, local);
   try {
     const { data } = await supabase.from('custom_products').select('*').eq('key', key).single();
     if (data) {
-      return {
+      const item: FoodItem = {
         name_pl: data.name_pl,
         name_en: data.name_en ?? '',
         category: data.category ?? 'inne',
@@ -110,6 +189,7 @@ export async function getFoodByKeyAll(key: string): Promise<FoodItem | null> {
         serving_g: data.serving_g,
         aliases: data.aliases,
       };
+      return applyOverrideSync(key, item);
     }
   } catch {}
   return null;

@@ -92,7 +92,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   betaine_mg:             { label: 'Betaina',              unit: 'mg',  rda_f: 500,  rda_m: 500,  rda_personal: 500,  category: 'other' },
   caffeine_mg:            { label: 'Kofeina',              unit: 'mg',  rda_personal: 200,  limit: true, category: 'other' },
   coenzyme_q10_mg:        { label: 'Koenzym Q10',          unit: 'mg',  rda_personal: 100,  category: 'other' },
-  carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 500,  category: 'other' },
+  carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 120,  category: 'other' },
   collagen_g:             { label: 'Kolagen',              unit: 'g',   rda_personal: 10,   category: 'other' },
   creatine_g:             { label: 'Kreatyna',             unit: 'g',   rda_personal: 5,    category: 'other' },
 };

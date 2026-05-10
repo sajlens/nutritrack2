@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, ActivityIndicator, Alert, Modal, FlatList
@@ -6,7 +6,7 @@ import {
 import { router } from 'expo-router';
 import { parseMealDescription } from '../lib/claude';
 import { resolveMealItems } from '../lib/calculations';
-import { searchFoodAll, searchFood, getFoodByKey, calculateNutrients, isSupplementKey } from '../lib/nutrients';
+import { searchFoodAll, searchFood, getFoodByKey, getFoodByKeyAll, calculateNutrients, isSupplementKey, setProductOverride, deleteProductOverride } from '../lib/nutrients';
 import { useNutriStore } from '../store/useNutriStore';
 import { MealItem } from '../types';
 import { NUTRIENTS } from '../constants/nutrients';
@@ -33,6 +33,11 @@ export default function AddMeal() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
+  const [editServingModal, setEditServingModal] = useState(false);
+  const [editServingProduct, setEditServingProduct] = useState<any | null>(null);
+  const [editServingG, setEditServingG] = useState('');
+  const [editServingNote, setEditServingNote] = useState('');
+
   const [templatesModal, setTemplatesModal] = useState(false);
   const [templates, setTemplates] = useState<any[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
@@ -41,6 +46,7 @@ export default function AddMeal() {
   const [portionsModal, setPortionsModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
   const [portionsInput, setPortionsInput] = useState('1');
+  const [portionsMode, setPortionsMode] = useState<'portions' | 'grams'>('portions');
 
   const [saveTemplateModal, setSaveTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState('');
@@ -52,7 +58,7 @@ export default function AddMeal() {
   const [supplementsModal, setSupplementsModal] = useState(false);
   const [supplements, setSupplements] = useState<any[]>([]);
   const [suppLoading, setSuppLoading] = useState(false);
-  const [selectedSupplements, setSelectedSupplements] = useState<Set<string>>(new Set());
+  const [selectedSupplements, setSelectedSupplements] = useState<Map<string, number>>(new Map());
 
   const [quickAddModal, setQuickAddModal] = useState(false);
   const [quickAddQuery, setQuickAddQuery] = useState('');
@@ -85,6 +91,12 @@ export default function AddMeal() {
   const [editSuppName, setEditSuppName] = useState('');
   const [editSuppKey, setEditSuppKey] = useState('');
   const [editSuppWeight, setEditSuppWeight] = useState('');
+  const [editSuppMode, setEditSuppMode] = useState<'simple' | 'composite'>('simple');
+  const [editSuppItems, setEditSuppItems] = useState<{ id: string; nutrient_key: string; name: string; weight_grams: number }[]>([]);
+  const [suppIngrQuery, setSuppIngrQuery] = useState('');
+  const [suppIngrResults, setSuppIngrResults] = useState<any[]>([]);
+  const [suppIngrSelected, setSuppIngrSelected] = useState<any | null>(null);
+  const [suppIngrWeight, setSuppIngrWeight] = useState('');
 
   const { addMeal } = useNutriStore();
 
@@ -251,9 +263,23 @@ export default function AddMeal() {
 
   const loadSupplements = async () => {
     setSuppLoading(true);
-    const { data } = await supabase.from('supplements').select('*').order('created_at');
+    const { data } = await supabase.from('supplements').select('*').order('sort_order', { ascending: true, nullsFirst: false }).order('created_at');
     if (data) setSupplements(data);
     setSuppLoading(false);
+  };
+
+  const moveSupp = async (suppId: string, direction: 'up' | 'down') => {
+    const idx = supplements.findIndex(s => s.id === suppId);
+    if (idx === -1) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= supplements.length) return;
+    const reordered = [...supplements];
+    [reordered[idx], reordered[targetIdx]] = [reordered[targetIdx], reordered[idx]];
+    // Optymistyczna aktualizacja UI
+    setSupplements(reordered);
+    // Zapisz nowe sort_order dla wszystkich (proste i niezawodne)
+    const updates = reordered.map((s, i) => supabase.from('supplements').update({ sort_order: i }).eq('id', s.id));
+    await Promise.all(updates);
   };
 
   const handleParse = async () => {
@@ -277,8 +303,14 @@ export default function AddMeal() {
   const openPortionsPicker = (template: any) => {
     setSelectedTemplate(template);
     setPortionsInput('1');
+    setPortionsMode('portions');
     setTemplatesModal(false);
     setPortionsModal(true);
+  };
+
+  const getTemplateTotalWeight = (template: any): number => {
+    if (!template?.items) return 0;
+    return template.items.reduce((sum: number, it: any) => sum + (it.weight_grams ?? 0), 0);
   };
 
   const handleLoadTemplate = async (template: any, portions: number) => {
@@ -375,28 +407,105 @@ export default function AddMeal() {
   const openEditSupp = (supp: any | null) => {
     setEditSupp(supp);
     setEditSuppName(supp?.name ?? '');
-    setEditSuppKey(supp?.nutrient_key ?? '');
-    setEditSuppWeight(supp ? String(supp.weight_grams) : '');
+    if (supp?.items && Array.isArray(supp.items) && supp.items.length > 0) {
+      setEditSuppMode('composite');
+      setEditSuppItems(supp.items.map((it: any) => ({
+        id: Math.random().toString(36).slice(2),
+        nutrient_key: it.nutrient_key,
+        name: it.name ?? it.nutrient_key,
+        weight_grams: it.weight_grams,
+      })));
+      setEditSuppKey('');
+      setEditSuppWeight('');
+    } else {
+      setEditSuppMode('simple');
+      setEditSuppItems([]);
+      setEditSuppKey(supp?.nutrient_key ?? '');
+      setEditSuppWeight(supp ? String(supp.weight_grams) : '');
+    }
+    setSuppIngrQuery('');
+    setSuppIngrResults([]);
+    setSuppIngrSelected(null);
+    setSuppIngrWeight('');
     setManageSuppModal(false);
     setEditSuppModal(true);
   };
 
   const handleSaveSupp = async () => {
     const name = editSuppName.trim();
-    const key = editSuppKey.trim();
-    const w = parseFloat(editSuppWeight);
-    if (!name || !key || isNaN(w) || w <= 0) {
-      Alert.alert('Błąd', 'Wypełnij wszystkie pola poprawnie.');
-      return;
-    }
-    if (editSupp) {
-      await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w }).eq('id', editSupp.id);
+    if (!name) { Alert.alert('Błąd', 'Podaj nazwę.'); return; }
+
+    if (editSuppMode === 'composite') {
+      if (editSuppItems.length === 0) {
+        Alert.alert('Błąd', 'Dodaj przynajmniej jeden składnik.');
+        return;
+      }
+      const itemsPayload = editSuppItems.map(it => ({
+        nutrient_key: it.nutrient_key,
+        name: it.name,
+        weight_grams: it.weight_grams,
+      }));
+      // Dla zachowania wstecznej kompatybilności zapisujemy też nutrient_key i weight_grams
+      // jako pierwszy składnik (gdyby coś poszło nie tak z items, fallback zadziała).
+      const fallbackKey = itemsPayload[0].nutrient_key;
+      const fallbackWeight = itemsPayload[0].weight_grams;
+      if (editSupp) {
+        await supabase.from('supplements').update({
+          name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
+        }).eq('id', editSupp.id);
+      } else {
+        await supabase.from('supplements').insert({
+          name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
+        });
+      }
     } else {
-      await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w });
+      const key = editSuppKey.trim();
+      const w = parseFloat(editSuppWeight);
+      if (!key || isNaN(w) || w <= 0) {
+        Alert.alert('Błąd', 'Wypełnij wszystkie pola poprawnie.');
+        return;
+      }
+      if (editSupp) {
+        await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null }).eq('id', editSupp.id);
+      } else {
+        await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w });
+      }
     }
     setEditSuppModal(false);
     await loadSupplements();
     setManageSuppModal(true);
+  };
+
+  // Wyszukiwanie składnika dla suplementu kompozytowego
+  useEffect(() => {
+    const q = suppIngrQuery.trim();
+    if (q.length < 2) { setSuppIngrResults([]); return; }
+    let cancelled = false;
+    (async () => {
+      const results = await searchFoodAll(q);
+      if (!cancelled) setSuppIngrResults(results);
+    })();
+    return () => { cancelled = true; };
+  }, [suppIngrQuery]);
+
+  const handleAddSuppIngredient = () => {
+    if (!suppIngrSelected) { Alert.alert('Błąd', 'Wybierz produkt.'); return; }
+    const w = parseFloat(suppIngrWeight);
+    if (isNaN(w) || w <= 0) { Alert.alert('Błąd', 'Podaj poprawną wagę.'); return; }
+    setEditSuppItems(prev => [...prev, {
+      id: Math.random().toString(36).slice(2),
+      nutrient_key: suppIngrSelected.key,
+      name: suppIngrSelected.item.name_pl,
+      weight_grams: w,
+    }]);
+    setSuppIngrQuery('');
+    setSuppIngrResults([]);
+    setSuppIngrSelected(null);
+    setSuppIngrWeight('');
+  };
+
+  const handleRemoveSuppIngredient = (id: string) => {
+    setEditSuppItems(prev => prev.filter(it => it.id !== id));
   };
 
   const handleDeleteSupp = (supp: any) => {
@@ -413,8 +522,21 @@ export default function AddMeal() {
 
   const toggleSupplement = (id: string) => {
     setSelectedSupplements(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      const next = new Map(prev);
+      if (next.has(id)) next.delete(id);
+      else next.set(id, 1);
+      return next;
+    });
+  };
+
+  const changeSuppPortions = (id: string, delta: number) => {
+    setSelectedSupplements(prev => {
+      const next = new Map(prev);
+      const current = next.get(id) ?? 1;
+      const updated = current + delta;
+      if (updated < 1) return next; // minimum 1 porcja
+      if (updated > 99) return next;
+      next.set(id, updated);
       return next;
     });
   };
@@ -424,27 +546,53 @@ export default function AddMeal() {
     setIsLoading(true);
     try {
       const mealItems: MealItem[] = [];
-      for (const suppId of selectedSupplements) {
+      for (const [suppId, portions] of selectedSupplements) {
         const supp = supplements.find((s: any) => s.id === suppId);
         if (!supp) continue;
-        const foodItem = getFoodByKey(supp.nutrient_key);
-        if (!foodItem) continue;
-        const nutrients = calculateNutrients(foodItem.per_100g, supp.weight_grams);
-        mealItems.push({
-          id: Math.random().toString(36).slice(2),
-          name: supp.name,
-          weight_grams: supp.weight_grams,
-          nutrients,
-          confirmed: true,
-          nutrient_key: supp.nutrient_key,
-        });
+        const portionsCount = portions || 1;
+
+        // Suplement kompozytowy — dodaj każdy składnik osobno
+        if (supp.items && Array.isArray(supp.items) && supp.items.length > 0) {
+          for (const ingr of supp.items) {
+            const foodItem = await getFoodByKeyAll(ingr.nutrient_key);
+            if (!foodItem) continue;
+            const totalWeight = ingr.weight_grams * portionsCount;
+            const nutrients = calculateNutrients(foodItem.per_100g, totalWeight);
+            mealItems.push({
+              id: Math.random().toString(36).slice(2),
+              name: portionsCount > 1 ? `${ingr.name ?? foodItem.name_pl} (×${portionsCount})` : (ingr.name ?? foodItem.name_pl),
+              weight_grams: totalWeight,
+              nutrients,
+              confirmed: true,
+              nutrient_key: ingr.nutrient_key,
+            });
+          }
+        } else {
+          // Suplement prosty
+          const foodItem = getFoodByKey(supp.nutrient_key);
+          if (!foodItem) continue;
+          const totalWeight = supp.weight_grams * portionsCount;
+          const nutrients = calculateNutrients(foodItem.per_100g, totalWeight);
+          mealItems.push({
+            id: Math.random().toString(36).slice(2),
+            name: portionsCount > 1 ? `${supp.name} (×${portionsCount})` : supp.name,
+            weight_grams: totalWeight,
+            nutrients,
+            confirmed: true,
+            nutrient_key: supp.nutrient_key,
+          });
+        }
       }
-      const label = Array.from(selectedSupplements)
-        .map((id: string) => supplements.find((s: any) => s.id === id)?.name)
+      const label = Array.from(selectedSupplements.entries())
+        .map(([id, portions]) => {
+          const supp = supplements.find((s: any) => s.id === id);
+          if (!supp) return null;
+          return portions > 1 ? `${supp.name} ×${portions}` : supp.name;
+        })
         .filter(Boolean)
         .join(', ');
       await addMeal('Suplementy: ' + label, mealItems);
-      setSelectedSupplements(new Set());
+      setSelectedSupplements(new Map());
       setSupplementsModal(false);
       router.replace('/');
     } catch {
@@ -492,6 +640,48 @@ export default function AddMeal() {
     setSearchModal({ visible: false, itemId: '' });
     setSearchQuery('');
     setSearchResults([]);
+  };
+
+  const openEditServing = (result: any) => {
+    setEditServingProduct(result);
+    setEditServingG(result.item.serving_g ? String(result.item.serving_g) : '');
+    setEditServingNote(result.item.serving_note ?? '');
+    setEditServingModal(true);
+  };
+
+  const handleSaveServing = async () => {
+    if (!editServingProduct) return;
+    const g = parseFloat(editServingG.replace(',', '.'));
+    if (isNaN(g) || g <= 0) { Alert.alert('Błąd', 'Podaj poprawną wagę.'); return; }
+    const note = editServingNote.trim() || null;
+    try {
+      await setProductOverride(editServingProduct.key, g, note);
+      // Odśwież listę wyników
+      const refreshed = await searchFoodAll(searchQuery || quickAddQuery);
+      if (searchQuery) setSearchResults(refreshed);
+      if (quickAddQuery) setQuickAddResults(refreshed);
+      setEditServingModal(false);
+      setEditServingProduct(null);
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się zapisać porcji.');
+    }
+  };
+
+  const handleResetServing = async () => {
+    if (!editServingProduct) return;
+    Alert.alert('Reset porcji', 'Przywrócić domyślną porcję?', [
+      { text: 'Anuluj', style: 'cancel' },
+      {
+        text: 'Reset', style: 'destructive', onPress: async () => {
+          await deleteProductOverride(editServingProduct.key);
+          const refreshed = await searchFoodAll(searchQuery || quickAddQuery);
+          if (searchQuery) setSearchResults(refreshed);
+          if (quickAddQuery) setQuickAddResults(refreshed);
+          setEditServingModal(false);
+          setEditServingProduct(null);
+        }
+      }
+    ]);
   };
 
   const handleSave = async () => {
@@ -629,10 +819,22 @@ export default function AddMeal() {
               data={searchResults}
               keyExtractor={item => item.key}
               renderItem={({ item }) => (
-                <TouchableOpacity style={styles.searchResult} onPress={() => selectFood(item)}>
-                  <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
-                  <Text style={styles.searchResultMeta}>{Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%</Text>
-                </TouchableOpacity>
+                <View style={styles.searchResultRow}>
+                  <TouchableOpacity style={styles.searchResultMain} onPress={() => selectFood(item)}>
+                    <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                    <Text style={styles.searchResultMeta}>
+                      {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
+                      {item.item.serving_g ? ` · porcja: ${item.item.serving_g}g${item.item.serving_note ? ` (${item.item.serving_note})` : ''}` : ''}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => openEditServing(item)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    style={styles.searchResultEdit}
+                  >
+                    <Text style={{ fontSize: 16 }}>✏️</Text>
+                  </TouchableOpacity>
+                </View>
               )}
               ListEmptyComponent={<Text style={styles.searchEmpty}>{searchQuery.length >= 2 ? 'Brak wyników.' : 'Wpisz min. 2 znaki.'}</Text>}
             />
@@ -812,7 +1014,36 @@ export default function AddMeal() {
         <View style={styles.portionsOverlay}>
           <View style={styles.portionsBox}>
             <Text style={styles.portionsTitle}>{selectedTemplate?.name}</Text>
-            <Text style={styles.portionsHint}>Ile porcji?</Text>
+            {(() => {
+              const totalW = getTemplateTotalWeight(selectedTemplate);
+              return totalW > 0 ? (
+                <Text style={[styles.portionsHint, { fontSize: 12, marginBottom: 8 }]}>
+                  1 porcja = {Math.round(totalW)}g
+                </Text>
+              ) : null;
+            })()}
+
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+              <TouchableOpacity
+                style={[styles.categoryChip, portionsMode === 'portions' && styles.categoryChipSelected, { flex: 1, justifyContent: 'center' }]}
+                onPress={() => { setPortionsMode('portions'); setPortionsInput('1'); }}
+              >
+                <Text style={[styles.categoryChipText, portionsMode === 'portions' && styles.categoryChipTextSelected]}>Porcje</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.categoryChip, portionsMode === 'grams' && styles.categoryChipSelected, { flex: 1, justifyContent: 'center' }]}
+                onPress={() => {
+                  setPortionsMode('grams');
+                  const totalW = getTemplateTotalWeight(selectedTemplate);
+                  setPortionsInput(totalW > 0 ? String(Math.round(totalW)) : '');
+                }}
+                disabled={getTemplateTotalWeight(selectedTemplate) === 0}
+              >
+                <Text style={[styles.categoryChipText, portionsMode === 'grams' && styles.categoryChipTextSelected]}>Gramy</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.portionsHint}>{portionsMode === 'portions' ? 'Ile porcji?' : 'Ile gramów?'}</Text>
             <TextInput
               style={styles.portionsInput}
               value={portionsInput}
@@ -831,10 +1062,16 @@ export default function AddMeal() {
               <TouchableOpacity
                 style={styles.btnPrimary}
                 onPress={() => {
-                  const p = parseFloat(portionsInput.replace(',', '.'));
-                  if (isNaN(p) || p <= 0) { Alert.alert('Błąd', 'Podaj liczbę większą od 0.'); return; }
+                  const value = parseFloat(portionsInput.replace(',', '.'));
+                  if (isNaN(value) || value <= 0) { Alert.alert('Błąd', 'Podaj liczbę większą od 0.'); return; }
+                  let portions = value;
+                  if (portionsMode === 'grams') {
+                    const totalW = getTemplateTotalWeight(selectedTemplate);
+                    if (totalW <= 0) { Alert.alert('Błąd', 'Ten szablon nie ma wagi - użyj trybu Porcje.'); return; }
+                    portions = value / totalW;
+                  }
                   setPortionsInput('1');
-                  handleLoadTemplate(selectedTemplate, p);
+                  handleLoadTemplate(selectedTemplate, portions);
                 }}
               >
                 <Text style={styles.btnPrimaryText}>Załaduj</Text>
@@ -956,6 +1193,16 @@ export default function AddMeal() {
                 selectTextOnFocus
                 autoFocus
               />
+              {quickAddSelected.item.serving_g ? (
+                <TouchableOpacity
+                  style={styles.servingHint}
+                  onPress={() => setQuickAddWeight(String(quickAddSelected.item.serving_g))}
+                >
+                  <Text style={styles.servingHintText}>
+                    🍽️ {quickAddSelected.item.serving_note ?? '1 porcja'} = {quickAddSelected.item.serving_g}g
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.btnSecondary} onPress={() => { setQuickAddSelected(null); setQuickAddQuery(''); }}>
                   <Text style={styles.btnSecondaryText}>Wróć</Text>
@@ -978,12 +1225,22 @@ export default function AddMeal() {
                 data={quickAddResults}
                 keyExtractor={item => item.key}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.searchResult} onPress={() => selectQuickProduct(item)}>
-                    <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
-                    <Text style={styles.searchResultMeta}>
-                      {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
-                    </Text>
-                  </TouchableOpacity>
+                  <View style={styles.searchResultRow}>
+                    <TouchableOpacity style={styles.searchResultMain} onPress={() => selectQuickProduct(item)}>
+                      <Text style={styles.searchResultName}>{item.item.name_pl}</Text>
+                      <Text style={styles.searchResultMeta}>
+                        {Math.round(item.item.per_100g.calories ?? 0)} kcal / 100g · {item.score}%
+                        {item.item.serving_g ? ` · porcja: ${item.item.serving_g}g${item.item.serving_note ? ` (${item.item.serving_note})` : ''}` : ''}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => openEditServing(item)}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      style={styles.searchResultEdit}
+                    >
+                      <Text style={{ fontSize: 16 }}>✏️</Text>
+                    </TouchableOpacity>
+                  </View>
                 )}
                 ListHeaderComponent={quickAddItems.length > 0 ? (
                   <View style={styles.quickItemsList}>
@@ -1019,7 +1276,7 @@ export default function AddMeal() {
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Suplementy</Text>
-            <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Set()); }}>
+            <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Map()); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
@@ -1034,18 +1291,42 @@ export default function AddMeal() {
             <ActivityIndicator style={{ marginTop: 20 }} color="#16a34a" />
           ) : (
             supplements.map((supp: any) => {
-              const selected = selectedSupplements.has(supp.id);
+              const portions = selectedSupplements.get(supp.id);
+              const selected = portions !== undefined;
               return (
-                <TouchableOpacity
+                <View
                   key={supp.id}
                   style={[styles.supplementItem, selected && styles.supplementItemSelected]}
-                  onPress={() => toggleSupplement(supp.id)}
                 >
-                  <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
-                    {selected && <Text style={styles.checkboxTick}>✓</Text>}
-                  </View>
-                  <Text style={[styles.supplementName, selected && styles.supplementNameSelected]}>{supp.name}</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}
+                    onPress={() => toggleSupplement(supp.id)}
+                  >
+                    <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
+                      {selected && <Text style={styles.checkboxTick}>✓</Text>}
+                    </View>
+                    <Text style={[styles.supplementName, selected && styles.supplementNameSelected]}>{supp.name}</Text>
+                  </TouchableOpacity>
+                  {selected && (
+                    <View style={styles.portionsControl}>
+                      <TouchableOpacity
+                        style={styles.portionsBtn}
+                        onPress={() => changeSuppPortions(supp.id, -1)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.portionsBtnText}>−</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.portionsCount}>{portions}</Text>
+                      <TouchableOpacity
+                        style={styles.portionsBtn}
+                        onPress={() => changeSuppPortions(supp.id, 1)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.portionsBtnText}>+</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
               );
             })
           )}
@@ -1075,12 +1356,32 @@ export default function AddMeal() {
             <FlatList
               data={supplements}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <View style={styles.suppManageItem}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.supplementName}>{item.name}</Text>
-                    <Text style={styles.templateMeta}>{item.weight_grams}g · {item.nutrient_key}</Text>
+                    <Text style={styles.templateMeta}>
+                      {item.items && Array.isArray(item.items) && item.items.length > 0
+                        ? `${item.items.length} składnik${item.items.length === 1 ? '' : item.items.length < 5 ? 'i' : 'ów'}`
+                        : `${item.weight_grams}g · ${item.nutrient_key}`}
+                    </Text>
                   </View>
+                  <TouchableOpacity
+                    onPress={() => moveSupp(item.id, 'up')}
+                    disabled={index === 0}
+                    style={{ marginRight: 8, opacity: index === 0 ? 0.3 : 1 }}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={{ fontSize: 18 }}>↑</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => moveSupp(item.id, 'down')}
+                    disabled={index === supplements.length - 1}
+                    style={{ marginRight: 12, opacity: index === supplements.length - 1 ? 0.3 : 1 }}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={{ fontSize: 18 }}>↓</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity onPress={() => openEditSupp(item)} style={{ marginRight: 12 }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                     <Text style={{ fontSize: 16 }}>✏️</Text>
                   </TouchableOpacity>
@@ -1099,6 +1400,47 @@ export default function AddMeal() {
         </View>
       </Modal>
 
+      {/* Modal: edycja standardowej porcji produktu */}
+      <Modal visible={editServingModal} animationType="fade" transparent onRequestClose={() => setEditServingModal(false)}>
+        <View style={styles.portionsOverlay}>
+          <View style={[styles.portionsBox, { maxWidth: 360 }]}>
+            <Text style={styles.portionsTitle}>{editServingProduct?.item.name_pl}</Text>
+            <Text style={[styles.portionsHint, { fontSize: 12, marginBottom: 16 }]}>
+              Ustaw standardową porcję dla tego produktu.
+            </Text>
+
+            <Text style={styles.fieldLabel}>Waga porcji (g):</Text>
+            <TextInput
+              style={styles.searchInputPadded}
+              value={editServingG}
+              onChangeText={setEditServingG}
+              keyboardType="numeric"
+              placeholder="np. 22"
+            />
+
+            <Text style={styles.fieldLabel}>Opis (opcjonalnie):</Text>
+            <TextInput
+              style={styles.searchInputPadded}
+              value={editServingNote}
+              onChangeText={setEditServingNote}
+              placeholder="np. 1 gruby kabanos"
+            />
+
+            <TouchableOpacity style={[styles.btnBlock, { marginTop: 16 }]} onPress={handleSaveServing}>
+              <Text style={styles.btnPrimaryText}>Zapisz</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.btnSecondary, { marginTop: 8 }]} onPress={handleResetServing}>
+              <Text style={styles.btnSecondaryText}>Reset do domyślnej</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{ marginTop: 12, alignItems: 'center' }} onPress={() => setEditServingModal(false)}>
+              <Text style={{ color: '#6b7280', fontSize: 14 }}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Modal: edycja suplementu */}
       <Modal visible={editSuppModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
@@ -1108,17 +1450,107 @@ export default function AddMeal() {
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.modalBody}>
+          <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
             <Text style={styles.fieldLabel}>Nazwa wyświetlana:</Text>
-            <TextInput style={styles.searchInputPadded} value={editSuppName} onChangeText={setEditSuppName} placeholder="np. Witamina C" autoFocus />
-            <Text style={styles.fieldLabel}>Klucz produktu z bazy (nutrient_key):</Text>
-            <TextInput style={styles.searchInputPadded} value={editSuppKey} onChangeText={setEditSuppKey} placeholder="np. witamina_c" autoCapitalize="none" />
-            <Text style={styles.fieldLabel}>Waga porcji (g):</Text>
-            <TextInput style={styles.searchInputPadded} value={editSuppWeight} onChangeText={setEditSuppWeight} keyboardType="numeric" placeholder="np. 5" />
-            <TouchableOpacity style={styles.btnBlock} onPress={handleSaveSupp}>
+            <TextInput style={styles.searchInputPadded} value={editSuppName} onChangeText={setEditSuppName} placeholder="np. Witamina C" />
+
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 12 }}>
+              <TouchableOpacity
+                style={[styles.categoryChip, editSuppMode === 'simple' && styles.categoryChipSelected, { flex: 1, justifyContent: 'center' }]}
+                onPress={() => setEditSuppMode('simple')}
+              >
+                <Text style={[styles.categoryChipText, editSuppMode === 'simple' && styles.categoryChipTextSelected]}>Pojedynczy produkt</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.categoryChip, editSuppMode === 'composite' && styles.categoryChipSelected, { flex: 1, justifyContent: 'center' }]}
+                onPress={() => setEditSuppMode('composite')}
+              >
+                <Text style={[styles.categoryChipText, editSuppMode === 'composite' && styles.categoryChipTextSelected]}>Kilka składników</Text>
+              </TouchableOpacity>
+            </View>
+
+            {editSuppMode === 'simple' ? (
+              <>
+                <Text style={styles.fieldLabel}>Klucz produktu z bazy (nutrient_key):</Text>
+                <TextInput style={styles.searchInputPadded} value={editSuppKey} onChangeText={setEditSuppKey} placeholder="np. witamina_c" autoCapitalize="none" />
+                <Text style={styles.fieldLabel}>Waga porcji (g):</Text>
+                <TextInput style={styles.searchInputPadded} value={editSuppWeight} onChangeText={setEditSuppWeight} keyboardType="numeric" placeholder="np. 5" />
+              </>
+            ) : (
+              <>
+                <Text style={styles.fieldLabel}>Składniki:</Text>
+                {editSuppItems.length === 0 ? (
+                  <Text style={[styles.searchEmpty, { marginVertical: 8 }]}>Brak składników. Dodaj pierwszy poniżej.</Text>
+                ) : (
+                  editSuppItems.map(it => (
+                    <View key={it.id} style={styles.suppManageItem}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.supplementName}>{it.name}</Text>
+                        <Text style={styles.templateMeta}>{it.weight_grams}g · {it.nutrient_key}</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => handleRemoveSuppIngredient(it.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                        <Text style={{ fontSize: 16 }}>🗑️</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
+
+                <View style={{ marginTop: 16, padding: 12, backgroundColor: '#f9fafb', borderRadius: 12, borderWidth: 1, borderColor: '#e5e7eb' }}>
+                  <Text style={[styles.fieldLabel, { marginTop: 0 }]}>Dodaj składnik:</Text>
+                  {suppIngrSelected ? (
+                    <View>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                        <Text style={[styles.supplementName, { flex: 1 }]}>{suppIngrSelected.item.name_pl}</Text>
+                        <TouchableOpacity onPress={() => { setSuppIngrSelected(null); setSuppIngrWeight(''); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                          <Text style={{ fontSize: 14, color: '#6b7280' }}>Zmień</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <TextInput
+                        style={styles.searchInputPadded}
+                        value={suppIngrWeight}
+                        onChangeText={setSuppIngrWeight}
+                        keyboardType="numeric"
+                        placeholder="Waga w gramach"
+                      />
+                      <TouchableOpacity style={[styles.btnBlock, { marginTop: 8 }]} onPress={handleAddSuppIngredient}>
+                        <Text style={styles.btnPrimaryText}>Dodaj składnik</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View>
+                      <TextInput
+                        style={styles.searchInputPadded}
+                        value={suppIngrQuery}
+                        onChangeText={setSuppIngrQuery}
+                        placeholder="Szukaj produktu..."
+                        autoCapitalize="none"
+                      />
+                      {suppIngrResults.length > 0 && (
+                        <View style={{ marginTop: 8, maxHeight: 220, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#e5e7eb' }}>
+                          <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+                            {suppIngrResults.slice(0, 8).map((r: any) => (
+                              <TouchableOpacity
+                                key={r.key}
+                                style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}
+                                onPress={() => { setSuppIngrSelected(r); setSuppIngrQuery(''); setSuppIngrResults([]); }}
+                              >
+                                <Text style={{ fontSize: 14, color: '#111827' }}>{r.item.name_pl}</Text>
+                                <Text style={{ fontSize: 12, color: '#6b7280' }}>{r.key}</Text>
+                              </TouchableOpacity>
+                            ))}
+                          </ScrollView>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </View>
+              </>
+            )}
+
+            <TouchableOpacity style={[styles.btnBlock, { marginTop: 16, marginBottom: 24 }]} onPress={handleSaveSupp}>
               <Text style={styles.btnPrimaryText}>Zapisz</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -1162,6 +1594,9 @@ const styles = StyleSheet.create({
   modalBody: { padding: 16, gap: 8 },
   searchInputPadded: { backgroundColor: '#fff', borderRadius: 12, padding: 14, fontSize: 16, borderWidth: 1, borderColor: '#e5e7eb', marginBottom: 8 },
   searchResult: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  searchResultRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  searchResultMain: { flex: 1, padding: 16 },
+  searchResultEdit: { padding: 16 },
   searchResultName: { fontSize: 15, color: '#111827', marginBottom: 2 },
   searchResultMeta: { fontSize: 12, color: '#9ca3af' },
   searchEmpty: { textAlign: 'center', color: '#9ca3af', marginTop: 40, fontSize: 14, lineHeight: 22 },
@@ -1186,6 +1621,10 @@ const styles = StyleSheet.create({
   checkboxSelected: { backgroundColor: '#16a34a', borderColor: '#16a34a' },
   checkboxTick: { color: '#fff', fontSize: 14, fontWeight: '700' },
   supplementName: { fontSize: 16, color: '#374151' },
+  portionsControl: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  portionsBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#e5e7eb', justifyContent: 'center', alignItems: 'center' },
+  portionsBtnText: { fontSize: 18, fontWeight: '600', color: '#111827' },
+  portionsCount: { fontSize: 16, fontWeight: '600', color: '#111827', minWidth: 20, textAlign: 'center' },
   supplementNameSelected: { color: '#15803d', fontWeight: '600' },
   suppManageItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
   addSuppBtn: { borderWidth: 1.5, borderColor: '#16a34a', borderStyle: 'dashed', borderRadius: 12, padding: 14, alignItems: 'center', margin: 16 },
@@ -1204,6 +1643,8 @@ const styles = StyleSheet.create({
   restField: { flex: 1 },
   quickSelectedName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
   quickSelectedMeta: { fontSize: 13, color: '#6b7280', marginBottom: 16 },
+  servingHint: { backgroundColor: '#f0fdf4', borderRadius: 10, padding: 12, marginTop: 8, alignItems: 'center', borderWidth: 1, borderColor: '#bbf7d0' },
+  servingHintText: { fontSize: 14, color: '#15803d', fontWeight: '600' },
   quickItemsList: { backgroundColor: '#f0fdf4', margin: 16, borderRadius: 12, padding: 12 },
   quickItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#d1fae5' },
   quickItemName: { fontSize: 14, fontWeight: '600', color: '#111827' },

@@ -66,6 +66,7 @@ export interface FoodItem {
   category: string;
   per_100g: NutrientValues;
   serving_g?: number;
+  serving_note?: string; // np. "1 gruby kabanos", "1 łyżka stołowa", "1 średnie jabłko"
   source?: string;
   aliases?: string[];
 }
@@ -102,4 +103,20 @@ export interface DailySummary {
   date: string;
   meals: Meal[];
   total_nutrients: NutrientValues;
+}
+
+// Suplement (rekord w tabeli supplements)
+export interface SupplementIngredient {
+  nutrient_key: string;
+  name: string;
+  weight_grams: number;
+}
+
+export interface Supplement {
+  id: string;
+  name: string;
+  nutrient_key: string;       // używany dla suplementów prostych (lub jako fallback)
+  weight_grams: number;       // jw.
+  items?: SupplementIngredient[] | null; // jeśli wypełnione → suplement kompozytowy
+  created_at?: string;
 }
