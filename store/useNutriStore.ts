@@ -3,6 +3,7 @@ import { Meal, MealItem, NutrientValues, DailySummary } from '../types';
 import { supabase } from '../lib/supabase';
 import { sumNutrientValues } from '../lib/calculations';
 import { localDateString, localDayRangeUtc } from '../lib/dates';
+import { DayMode } from '../constants/nutrients';
 
 const EXCLUDED_KEYS = new Set([
   'id', 'meal_id', 'name', 'weight_grams', 'confirmed', 'nutrient_key', 'created_at'
@@ -35,6 +36,7 @@ interface NutriState {
   todayMeals: Meal[];
   isLoading: boolean;
   selectedDate: string;
+  dayModes: Record<string, DayMode>;  // mapowanie data → tryb (cache)
   setSelectedDate: (date: string) => void;
   loadTodayMeals: () => Promise<void>;
   loadMealsForDate: (date: string) => Promise<void>;
@@ -42,12 +44,16 @@ interface NutriState {
   updateMeal: (mealId: string, rawInput: string, items: MealItem[], newEatenAtIso?: string) => Promise<void>;
   deleteMeal: (mealId: string) => Promise<void>;
   getTodayTotals: () => NutrientValues;
+  loadDayMode: (date: string) => Promise<DayMode>;
+  setDayMode: (date: string, mode: DayMode) => Promise<void>;
+  getDayMode: (date: string) => DayMode;
 }
 
 export const useNutriStore = create<NutriState>((set, get) => ({
   todayMeals: [],
   isLoading: false,
   selectedDate: localDateString(),
+  dayModes: {},
 
   setSelectedDate: (date: string) => {
     set({ selectedDate: date });
@@ -203,5 +209,32 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   getTodayTotals: () => {
     const { todayMeals } = get();
     return sumNutrientValues(todayMeals.flatMap(m => m.items));
+  },
+
+  loadDayMode: async (date: string) => {
+    try {
+      const { data } = await supabase.from('day_modes').select('mode').eq('date', date).single();
+      const mode: DayMode = (data?.mode === 'gain') ? 'gain' : 'maintain';
+      set(state => ({ dayModes: { ...state.dayModes, [date]: mode } }));
+      return mode;
+    } catch {
+      const mode: DayMode = 'maintain';
+      set(state => ({ dayModes: { ...state.dayModes, [date]: mode } }));
+      return mode;
+    }
+  },
+
+  setDayMode: async (date: string, mode: DayMode) => {
+    // Optymistyczna aktualizacja UI
+    set(state => ({ dayModes: { ...state.dayModes, [date]: mode } }));
+    try {
+      await supabase.from('day_modes').upsert({ date, mode }, { onConflict: 'date' });
+    } catch {
+      // Jeśli zapis nie wyszedł, zostawiamy lokalny stan — można spróbować ponownie
+    }
+  },
+
+  getDayMode: (date: string) => {
+    return get().dayModes[date] ?? 'maintain';
   },
 }));

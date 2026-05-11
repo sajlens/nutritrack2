@@ -2,57 +2,90 @@ import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
-import { NUTRIENTS, DASHBOARD_NUTRIENTS } from '../constants/nutrients';
-import { calculateDayScore } from '../lib/score';
+import { NUTRIENTS, DASHBOARD_NUTRIENTS, getRdaFor, DayMode } from '../constants/nutrients';
+import { calculateDayScore, getScoreBreakdown, ScoreItem } from '../lib/score';
 import { localDateString, addDays, isToday as isTodayDate } from '../lib/dates';
 import { Meal } from '../types';
 
 // ── Pomocnicze ────────────────────────────────────────────────────────────
 
-/** Zwraca metadane nutrientu, z obsługą wirtualnego klucza 'net_carbs'. */
-function getMeta(key: string) {
-  if (key === 'net_carbs') {
+/** Zwraca metadane nutrientu, z obsługą wirtualnego klucza 'net_carbs'.
+ *  RDA dobierane jest do trybu dnia (maintain/gain). */
+function getMeta(key: string, mode: DayMode = 'maintain') {
+  if (key === 'net_carbs' || key === 'effective_sugar' || key === 'omega_ratio') {
+    const meta = NUTRIENTS[key];
     return {
-      label: 'Net carbs',
-      unit: 'g',
-      rda_personal: NUTRIENTS.carbs?.rda_personal ?? 0,
-      limit: false,
+      label: meta?.label ?? key,
+      unit: meta?.unit ?? '',
+      rda_personal: meta ? (getRdaFor(meta, mode) ?? 0) : 0,
+      limit: meta?.limit ?? false,
     };
   }
   const meta = NUTRIENTS[key];
-  return meta ? { ...meta, rda_personal: meta.rda_personal ?? 0 } : null;
+  if (!meta) return null;
+  return { ...meta, rda_personal: getRdaFor(meta, mode) ?? 0 };
 }
 
-/** Wyciąga wartość nutrientu dla pojedynczego itema, z obsługą net_carbs. */
+/** Wyciąga wartość nutrientu dla pojedynczego itema, z obsługą wirtualnych kluczy. */
 function nutrientValue(itemNutrients: any, key: string): number {
   if (key === 'net_carbs') {
     return Math.max(0, (itemNutrients.carbs ?? 0) - (itemNutrients.fiber ?? 0));
+  }
+  if (key === 'effective_sugar') {
+    return Math.max(0, (itemNutrients.sugar_g ?? 0) - (itemNutrients.fiber ?? 0) / 2);
   }
   return itemNutrients[key] ?? 0;
 }
 
 /** Grupuje produkty z wszystkich posiłków po nazwie i sumuje wkład w dany nutrient. */
 function getNutrientBreakdown(meals: Meal[], key: string) {
-  const grouped = new Map<string, { name: string; weight: number; value: number }>();
+  // Grupowanie: posiłek -> lista składników wnoszących dany nutrient
+  type Ingredient = { name: string; weight: number; value: number };
+  type MealGroup = { mealId: string; mealName: string; total: number; items: Ingredient[] };
+  const groups: MealGroup[] = [];
+
   for (const meal of meals) {
+    const ingredients: Ingredient[] = [];
+    let mealTotal = 0;
+    // W obrębie jednego posiłku scalamy składniki o tej samej nazwie
+    const merged = new Map<string, Ingredient>();
     for (const item of meal.items) {
       const val = nutrientValue(item.nutrients, key);
       if (val <= 0) continue;
-      const existing = grouped.get(item.name);
+      const existing = merged.get(item.name);
       if (existing) {
         existing.weight += item.weight_grams;
         existing.value += val;
       } else {
-        grouped.set(item.name, { name: item.name, weight: item.weight_grams, value: val });
+        merged.set(item.name, { name: item.name, weight: item.weight_grams, value: val });
       }
+      mealTotal += val;
+    }
+    for (const ingr of merged.values()) ingredients.push(ingr);
+
+    if (mealTotal > 0) {
+      groups.push({
+        mealId: meal.id,
+        mealName: meal.raw_input || 'Posiłek',
+        total: mealTotal,
+        items: ingredients.sort((a, b) => b.value - a.value),
+      });
     }
   }
-  const total = Array.from(grouped.values()).reduce((s, x) => s + x.value, 0);
+
+  const total = groups.reduce((s, g) => s + g.total, 0);
   return {
     total,
-    items: Array.from(grouped.values())
-      .sort((a, b) => b.value - a.value)
-      .map(x => ({ ...x, percent: total > 0 ? (x.value / total) * 100 : 0 })),
+    meals: groups
+      .sort((a, b) => b.total - a.total)
+      .map(g => ({
+        ...g,
+        percent: total > 0 ? (g.total / total) * 100 : 0,
+        items: g.items.map(it => ({
+          ...it,
+          percent: total > 0 ? (it.value / total) * 100 : 0,
+        })),
+      })),
   };
 }
 
@@ -66,20 +99,72 @@ function fmt(value: number): string {
 
 // ── Komponenty ────────────────────────────────────────────────────────────
 
-function NutrientBar({ nutrientKey, value, onPress }: { nutrientKey: string; value: number; onPress?: () => void }) {
-  const meta = NUTRIENTS[nutrientKey];
-  if (!meta) return null;
-  const rda = meta.rda_personal ?? meta.rda_f ?? 0;
-  const pct = rda > 0 ? Math.min((value / rda) * 100, 100) : 0;
+function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKey: string; value: number; onPress?: () => void; mode: DayMode; totals?: any }) {
+  // Wirtualny klucz: stosunek omega-6 do omega-3
+  let displayValue = value;
+  let displayUnit: string | undefined;
+  let displayLabel: string | undefined;
+  let meta = NUTRIENTS[nutrientKey];
 
-  let color: string;
-  if (meta.limit) {
-    color = pct <= 60 ? '#16a34a' : pct <= 90 ? '#f59e0b' : '#ef4444';
-  } else {
-    color = pct >= 80 ? '#16a34a' : pct >= 40 ? '#f59e0b' : '#ef4444';
+  if (nutrientKey === 'omega_ratio') {
+    const o3 = totals?.omega3_g ?? 0;
+    const o6 = totals?.omega6_g ?? 0;
+    displayValue = o3 > 0 ? o6 / o3 : 0;
+    meta = NUTRIENTS.omega_ratio;
+    displayLabel = meta?.label;
+    displayUnit = meta?.unit;
   }
 
-  const clickable = !!onPress && value > 0;
+  if (nutrientKey === 'effective_sugar') {
+    const sugar = totals?.sugar_g ?? 0;
+    const fiber = totals?.fiber ?? 0;
+    displayValue = Math.max(0, sugar - fiber / 2);
+    meta = NUTRIENTS.effective_sugar;
+    displayLabel = meta?.label;
+    displayUnit = meta?.unit;
+  }
+
+  if (!meta) return null;
+  const label = displayLabel ?? meta.label;
+  const unit = displayUnit ?? meta.unit;
+
+  // Wartość docelowa / zakres
+  const rdaPoint = getRdaFor(meta, mode) ?? meta.rda_f ?? 0;
+  const rdaMin = meta.rda_min;
+  const rdaMax = meta.rda_max;
+  const hasRange = rdaMin !== undefined && rdaMax !== undefined;
+
+  let pct = 0;
+  let color: string;
+
+  if (hasRange) {
+    // Tryb zakresu: zielony w przedziale, żółty blisko, czerwony daleko
+    if (displayValue >= rdaMin! && displayValue <= rdaMax!) {
+      pct = 100;
+      color = '#16a34a';
+    } else if (displayValue < rdaMin!) {
+      pct = rdaMin! > 0 ? Math.min((displayValue / rdaMin!) * 100, 99) : 0;
+      color = pct >= 70 ? '#f59e0b' : '#ef4444';
+    } else {
+      // przekroczenie górnej granicy
+      const overshoot = (displayValue - rdaMax!) / rdaMax!;
+      pct = 100; // pasek pełny
+      color = overshoot < 0.25 ? '#f59e0b' : '#ef4444';
+    }
+  } else {
+    pct = rdaPoint > 0 ? Math.min((displayValue / rdaPoint) * 100, 100) : 0;
+    if (meta.limit) {
+      color = pct <= 60 ? '#16a34a' : pct <= 90 ? '#f59e0b' : '#ef4444';
+    } else {
+      color = pct >= 80 ? '#16a34a' : pct >= 40 ? '#f59e0b' : '#ef4444';
+    }
+  }
+
+  const clickable = !!onPress && displayValue > 0 && nutrientKey !== 'omega_ratio';
+  const showBar = hasRange || rdaPoint > 0;
+  const valueStr = displayValue % 1 === 0 ? String(displayValue) : displayValue.toFixed(1);
+  const targetStr = hasRange ? `${rdaMin}–${rdaMax}` : String(rdaPoint);
+  const indicator = meta.limit ? ' ↓' : (hasRange ? ' ↔' : '');
 
   return (
     <TouchableOpacity
@@ -90,14 +175,14 @@ function NutrientBar({ nutrientKey, value, onPress }: { nutrientKey: string; val
     >
       <View style={styles.nutrientLabel}>
         <Text style={styles.nutrientName}>
-          {meta.label}{meta.limit ? ' ↓' : ''}
+          {label}{indicator}
         </Text>
         <Text style={styles.nutrientValue}>
-          {value % 1 === 0 ? value : value.toFixed(1)} {meta.unit}
-          {rda > 0 && <Text style={styles.nutrientRda}> / {rda}</Text>}
+          {valueStr} {unit}
+          {showBar && <Text style={styles.nutrientRda}> / {targetStr}</Text>}
         </Text>
       </View>
-      {rda > 0 && (
+      {showBar && (
         <View style={styles.barBg}>
           <View style={[styles.barFill, { width: `${pct}%`, backgroundColor: color }]} />
         </View>
@@ -118,14 +203,28 @@ function formatDateLabel(dateStr: string): string {
 // ── Główny ekran ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal } = useNutriStore();
+  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal, loadDayMode, setDayMode, getDayMode } = useNutriStore();
   const totals = getTodayTotals();
-  const dayScore = calculateDayScore(totals);
   const [breakdownKey, setBreakdownKey] = useState<string | null>(null);
+  const [scoreModal, setScoreModal] = useState(false);
+
+  const currentMode = getDayMode(selectedDate);
+  const dayScore = calculateDayScore(totals, currentMode);
+  const scoreBreakdown = scoreModal ? getScoreBreakdown(totals, currentMode) : null;
 
   useEffect(() => {
     loadTodayMeals();
   }, []);
+
+  // Załaduj tryb dnia gdy zmienia się data
+  useEffect(() => {
+    loadDayMode(selectedDate);
+  }, [selectedDate]);
+
+  const toggleDayMode = () => {
+    const newMode: DayMode = currentMode === 'gain' ? 'maintain' : 'gain';
+    setDayMode(selectedDate, newMode);
+  };
 
   const goToPrevDay = () => setSelectedDate(addDays(selectedDate, -1));
   const goToNextDay = () => {
@@ -155,7 +254,7 @@ export default function Dashboard() {
   ];
 
   const breakdownData = breakdownKey ? getNutrientBreakdown(todayMeals, breakdownKey) : null;
-  const breakdownMeta = breakdownKey ? getMeta(breakdownKey) : null;
+  const breakdownMeta = breakdownKey ? getMeta(breakdownKey, currentMode) : null;
 
   return (
     <>
@@ -169,14 +268,28 @@ export default function Dashboard() {
           </TouchableOpacity>
           <TouchableOpacity onPress={loadTodayMeals} style={styles.dateLabelRow}>
             <Text style={styles.dateLabel}>{formatDateLabel(selectedDate)}</Text>
-            <View style={[styles.scoreBadge, { backgroundColor: dayScore >= 80 ? '#16a34a' : dayScore >= 50 ? '#f59e0b' : '#ef4444' }]}>
+            <TouchableOpacity
+              onPress={() => setScoreModal(true)}
+              style={[styles.scoreBadge, { backgroundColor: dayScore >= 80 ? '#16a34a' : dayScore >= 50 ? '#f59e0b' : '#ef4444' }]}
+              activeOpacity={0.7}
+            >
               <Text style={styles.scoreText}>{dayScore}%</Text>
-            </View>
+            </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.dateArrow, isToday && styles.dateArrowDisabled]} onPress={goToNextDay}>
             <Text style={[styles.dateArrowText, isToday && styles.dateArrowDisabledText]}>›</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Toggle trybu dnia */}
+        <TouchableOpacity onPress={toggleDayMode} style={styles.modeToggle} activeOpacity={0.7}>
+          <Text style={styles.modeToggleLabel}>Tryb dnia:</Text>
+          <View style={[styles.modeBadge, currentMode === 'gain' ? styles.modeBadgeGain : styles.modeBadgeMaintain]}>
+            <Text style={[styles.modeBadgeText, currentMode === 'gain' ? styles.modeBadgeTextGain : styles.modeBadgeTextMaintain]}>
+              {currentMode === 'gain' ? '💪 Gain' : '⚖️ Utrzymanie'}
+            </Text>
+          </View>
+        </TouchableOpacity>
 
         {/* Makro z paskami progresu — klikalne */}
         <View style={styles.macroRow}>
@@ -186,7 +299,9 @@ export default function Dashboard() {
             const val = isNetCarbs
               ? Math.max(0, Math.round(((totals as any).carbs ?? 0) - ((totals as any).fiber ?? 0)))
               : Math.round((totals as any)[key] ?? 0);
-            const rda = isNetCarbs ? (NUTRIENTS.carbs?.rda_personal ?? 0) : (meta?.rda_personal ?? 0);
+            const rda = isNetCarbs
+              ? (NUTRIENTS.net_carbs ? (getRdaFor(NUTRIENTS.net_carbs, currentMode) ?? 0) : 0)
+              : (meta ? (getRdaFor(meta, currentMode) ?? 0) : 0);
             const pct = rda > 0 ? Math.min((val / rda) * 100, 100) : 0;
             const color = pct >= 80 ? '#16a34a' : pct >= 40 ? '#f59e0b' : '#ef4444';
             const clickable = val > 0;
@@ -222,6 +337,8 @@ export default function Dashboard() {
               nutrientKey={key}
               value={(totals as any)[key] ?? 0}
               onPress={() => setBreakdownKey(key)}
+              mode={currentMode}
+              totals={totals}
             />
           ))}
         </View>
@@ -286,24 +403,40 @@ export default function Dashboard() {
                 </View>
 
                 <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
-                  {breakdownData.items.length === 0 ? (
+                  {breakdownData.meals.length === 0 ? (
                     <Text style={styles.modalEmpty}>Brak produktów z tym składnikiem dzisiaj.</Text>
                   ) : (
-                    breakdownData.items.map((item, i) => (
-                      <View key={i} style={styles.breakdownRow}>
-                        <View style={styles.breakdownTop}>
-                          <Text style={styles.breakdownName} numberOfLines={2}>{item.name}</Text>
-                          <Text style={styles.breakdownValue}>
-                            {fmt(item.value)} {breakdownMeta.unit}
-                          </Text>
+                    breakdownData.meals.map(group => (
+                      <View key={group.mealId} style={styles.breakdownGroup}>
+                        {/* Nagłówek posiłku */}
+                        <View style={styles.breakdownMealHeader}>
+                          <Text style={styles.breakdownMealName} numberOfLines={2}>{group.mealName}</Text>
+                          <View style={{ alignItems: 'flex-end' }}>
+                            <Text style={styles.breakdownMealValue}>
+                              {fmt(group.total)} {breakdownMeta.unit}
+                            </Text>
+                            <Text style={styles.breakdownMealPct}>{Math.round(group.percent)}%</Text>
+                          </View>
                         </View>
-                        <View style={styles.breakdownBottom}>
-                          <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g produktu</Text>
-                          <Text style={styles.breakdownPct}>{Math.round(item.percent)}%</Text>
-                        </View>
-                        <View style={styles.breakdownBarBg}>
-                          <View style={[styles.breakdownBarFill, { width: `${item.percent}%` }]} />
-                        </View>
+
+                        {/* Składniki w posiłku */}
+                        {group.items.map((item, i) => (
+                          <View key={i} style={styles.breakdownIngredientRow}>
+                            <View style={styles.breakdownTop}>
+                              <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                              <Text style={styles.breakdownValue}>
+                                {fmt(item.value)} {breakdownMeta.unit}
+                              </Text>
+                            </View>
+                            <View style={styles.breakdownBottom}>
+                              <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                              <Text style={styles.breakdownPct}>{Math.round(item.percent)}%</Text>
+                            </View>
+                            <View style={styles.breakdownBarBg}>
+                              <View style={[styles.breakdownBarFill, { width: `${item.percent}%` }]} />
+                            </View>
+                          </View>
+                        ))}
                       </View>
                     ))
                   )}
@@ -313,7 +446,109 @@ export default function Dashboard() {
           </View>
         </View>
       </Modal>
+
+      {/* Modal: szczegóły wyniku dnia */}
+      <Modal
+        visible={scoreModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setScoreModal(false)}
+      >
+        <View style={styles.modalBg}>
+          <TouchableOpacity style={styles.modalBackdrop} onPress={() => setScoreModal(false)} activeOpacity={1} />
+          <View style={styles.modalCard}>
+            {scoreBreakdown && (
+              <>
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalTitle}>Wynik dnia: {scoreBreakdown.total}%</Text>
+                    <Text style={styles.modalSubtitle}>
+                      <Text style={styles.modalSubtitleMuted}>Co warto poprawić</Text>
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setScoreModal(false)} style={styles.modalClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
+                  {(() => {
+                    // 1. Kary (najpierw bo najszybsza poprawa)
+                    const penalties = scoreBreakdown.items.filter(i => i.kind === 'kara');
+                    // 2. Składowe gdzie najwięcej można ugrać (max - earned, posortowane malejąco)
+                    const opportunities = scoreBreakdown.items
+                      .filter(i => i.kind !== 'kara' && i.earned < i.max && i.hint)
+                      .map(i => ({ ...i, toGain: i.max - i.earned }))
+                      .sort((a, b) => b.toGain - a.toGain);
+                    // 3. Co działa dobrze
+                    const winning = scoreBreakdown.items.filter(i => i.kind !== 'kara' && i.earned === i.max && i.max > 0);
+
+                    return (
+                      <>
+                        {penalties.length > 0 && (
+                          <>
+                            <Text style={styles.scoreSection}>⚠️ Kary</Text>
+                            {penalties.map(it => (
+                              <ScoreRow key={it.key} item={it} subtitle={it.hint} negative />
+                            ))}
+                          </>
+                        )}
+
+                        {opportunities.length > 0 && (
+                          <>
+                            <Text style={styles.scoreSection}>📈 Co podnieść</Text>
+                            {opportunities.slice(0, 10).map(it => (
+                              <ScoreRow key={it.key} item={it} subtitle={it.hint} toGain={it.toGain} />
+                            ))}
+                          </>
+                        )}
+
+                        {winning.length > 0 && (
+                          <>
+                            <Text style={styles.scoreSection}>✅ Cele osiągnięte</Text>
+                            {winning.map(it => (
+                              <View key={it.key} style={styles.scoreWinRow}>
+                                <Text style={styles.scoreWinLabel}>{it.label}</Text>
+                                <Text style={styles.scoreWinValue}>+{it.earned} pkt</Text>
+                              </View>
+                            ))}
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
+                </ScrollView>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </>
+  );
+}
+
+// Pomocniczy komponent do wiersza w modalu score
+function ScoreRow({ item, subtitle, toGain, negative }: { item: ScoreItem; subtitle?: string; toGain?: number; negative?: boolean }) {
+  return (
+    <View style={[styles.scoreRow, negative && styles.scoreRowNegative]}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.scoreRowLabel}>{item.label}</Text>
+        {subtitle && <Text style={styles.scoreRowHint}>{subtitle}</Text>}
+        <Text style={styles.scoreRowPct}>{Math.round(item.pct)}% celu</Text>
+      </View>
+      <View style={{ alignItems: 'flex-end' }}>
+        {negative ? (
+          <Text style={styles.scoreRowPtsNeg}>{item.earned} pkt</Text>
+        ) : (
+          <>
+            <Text style={styles.scoreRowPts}>{item.earned}/{item.max} pkt</Text>
+            {toGain !== undefined && toGain > 0 && (
+              <Text style={styles.scoreRowGain}>+{toGain} do zdobycia</Text>
+            )}
+          </>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -329,8 +564,28 @@ const styles = StyleSheet.create({
   dateArrowText: { fontSize: 28, color: '#16a34a', lineHeight: 30 },
   dateArrowDisabledText: { color: '#9ca3af' },
   dateLabel: { fontSize: 17, fontWeight: '600', color: '#111827' },
+  modeToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 16, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#e5e7eb' },
+  modeToggleLabel: { fontSize: 14, color: '#6b7280' },
+  modeBadge: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 999, borderWidth: 1 },
+  modeBadgeMaintain: { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' },
+  modeBadgeGain: { backgroundColor: '#fef3c7', borderColor: '#fde68a' },
+  modeBadgeText: { fontSize: 14, fontWeight: '700' },
+  modeBadgeTextMaintain: { color: '#1e40af' },
+  modeBadgeTextGain: { color: '#92400e' },
   dateLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   scoreBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
+  scoreSection: { fontSize: 14, fontWeight: '700', color: '#374151', marginTop: 16, marginBottom: 8, paddingHorizontal: 4 },
+  scoreRow: { flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 12, marginBottom: 6, backgroundColor: '#f9fafb', borderRadius: 10, gap: 12 },
+  scoreRowNegative: { backgroundColor: '#fef2f2', borderWidth: 1, borderColor: '#fecaca' },
+  scoreRowLabel: { fontSize: 14, fontWeight: '600', color: '#111827' },
+  scoreRowHint: { fontSize: 13, color: '#6b7280', marginTop: 2 },
+  scoreRowPct: { fontSize: 11, color: '#9ca3af', marginTop: 4 },
+  scoreRowPts: { fontSize: 13, fontWeight: '600', color: '#374151' },
+  scoreRowPtsNeg: { fontSize: 13, fontWeight: '700', color: '#dc2626' },
+  scoreRowGain: { fontSize: 11, color: '#16a34a', marginTop: 2, fontWeight: '600' },
+  scoreWinRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12 },
+  scoreWinLabel: { fontSize: 13, color: '#374151' },
+  scoreWinValue: { fontSize: 12, color: '#16a34a', fontWeight: '600' },
   scoreText: { fontSize: 13, fontWeight: '700', color: '#fff' },
   macroRow: { flexDirection: 'row', backgroundColor: '#fff', padding: 12, gap: 6 },
   macroBox: { flex: 1, alignItems: 'center', backgroundColor: '#f0fdf4', borderRadius: 10, paddingVertical: 8, paddingHorizontal: 4 },
@@ -371,6 +626,13 @@ const styles = StyleSheet.create({
   modalScroll: { paddingHorizontal: 20, paddingTop: 8 },
   modalEmpty: { textAlign: 'center', color: '#9ca3af', paddingVertical: 32, fontSize: 14 },
   breakdownRow: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' },
+  breakdownGroup: { marginBottom: 16, backgroundColor: '#fafafa', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#e5e7eb' },
+  breakdownMealHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: 10, marginBottom: 6, borderBottomWidth: 1, borderBottomColor: '#e5e7eb', gap: 8 },
+  breakdownMealName: { fontSize: 15, fontWeight: '700', color: '#111827', flex: 1, marginRight: 8 },
+  breakdownMealValue: { fontSize: 14, fontWeight: '700', color: '#16a34a' },
+  breakdownMealPct: { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  breakdownIngredientRow: { paddingVertical: 8, paddingLeft: 8 },
+  breakdownIngredientName: { fontSize: 13, color: '#374151', flex: 1, marginRight: 8 },
   breakdownTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
   breakdownName: { fontSize: 14, color: '#111827', flex: 1, marginRight: 8 },
   breakdownValue: { fontSize: 14, fontWeight: '600', color: '#111827' },

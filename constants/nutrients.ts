@@ -3,33 +3,48 @@ export interface NutrientMeta {
   unit: string;
   rda_f?: number;        // RDA dla kobiet (standardowe)
   rda_m?: number;        // RDA dla mężczyzn (standardowe)
-  rda_personal?: number; // RDA spersonalizowane: kobieta, 37l, 56kg, 164cm, trening siłowy 2x/tydz
-  limit?: boolean;       // true = to jest limit max, nie cel min
+  rda_personal?: number; // RDA spersonalizowane (dni utrzymania) — cel "im więcej tym lepiej do tej wartości"
+  rda_gain?: number;     // RDA dla dni gain
+  rda_min?: number;      // dolna granica zdrowego zakresu (gdy używamy range zamiast pojedynczego celu)
+  rda_max?: number;      // górna granica zdrowego zakresu
+  limit?: boolean;       // true = to jest limit max, nie cel min (dla pojedynczego celu)
   category: 'macro' | 'vitamin' | 'mineral' | 'carotenoid' | 'phyto' | 'other';
 }
 
-// Profil: kobieta, 37 lat, 56kg, 164cm, trening siłowy 2x/tydzień, dieta niskowęglowa
-// Target: 1800 kcal | Białko: 110g | Węgle: 90g | Tłuszcze: 111g
+// Profil: kobieta, 38 lat, 56kg, 164cm, trening siłowy co 4 dni, dieta low-carb
+// MAINTAIN (rda_personal): 1800 kcal | Białko: 110g | Tłuszcz: 100g | Węgle: 90g
+// GAIN     (rda_gain):     2200 kcal | Białko: 120g | Tłuszcz: 120g | Węgle: 100g
+// Mikro: takie same w obu trybach (rda_gain = rda_personal lub puste = fallback do rda_personal)
+
+export type DayMode = 'maintain' | 'gain';
+
+export function getRdaFor(meta: NutrientMeta, mode: DayMode): number | undefined {
+  if (mode === 'gain') return meta.rda_gain ?? meta.rda_personal;
+  return meta.rda_personal;
+}
 
 export const NUTRIENTS: Record<string, NutrientMeta> = {
   // Makro
-  calories:               { label: 'Kalorie',              unit: 'kcal', rda_personal: 1800, category: 'macro' },
-  protein:                { label: 'Białko',               unit: 'g',    rda_personal: 110,   category: 'macro' },
-  fat:                    { label: 'Tłuszcze',             unit: 'g',    rda_personal: 111,   category: 'macro' },
-  carbs:                  { label: 'Węglowodany',          unit: 'g',    rda_personal: 90,  category: 'macro' },
+  calories:               { label: 'Kalorie',              unit: 'kcal', rda_personal: 1800, rda_gain: 2200, category: 'macro' },
+  protein:                { label: 'Białko',               unit: 'g',    rda_personal: 110,  rda_gain: 120,  category: 'macro' },
+  fat:                    { label: 'Tłuszcze',             unit: 'g',    rda_personal: 100,  rda_gain: 120,  category: 'macro' },
+  carbs:                  { label: 'Węglowodany',          unit: 'g',    rda_personal: 115,  rda_gain: 130,  category: 'macro' },
+  net_carbs:              { label: 'Net carbs',            unit: 'g',    rda_personal: 90,   rda_gain: 100,  category: 'macro' },
   // Błonnik: wyższe zapotrzebowanie przy aktywności fizycznej
-  fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 28,   category: 'macro' },
-  sugar_g:                { label: 'Cukry',                unit: 'g',    rda_personal: 25,   limit: true, category: 'macro' },
+  fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 25,   rda_gain: 28, category: 'macro' },
+  sugar_g:                { label: 'Cukry (wszystkie)',    unit: 'g',    rda_personal: 60,   limit: true, category: 'macro' },
+  effective_sugar:        { label: 'Cukry efektywne',      unit: 'g',    rda_personal: 25,   limit: true, category: 'macro' },
   // Woda: +500ml przy treningu
-  water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 800,  category: 'macro' },
+  water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 1200, category: 'macro' },
 
   // Tłuszcze szczegółowe
   saturated_fat_g:        { label: 'Tłuszcze nasycone',        unit: 'g',  rda_personal: 20,   limit: true, category: 'macro' },
   monounsaturated_fat_g:  { label: 'Tłuszcze jednonienasycone', unit: 'g', rda_personal: 40,   category: 'macro' },
   polyunsaturated_fat_g:  { label: 'Tłuszcze wielonienasycone', unit: 'g', rda_personal: 20,   category: 'macro' },
   // Omega-3: wyższe przy treningu siłowym (działanie przeciwzapalne)
-  omega3_g:               { label: 'Omega-3',              unit: 'g',    rda_f: 1.1,  rda_m: 1.6,  rda_personal: 2.0,  category: 'macro' },
-  omega6_g:               { label: 'Omega-6',              unit: 'g',    rda_personal: 6,    limit: true, category: 'macro' },
+  omega3_g:               { label: 'Omega-3',              unit: 'g',    rda_f: 1.1,  rda_m: 1.6,  rda_personal: 1.6,  category: 'macro' },
+  omega6_g:               { label: 'Omega-6',              unit: 'g',    rda_personal: 12,   category: 'macro' },
+  omega_ratio:            { label: 'Stosunek ω6:ω3',       unit: ':1',   rda_personal: 4,    limit: true, category: 'macro' },
 
   // Witaminy
   // Wit. A: standardowe dla kobiet
@@ -65,8 +80,8 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   magnesium_mg:           { label: 'Magnez',               unit: 'mg',  rda_f: 310,  rda_m: 400,  rda_personal: 350,  category: 'mineral' },
   phosphorus_mg:          { label: 'Fosfor',               unit: 'mg',  rda_f: 700,  rda_m: 700,  rda_personal: 700,  category: 'mineral' },
   // Potas: wyższe przy aktywności (utrata przez pot)
-  potassium_mg:           { label: 'Potas',                unit: 'mg',  rda_f: 2600, rda_m: 3400, rda_personal: 3000, category: 'mineral' },
-  sodium_mg:              { label: 'Sód',                  unit: 'mg',  rda_personal: 2000, limit: true, category: 'mineral' },
+  potassium_mg:           { label: 'Potas',                unit: 'mg',  rda_f: 2600, rda_m: 3400, rda_personal: 4000, category: 'mineral' },
+  sodium_mg:              { label: 'Sód',                  unit: 'mg',  rda_min: 2300, rda_max: 4000, rda_personal: 3000, category: 'mineral' },
   // Cynk: wyższe przy treningu siłowym (synteza białka, testosteron)
   zinc_mg:                { label: 'Cynk',                 unit: 'mg',  rda_f: 8,    rda_m: 11,   rda_personal: 10,   category: 'mineral' },
   copper_mg:              { label: 'Miedź',                unit: 'mg',  rda_f: 0.9,  rda_m: 0.9,  rda_personal: 0.9,  category: 'mineral' },
@@ -77,7 +92,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   choline_mg:             { label: 'Cholina',              unit: 'mg',  rda_f: 425,  rda_m: 550,  rda_personal: 450,  category: 'mineral' },
 
   // Karotenoidy
-  beta_carotene_ug:       { label: 'Beta-karoten',         unit: 'µg',  rda_personal: 4000, category: 'carotenoid' },
+  beta_carotene_ug:       { label: 'Beta-karoten',         unit: 'µg',  rda_personal: 3000, category: 'carotenoid' },
   // Luteina: standardowe (ochrona wzroku)
   lutein_zeaxanthin_ug:   { label: 'Luteina + zeaksantyna', unit: 'µg', rda_f: 6000, rda_m: 6000, rda_personal: 6000, category: 'carotenoid' },
   lycopene_ug:            { label: 'Likopen',              unit: 'µg',  rda_personal: 10000, category: 'carotenoid' },
@@ -102,12 +117,14 @@ export const DASHBOARD_NUTRIENTS = [
   // Makro rozszerzone
   'fiber',
   'sugar_g',
+  'effective_sugar',
   'water_g',
   'saturated_fat_g',
   'monounsaturated_fat_g',
   'polyunsaturated_fat_g',
   'omega3_g',
   'omega6_g',
+  'omega_ratio',
   // Witaminy
   'vitamin_a_ug',
   'vitamin_b1_mg',
