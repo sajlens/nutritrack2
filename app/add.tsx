@@ -257,7 +257,28 @@ export default function AddMeal() {
   const loadTemplates = async () => {
     setTemplatesLoading(true);
     const { data } = await supabase.from('meal_templates').select('*').order('created_at', { ascending: false });
-    if (data) setTemplates(data);
+    if (data) {
+      // Liczymy sumy makro dla każdego szablonu, żeby wyświetlić w liście.
+      // Używamy resolveMealItems który obsługuje zarówno nutrient_key jak i custom_nutrients.
+      const withTotals = await Promise.all(data.map(async (tpl: any) => {
+        try {
+          const resolved = await resolveMealItems(tpl.items || []);
+          const totals = resolved.reduce((acc, i) => {
+            acc.calories += i.nutrients.calories ?? 0;
+            acc.protein += i.nutrients.protein ?? 0;
+            acc.fat += i.nutrients.fat ?? 0;
+            acc.carbs += i.nutrients.carbs ?? 0;
+            acc.fiber += i.nutrients.fiber ?? 0;
+            acc.sugar_g += i.nutrients.sugar_g ?? 0;
+            return acc;
+          }, { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sugar_g: 0 });
+          return { ...tpl, _totals: totals };
+        } catch {
+          return { ...tpl, _totals: null };
+        }
+      }));
+      setTemplates(withTotals);
+    }
     setTemplatesLoading(false);
   };
 
@@ -954,6 +975,11 @@ export default function AddMeal() {
                           <View style={{ flex: 1 }}>
                             <Text style={styles.templateName}>{item.name}</Text>
                             <Text style={styles.templateMeta}>{item.items.length} składników</Text>
+                            {item._totals && (
+                              <Text style={styles.templateMacros}>
+                                {Math.round(item._totals.calories)} kcal · B {Math.round(item._totals.protein)}g · T {Math.round(item._totals.fat)}g · W {Math.round(item._totals.carbs)}g · Bł {Math.round(item._totals.fiber)}g · C {Math.round(item._totals.sugar_g)}g
+                              </Text>
+                            )}
                           </View>
                           <TouchableOpacity
                             onPress={() => openChangeCategoryModal(item)}
@@ -1603,6 +1629,7 @@ const styles = StyleSheet.create({
   templateItem: { backgroundColor: '#fff', padding: 16, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', flexDirection: 'row', alignItems: 'center' },
   templateName: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 2 },
   templateMeta: { fontSize: 12, color: '#9ca3af' },
+  templateMacros: { fontSize: 12, fontWeight: '500', color: '#15803d', marginTop: 4 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f3f4f6', paddingHorizontal: 16, paddingVertical: 10 },
   sectionHeaderText: { fontSize: 14, fontWeight: '700', color: '#6b7280' },
   sectionHeaderArrow: { fontSize: 16, color: '#9ca3af' },

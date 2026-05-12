@@ -7,7 +7,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { searchFoodAll, calculateNutrients, setProductOverride, deleteProductOverride } from '../lib/nutrients';
 import { useNutriStore } from '../store/useNutriStore';
 import { MealItem } from '../types';
-import { NUTRIENTS } from '../constants/nutrients';
 import { supabase } from '../lib/supabase';
 import { resolveMealItems } from '../lib/calculations';
 import { localDateString, addDays } from '../lib/dates';
@@ -249,7 +248,16 @@ export default function EditMeal() {
     ]);
   };
 
-  const totalCals = Math.round(items.reduce((s, i) => s + (i.nutrients.calories ?? 0), 0));
+  // Sumy makro dla całego posiłku/szablonu — wyświetlane w nagłówku.
+  const totals = items.reduce((acc, i) => {
+    acc.calories += i.nutrients.calories ?? 0;
+    acc.protein += i.nutrients.protein ?? 0;
+    acc.fat += i.nutrients.fat ?? 0;
+    acc.carbs += i.nutrients.carbs ?? 0;
+    acc.fiber += i.nutrients.fiber ?? 0;
+    acc.sugar_g += i.nutrients.sugar_g ?? 0;
+    return acc;
+  }, { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sugar_g: 0 });
 
   // Przesuwa eaten_at o `days` dni — godzina pozostaje bez zmian.
   const shiftEatenAt = (days: number) => {
@@ -298,7 +306,18 @@ export default function EditMeal() {
         </View>
       )}
 
-      <Text style={styles.sectionLabel}>Składniki · łącznie {totalCals} kcal</Text>
+      <Text style={styles.sectionLabel}>Składniki</Text>
+      <View style={styles.totalsBar}>
+        <Text style={styles.totalsBarTitle}>Łącznie</Text>
+        <View style={styles.totalsBarRow}>
+          <Text style={styles.totalsBarItem}>{Math.round(totals.calories)} kcal</Text>
+          <Text style={styles.totalsBarItem}>B {Math.round(totals.protein)}g</Text>
+          <Text style={styles.totalsBarItem}>T {Math.round(totals.fat)}g</Text>
+          <Text style={styles.totalsBarItem}>W {Math.round(totals.carbs)}g</Text>
+          <Text style={styles.totalsBarItem}>Bł {Math.round(totals.fiber)}g</Text>
+          <Text style={styles.totalsBarItem}>C {Math.round(totals.sugar_g)}g</Text>
+        </View>
+      </View>
 
       {items.map(item => (
         <View key={item.id} style={styles.itemCard}>
@@ -321,13 +340,6 @@ export default function EditMeal() {
               keyboardType="numeric"
             />
             <Text style={styles.weightUnit}>g</Text>
-          </View>
-          <View style={styles.itemNutrients}>
-            {(['calories', 'protein', 'fat', 'carbs'] as const).map(key => (
-              <Text key={key} style={styles.nutrientChip}>
-                {NUTRIENTS[key].label}: {Math.round((item.nutrients as any)[key] ?? 0)}{NUTRIENTS[key].unit}
-              </Text>
-            ))}
           </View>
         </View>
       ))}
@@ -523,6 +535,10 @@ const styles = StyleSheet.create({
   dateArrowText: { fontSize: 28, color: '#16a34a', lineHeight: 30 },
   dateValue: { fontSize: 16, fontWeight: '600', color: '#111827' },
   sectionLabel: { fontSize: 13, fontWeight: '600', color: '#6b7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
+  totalsBar: { backgroundColor: '#f0fdf4', borderRadius: 12, padding: 12, marginBottom: 14, borderWidth: 1, borderColor: '#bbf7d0' },
+  totalsBarTitle: { fontSize: 11, fontWeight: '700', color: '#15803d', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
+  totalsBarRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, rowGap: 4 },
+  totalsBarItem: { fontSize: 14, fontWeight: '600', color: '#111827' },
   itemCard: { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#e5e7eb' },
   itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   itemName: { fontSize: 15, fontWeight: '600', color: '#111827', flex: 1, marginRight: 8 },
@@ -531,11 +547,9 @@ const styles = StyleSheet.create({
   actionBtnText: { fontSize: 12, color: '#374151' },
   actionBtnDanger: { backgroundColor: '#fef2f2' },
   actionBtnDangerText: { color: '#ef4444' },
-  weightRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  weightRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   weightInput: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 8, padding: 6, width: 70, textAlign: 'center', fontSize: 14, backgroundColor: '#f9fafb' },
   weightUnit: { fontSize: 13, color: '#6b7280' },
-  itemNutrients: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  nutrientChip: { fontSize: 12, color: '#6b7280', backgroundColor: '#f3f4f6', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   addItemBtn: { borderWidth: 1.5, borderColor: '#16a34a', borderStyle: 'dashed', borderRadius: 12, padding: 14, alignItems: 'center', marginBottom: 16 },
   addItemBtnText: { color: '#16a34a', fontSize: 15, fontWeight: '600' },
   buttonRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },

@@ -110,6 +110,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 120,  category: 'other' },
   collagen_g:             { label: 'Kolagen',              unit: 'g',   rda_personal: 10,   category: 'other' },
   creatine_g:             { label: 'Kreatyna',             unit: 'g',   rda_personal: 5,    category: 'other' },
+  l_theanine_mg:          { label: 'L-teanina',            unit: 'mg',  category: 'other' },
 };
 
 // Wszystkie składniki pogrupowane kategoriami
@@ -169,4 +170,5 @@ export const DASHBOARD_NUTRIENTS = [
   'carnitine_mg',
   'collagen_g',
   'creatine_g',
+  'l_theanine_mg',
 ];
