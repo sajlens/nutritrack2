@@ -32,7 +32,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   net_carbs:              { label: 'Net carbs',            unit: 'g',    rda_personal: 90,   rda_gain: 100,  category: 'macro' },
   // Błonnik: wyższe zapotrzebowanie przy aktywności fizycznej
   fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 25,   rda_gain: 28, category: 'macro' },
-  sugar_g:                { label: 'Cukry (wszystkie)',    unit: 'g',    rda_personal: 60,   limit: true, category: 'macro' },
+  sugar_g:                { label: 'Cukry (wszystkie)',    unit: 'g',    category: 'macro' },
   effective_sugar:        { label: 'Cukry efektywne',      unit: 'g',    rda_personal: 25,   limit: true, category: 'macro' },
   // Woda: +500ml przy treningu
   water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 1200, category: 'macro' },
@@ -104,12 +104,12 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   chlorogenic_acid_mg:    { label: 'Kwas chlorogenowy',    unit: 'mg',  rda_personal: 200,  category: 'phyto' },
 
   // Inne
-  betaine_mg:             { label: 'Betaina',              unit: 'mg',  rda_f: 500,  rda_m: 500,  rda_personal: 500,  category: 'other' },
+  betaine_mg:             { label: 'Betaina',              unit: 'mg',  rda_f: 500,  rda_m: 500,  rda_personal: 300,  category: 'other' },
   caffeine_mg:            { label: 'Kofeina',              unit: 'mg',  rda_personal: 200,  limit: true, category: 'other' },
-  coenzyme_q10_mg:        { label: 'Koenzym Q10',          unit: 'mg',  rda_personal: 100,  category: 'other' },
-  carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 120,  category: 'other' },
-  collagen_g:             { label: 'Kolagen',              unit: 'g',   rda_personal: 10,   category: 'other' },
-  creatine_g:             { label: 'Kreatyna',             unit: 'g',   rda_personal: 5,    category: 'other' },
+  coenzyme_q10_mg:        { label: 'Koenzym Q10',          unit: 'mg',  rda_personal: 30,   category: 'other' },
+  carnitine_mg:           { label: 'Karnityna',            unit: 'mg',  rda_personal: 50,   category: 'other' },
+  collagen_g:             { label: 'Kolagen',              unit: 'g',   rda_personal: 5,    category: 'other' },
+  creatine_g:             { label: 'Kreatyna',             unit: 'g',   rda_personal: 4,    category: 'other' },
   l_theanine_mg:          { label: 'L-teanina',            unit: 'mg',  category: 'other' },
 };
 

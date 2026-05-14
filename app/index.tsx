@@ -32,7 +32,16 @@ function nutrientValue(itemNutrients: any, key: string): number {
     return Math.max(0, (itemNutrients.carbs ?? 0) - (itemNutrients.fiber ?? 0));
   }
   if (key === 'effective_sugar') {
-    return Math.max(0, (itemNutrients.sugar_g ?? 0) - (itemNutrients.fiber ?? 0) / 2);
+    // Cukier "efektywny" = cukier, którego nie neutralizuje błonnik z tego samego produktu.
+    // Formuła: sugar - min(sugar, fiber). Czyli błonnik kapuje cukier do swojej wysokości.
+    // Przykłady:
+    //   maliny (12g cukru, 7g błonnika) → 12 - min(12, 7) = 12 - 7 = 5g effective
+    //   sok NFC (11g cukru, 0g błonnika) → 11 - 0 = 11g effective
+    //   jabłko (10g cukru, 2.4g błonnika) → 10 - 2.4 = 7.6g effective
+    //   miód (73g cukru, 0g błonnika) → 73g effective (cały cukier "działa")
+    const sugar = itemNutrients.sugar_g ?? 0;
+    const fiber = itemNutrients.fiber ?? 0;
+    return Math.max(0, sugar - Math.min(sugar, fiber));
   }
   return itemNutrients[key] ?? 0;
 }

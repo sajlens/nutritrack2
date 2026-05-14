@@ -4,9 +4,18 @@ import { supabase } from './supabase';
 
 const DB = nutrientsDB as any;
 
+// Mapuje polskie znaki które NFD nie rozkłada poprawnie.
+// NFD radzi sobie z: ą,ć,ę,ń,ó,ś,ź (znaki z diakrytykami nakładanymi).
+// NIE radzi sobie z: ł, ż (to są osobne znaki Unicode, nie kompozycje).
+const POLISH_CHARS: Record<string, string> = {
+  'ł': 'l', 'Ł': 'l',
+  'ż': 'z', 'Ż': 'z',
+};
+
 function normalize(str: string): string {
   return str
     .toLowerCase()
+    .replace(/[łżŁŻ]/g, (c) => POLISH_CHARS[c] ?? c)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9 ]/g, '')

@@ -65,6 +65,7 @@ export default function AddMeal() {
   const [quickAddResults, setQuickAddResults] = useState<any[]>([]);
   const [quickAddSelected, setQuickAddSelected] = useState<any | null>(null);
   const [quickAddWeight, setQuickAddWeight] = useState('');
+  const [quickAddServingCount, setQuickAddServingCount] = useState<number | null>(null);
   const [quickAddItems, setQuickAddItems] = useState<{ result: any; weight: number; id: string }[]>([]);
 
   const [restaurantModal, setRestaurantModal] = useState(false);
@@ -109,7 +110,33 @@ export default function AddMeal() {
 
   const selectQuickProduct = (result: any) => {
     setQuickAddSelected(result);
-    setQuickAddWeight(String(result.item.serving_g ?? 100));
+    const serving = result.item.serving_g;
+    setQuickAddWeight(String(serving ?? 100));
+    // Inicjalizuj licznik porcji tylko dla produktów z niestandardową porcją (≠ 100g)
+    setQuickAddServingCount(serving && serving !== 100 ? 1 : null);
+  };
+
+  // Zmiana liczby porcji przez stepper (chip stays fixed at 1 portion)
+  const changeServingCount = (delta: number) => {
+    if (!quickAddSelected) return;
+    const serving = quickAddSelected.item.serving_g;
+    if (!serving) return;
+    const current = quickAddServingCount ?? 1;
+    const next = Math.max(1, current + delta);
+    setQuickAddServingCount(next);
+    setQuickAddWeight(String(next * serving));
+  };
+
+  // Ręczna edycja wagi → liczba porcji traci sens (chyba że dokładnie się zgadza)
+  const onQuickWeightChange = (val: string) => {
+    setQuickAddWeight(val);
+    const w = parseFloat(val.replace(',', '.'));
+    const serving = quickAddSelected?.item.serving_g;
+    if (!isNaN(w) && serving && w % serving === 0) {
+      setQuickAddServingCount(w / serving);
+    } else {
+      setQuickAddServingCount(null);
+    }
   };
 
   const addQuickItem = () => {
@@ -125,6 +152,7 @@ export default function AddMeal() {
     setQuickAddQuery('');
     setQuickAddResults([]);
     setQuickAddWeight('');
+    setQuickAddServingCount(null);
   };
 
   const removeQuickItem = (id: string) => {
@@ -1199,7 +1227,7 @@ export default function AddMeal() {
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Szybkie dodanie</Text>
-            <TouchableOpacity onPress={() => { setQuickAddModal(false); setQuickAddSelected(null); setQuickAddQuery(''); setQuickAddResults([]); setQuickAddItems([]); }}>
+            <TouchableOpacity onPress={() => { setQuickAddModal(false); setQuickAddSelected(null); setQuickAddQuery(''); setQuickAddResults([]); setQuickAddItems([]); setQuickAddServingCount(null); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
@@ -1214,23 +1242,53 @@ export default function AddMeal() {
               <TextInput
                 style={styles.searchInputPadded}
                 value={quickAddWeight}
-                onChangeText={setQuickAddWeight}
+                onChangeText={onQuickWeightChange}
                 keyboardType="numeric"
                 selectTextOnFocus
                 autoFocus
               />
-              {quickAddSelected.item.serving_g ? (
+              {quickAddSelected.item.serving_g && quickAddSelected.item.serving_g !== 100 ? (
+                <View style={styles.servingRow}>
+                  <TouchableOpacity
+                    style={[styles.servingHint, styles.servingHintInRow]}
+                    onPress={() => {
+                      setQuickAddWeight(String(quickAddSelected.item.serving_g));
+                      setQuickAddServingCount(1);
+                    }}
+                  >
+                    <Text style={styles.servingHintText}>
+                      🍽️ {quickAddSelected.item.serving_note ?? '1 porcja'} = {quickAddSelected.item.serving_g}g
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.stepperRow}>
+                    <TouchableOpacity
+                      style={styles.stepperBtn}
+                      onPress={() => changeServingCount(-1)}
+                      disabled={(quickAddServingCount ?? 0) <= 1}
+                    >
+                      <Text style={[styles.stepperBtnText, (quickAddServingCount ?? 0) <= 1 && styles.stepperBtnDisabled]}>−</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.stepperValue}>{quickAddServingCount ?? '—'}</Text>
+                    <TouchableOpacity
+                      style={styles.stepperBtn}
+                      onPress={() => changeServingCount(1)}
+                    >
+                      <Text style={styles.stepperBtnText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : quickAddSelected.item.serving_g === 100 ? (
                 <TouchableOpacity
                   style={styles.servingHint}
-                  onPress={() => setQuickAddWeight(String(quickAddSelected.item.serving_g))}
+                  onPress={() => setQuickAddWeight('100')}
                 >
                   <Text style={styles.servingHintText}>
-                    🍽️ {quickAddSelected.item.serving_note ?? '1 porcja'} = {quickAddSelected.item.serving_g}g
+                    🍽️ {quickAddSelected.item.serving_note ?? '1 porcja'} = 100g
                   </Text>
                 </TouchableOpacity>
               ) : null}
               <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.btnSecondary} onPress={() => { setQuickAddSelected(null); setQuickAddQuery(''); }}>
+                <TouchableOpacity style={styles.btnSecondary} onPress={() => { setQuickAddSelected(null); setQuickAddQuery(''); setQuickAddServingCount(null); }}>
                   <Text style={styles.btnSecondaryText}>Wróć</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.btnPrimary} onPress={addQuickItem}>
@@ -1671,7 +1729,14 @@ const styles = StyleSheet.create({
   quickSelectedName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
   quickSelectedMeta: { fontSize: 13, color: '#6b7280', marginBottom: 16 },
   servingHint: { backgroundColor: '#f0fdf4', borderRadius: 10, padding: 12, marginTop: 8, alignItems: 'center', borderWidth: 1, borderColor: '#bbf7d0' },
+  servingHintInRow: { flex: 1, marginTop: 0, padding: 10 },
   servingHintText: { fontSize: 14, color: '#15803d', fontWeight: '600' },
+  servingRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginTop: 8 },
+  stepperRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f0fdf4', borderRadius: 10, borderWidth: 1, borderColor: '#bbf7d0', paddingHorizontal: 4 },
+  stepperBtn: { paddingHorizontal: 14, paddingVertical: 8, justifyContent: 'center', alignItems: 'center' },
+  stepperBtnText: { fontSize: 22, color: '#15803d', fontWeight: '700', lineHeight: 24 },
+  stepperBtnDisabled: { color: '#a7d4ba' },
+  stepperValue: { fontSize: 16, fontWeight: '700', color: '#15803d', minWidth: 24, textAlign: 'center' },
   quickItemsList: { backgroundColor: '#f0fdf4', margin: 16, borderRadius: 12, padding: 12 },
   quickItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#d1fae5' },
   quickItemName: { fontSize: 14, fontWeight: '600', color: '#111827' },
