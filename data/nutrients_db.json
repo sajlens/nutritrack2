@@ -2811,7 +2811,7 @@
       "source": "USDA SR Legacy 173424"
     },
     "maslo_niesolone": {
-      "name_pl": "masło niesolone",
+      "name_pl": "masło",
       "name_en": "Butter, stick, unsalted",
       "category": "Dairy and Egg Products",
       "per_100g": {
@@ -2869,7 +2869,9 @@
         "l_theanine_mg": 0
       },
       "aliases": [
-        "masło"
+        "masło",
+        "masło niesolone",
+        "maslo"
       ],
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -32557,6 +32559,78 @@
       "data_origin": "label_plus_estimate",
       "needs_review": false,
       "source": "Etykieta Thai Dancer Panang: 240 kcal, 15g tłuszcz (2.5g nasyc.), 17g węgl. (8g cukry), 3.5g białko, 3.88g sól (1552 mg Na). Skład: czosnek, szalotka, chili, sól, trawa cytrynowa, cukier, olej sojowy, skórka limonki kaffir, korzeń galangalu, pieprz, kw. askorbinowy (E300). Mikroelementy i bioaktywne: USDA SR Legacy dla głównych składników (czosnek dominuje), proporcjonalnie do kolejności na etykiecie. Tłuszcze rozbite zgodnie z profilem oleju sojowego (~23% MUFA, ~57% PUFA, ~7% omega-3, ~50% omega-6). Wit C ~30 mg/100g (część z chili + dodany askorbinian). Brak orzeszków ziemnych (klasyczny Panang często ma - ta wersja uproszczona). UWAGA: też zawiera sporo sodu - 1 łyżka (~15g) = 230 mg sodu."
+    },
+    "papryczki_czeresniowe_z_serkiem": {
+      "name_pl": "papryczki czereśniowe nadziewane serkiem",
+      "name_en": "cherry peppers stuffed with cream cheese",
+      "category": "Vegetables and Vegetable Products",
+      "per_100g": {
+        "calories": 160,
+        "protein": 3.0,
+        "fat": 12.0,
+        "carbs": 11.0,
+        "fiber": 2.4,
+        "sugar_g": 10.0,
+        "water_g": 70.0,
+        "saturated_fat_g": 7.0,
+        "monounsaturated_fat_g": 3.0,
+        "polyunsaturated_fat_g": 1.5,
+        "omega3_g": 0.15,
+        "omega6_g": 1.2,
+        "sodium_mg": 200,
+        "potassium_mg": 130,
+        "calcium_mg": 35,
+        "iron_mg": 0.3,
+        "magnesium_mg": 10,
+        "phosphorus_mg": 40,
+        "zinc_mg": 0.3,
+        "copper_mg": 0,
+        "manganese_mg": 0,
+        "selenium_ug": 0,
+        "iodine_ug": 0,
+        "vitamin_a_ug": 130,
+        "vitamin_b1_mg": 0,
+        "vitamin_b2_mg": 0.06,
+        "vitamin_b3_mg": 0,
+        "vitamin_b5_mg": 0,
+        "vitamin_b6_mg": 0.1,
+        "vitamin_b7_ug": 0,
+        "vitamin_b9_ug": 0,
+        "vitamin_b12_ug": 0.15,
+        "vitamin_c_mg": 18,
+        "vitamin_d_ug": 0,
+        "vitamin_e_mg": 0,
+        "vitamin_k1_ug": 6,
+        "vitamin_k2_ug": 0,
+        "beta_carotene_ug": 800,
+        "lutein_zeaxanthin_ug": 0,
+        "lycopene_ug": 150,
+        "choline_mg": 12,
+        "polyphenols_mg": 50,
+        "chlorogenic_acid_mg": 0,
+        "anthocyanins_mg": 0,
+        "quercetin_mg": 1.5,
+        "betaine_mg": 0,
+        "caffeine_mg": 0,
+        "coenzyme_q10_mg": 0,
+        "carnitine_mg": 0,
+        "collagen_g": 0,
+        "creatine_g": 0,
+        "l_theanine_mg": 0
+      },
+      "aliases": [
+        "papryczki",
+        "papryczki czereśniowe",
+        "papryczki nadziewane",
+        "papryczki z serkiem",
+        "papryczki czeresniowe",
+        "cherry peppers stuffed"
+      ],
+      "serving_g": 100,
+      "serving_note": "100g (~4 papryczki)",
+      "data_origin": "label_plus_estimate",
+      "needs_review": false,
+      "source": "Etykieta producenta (twarde dane per 100g): 160 kcal, 12g tłuszcz (7g nasyc.), 11g węgl. (10g cukry), 2.4g błonnik, 3g białko, 0.5g sól (200 mg Na). Skład: papryczki czereśniowe 50% (w occie, cukier, sól), serek śmietankowy 33% (mleko, sól, kultury bakterii, podpuszczka, czosnek suszony, zioła liofilizowane), olej rzepakowy. Mikro - estymacje z USDA dla głównych składników proporcjonalnie do %: papryka czerwona konserwowana (50%) i serek śmietankowy (33%). Wit C ~18mg (utrata ~80% w konserwacji). Beta-karoten i likopen z czerwonej papryki. Wapń, fosfor, wit B2 i B12 głównie z serka. Tłuszcze: 7g SFA z etykiety, reszta MUFA/PUFA proporcjonalnie do oleju rzepakowego i tłuszczu mlecznego."
     }
   }
 }

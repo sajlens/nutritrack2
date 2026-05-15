@@ -38,13 +38,15 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 1200, category: 'macro' },
 
   // Tłuszcze szczegółowe
-  saturated_fat_g:        { label: 'Tłuszcze nasycone',        unit: 'g',  rda_personal: 20,   limit: true, category: 'macro' },
+  saturated_fat_g:        { label: 'Tłuszcze nasycone',        unit: 'g',  rda_personal: 40,   limit: true, category: 'macro' },
   monounsaturated_fat_g:  { label: 'Tłuszcze jednonienasycone', unit: 'g', rda_personal: 40,   category: 'macro' },
   polyunsaturated_fat_g:  { label: 'Tłuszcze wielonienasycone', unit: 'g', rda_personal: 20,   category: 'macro' },
   // Omega-3: wyższe przy treningu siłowym (działanie przeciwzapalne)
   omega3_g:               { label: 'Omega-3',              unit: 'g',    rda_f: 1.1,  rda_m: 1.6,  rda_personal: 1.6,  category: 'macro' },
   omega6_g:               { label: 'Omega-6',              unit: 'g',    rda_personal: 12,   category: 'macro' },
-  omega_ratio:            { label: 'Stosunek ω6:ω3',       unit: ':1',   rda_personal: 4,    limit: true, category: 'macro' },
+  omega_ratio:            { label: 'Stosunek ω6:ω3',       unit: ':1',   rda_personal: 10,   limit: true, category: 'macro' },
+  ca_p_ratio:             { label: 'Stosunek Ca:P',        unit: ':1',   rda_personal: 1,    category: 'mineral' },
+  na_k_ratio:             { label: 'Stosunek Na:K',        unit: ':1',   rda_personal: 1,    limit: true, category: 'mineral' },
 
   // Witaminy
   // Wit. A: standardowe dla kobiet
@@ -78,7 +80,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   iron_mg:                { label: 'Żelazo',               unit: 'mg',  rda_f: 18,   rda_m: 8,    rda_personal: 18,   category: 'mineral' },
   // Magnez: wyższe przy treningu siłowym (skurcze mięśni, synteza białka)
   magnesium_mg:           { label: 'Magnez',               unit: 'mg',  rda_f: 310,  rda_m: 400,  rda_personal: 350,  category: 'mineral' },
-  phosphorus_mg:          { label: 'Fosfor',               unit: 'mg',  rda_f: 700,  rda_m: 700,  rda_personal: 700,  category: 'mineral' },
+  phosphorus_mg:          { label: 'Fosfor',               unit: 'mg',  rda_f: 700,  rda_m: 700,  rda_min: 700,  rda_max: 1500, rda_personal: 700,  category: 'mineral' },
   // Potas: wyższe przy aktywności (utrata przez pot)
   potassium_mg:           { label: 'Potas',                unit: 'mg',  rda_f: 2600, rda_m: 3400, rda_personal: 4000, category: 'mineral' },
   sodium_mg:              { label: 'Sód',                  unit: 'mg',  rda_min: 2300, rda_max: 4000, rda_personal: 3000, category: 'mineral' },
@@ -98,7 +100,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   lycopene_ug:            { label: 'Likopen',              unit: 'µg',  rda_personal: 10000, category: 'carotenoid' },
 
   // Fitoskładniki
-  polyphenols_mg:         { label: 'Polifenole',           unit: 'mg',  rda_personal: 1000, category: 'phyto' },
+  polyphenols_mg:         { label: 'Polifenole',           unit: 'mg',  rda_personal: 2000, category: 'phyto' },
   quercetin_mg:           { label: 'Kwercetyna',           unit: 'mg',  rda_personal: 50,   category: 'phyto' },
   anthocyanins_mg:        { label: 'Antocyjany',           unit: 'mg',  rda_personal: 100,  category: 'phyto' },
   chlorogenic_acid_mg:    { label: 'Kwas chlorogenowy',    unit: 'mg',  rda_personal: 200,  category: 'phyto' },
@@ -146,8 +148,10 @@ export const DASHBOARD_NUTRIENTS = [
   'iron_mg',
   'magnesium_mg',
   'phosphorus_mg',
+  'ca_p_ratio',
   'potassium_mg',
   'sodium_mg',
+  'na_k_ratio',
   'zinc_mg',
   'copper_mg',
   'manganese_mg',

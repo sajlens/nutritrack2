@@ -98,6 +98,221 @@ function getNutrientBreakdown(meals: Meal[], key: string) {
   };
 }
 
+/** Specjalny breakdown dla omega_ratio - pokazuje produkty psujące / poprawiające proporcję.
+ * Algorytm:
+ * - Dla każdego produktu liczymy "lokalne ratio" = omega6 / omega3
+ * - Jeśli ratio > target (10) lub omega3=0 i omega6>0 → "psuje"
+ * - Jeśli ratio < target (10) i omega3>0 → "poprawia"
+ * - Pomijamy produkty z śladowymi ilościami obu (poniżej 0.1g)
+ * Sortujemy po **wkładzie do dnia** (omega6 dla "psuje", omega3 dla "poprawia"), nie po ratio.
+ * To znaczy: oliwa z małej porcji pokaże się na dole listy "psuje", a pestki słonecznika na górze.
+ */
+function getOmegaRatioBreakdown(meals: Meal[], targetRatio: number) {
+  type OmegaItem = {
+    name: string;
+    weight: number;
+    omega3: number;
+    omega6: number;
+    localRatio: number; // o6/o3, lub Infinity gdy o3=0
+    impact: number; // dla "psuje" = omega6, dla "poprawia" = omega3 (do sortowania)
+  };
+
+  const merged = new Map<string, OmegaItem>();
+
+  for (const meal of meals) {
+    for (const item of meal.items) {
+      const o3 = item.nutrients.omega3_g ?? 0;
+      const o6 = item.nutrients.omega6_g ?? 0;
+      // Pomijamy produkty z śladowymi ilościami obu (poniżej 0.05g każdy)
+      if (o3 < 0.05 && o6 < 0.05) continue;
+
+      const existing = merged.get(item.name);
+      if (existing) {
+        existing.weight += item.weight_grams;
+        existing.omega3 += o3;
+        existing.omega6 += o6;
+      } else {
+        merged.set(item.name, {
+          name: item.name,
+          weight: item.weight_grams,
+          omega3: o3,
+          omega6: o6,
+          localRatio: 0,
+          impact: 0,
+        });
+      }
+    }
+  }
+
+  const psuje: OmegaItem[] = [];
+  const poprawia: OmegaItem[] = [];
+
+  for (const item of merged.values()) {
+    item.localRatio = item.omega3 > 0 ? item.omega6 / item.omega3 : Infinity;
+
+    // Klasyfikacja: psuje jeśli ratio > target ALBO tylko omega6 i co najmniej 0.1g
+    if (item.localRatio > targetRatio && item.omega6 >= 0.1) {
+      item.impact = item.omega6;
+      psuje.push(item);
+    }
+    // Poprawia jeśli ratio < target i ma co najmniej 0.1g omega3
+    else if (item.localRatio < targetRatio && item.omega3 >= 0.1) {
+      item.impact = item.omega3;
+      poprawia.push(item);
+    }
+    // Pozostałe (neutralne) pomijamy
+  }
+
+  // Sortujemy malejąco po wpływie
+  psuje.sort((a, b) => b.impact - a.impact);
+  poprawia.sort((a, b) => b.impact - a.impact);
+
+  return { psuje, poprawia };
+}
+
+/** Specjalny breakdown dla ca_p_ratio - pokazuje produkty psujące / poprawiające proporcję.
+ * Algorytm:
+ * - Dla każdego produktu liczymy "lokalne ratio" = calcium / phosphorus
+ * - Jeśli ratio < target (1.0) lub Ca=0 i P>0 → "psuje" (za mało wapnia względem fosforu)
+ * - Jeśli ratio >= target lub Ca>0 i P=0 → "poprawia" (proporcjonalnie dużo wapnia)
+ * - Pomijamy produkty z śladowymi ilościami obu
+ * Sortujemy po **wkładzie do dnia**:
+ *   - dla "psuje" sortujemy po phosphorus (kto wnosi najwięcej fosforu bez wapnia)
+ *   - dla "poprawia" sortujemy po calcium (kto wnosi najwięcej wapnia)
+ */
+function getCaPRatioBreakdown(meals: Meal[], targetRatio: number) {
+  type CaPItem = {
+    name: string;
+    weight: number;
+    calcium: number;
+    phosphorus: number;
+    localRatio: number; // Ca/P, lub Infinity gdy P=0
+    impact: number;
+  };
+
+  const merged = new Map<string, CaPItem>();
+
+  for (const meal of meals) {
+    for (const item of meal.items) {
+      const ca = item.nutrients.calcium_mg ?? 0;
+      const ph = item.nutrients.phosphorus_mg ?? 0;
+      // Pomijamy produkty z śladowymi ilościami obu (poniżej 5mg każdy)
+      if (ca < 5 && ph < 5) continue;
+
+      const existing = merged.get(item.name);
+      if (existing) {
+        existing.weight += item.weight_grams;
+        existing.calcium += ca;
+        existing.phosphorus += ph;
+      } else {
+        merged.set(item.name, {
+          name: item.name,
+          weight: item.weight_grams,
+          calcium: ca,
+          phosphorus: ph,
+          localRatio: 0,
+          impact: 0,
+        });
+      }
+    }
+  }
+
+  const psuje: CaPItem[] = [];
+  const poprawia: CaPItem[] = [];
+
+  for (const item of merged.values()) {
+    item.localRatio = item.phosphorus > 0 ? item.calcium / item.phosphorus : Infinity;
+
+    // Psuje jeśli ratio < target ALBO tylko fosfor i co najmniej 20mg
+    if (item.localRatio < targetRatio && item.phosphorus >= 20) {
+      item.impact = item.phosphorus;
+      psuje.push(item);
+    }
+    // Poprawia jeśli ratio >= target i ma co najmniej 20mg wapnia
+    else if (item.localRatio >= targetRatio && item.calcium >= 20) {
+      item.impact = item.calcium;
+      poprawia.push(item);
+    }
+    // Pozostałe (neutralne) pomijamy
+  }
+
+  // Sortujemy malejąco po wpływie
+  psuje.sort((a, b) => b.impact - a.impact);
+  poprawia.sort((a, b) => b.impact - a.impact);
+
+  return { psuje, poprawia };
+}
+
+/** Specjalny breakdown dla na_k_ratio - pokazuje produkty psujące / poprawiające proporcję.
+ * Algorytm (jak omega - im mniej tym lepiej):
+ * - Dla każdego produktu liczymy "lokalne ratio" = sodium / potassium
+ * - Jeśli ratio > target (1.0) lub K=0 i Na>0 → "psuje" (za dużo sodu względem potasu)
+ * - Jeśli ratio <= target i K>0 → "poprawia" (proporcjonalnie dużo potasu)
+ * Sortujemy po wpływie:
+ *   - "psuje": po sodium (kto wnosi najwięcej sodu)
+ *   - "poprawia": po potassium (kto wnosi najwięcej potasu)
+ */
+function getNaKRatioBreakdown(meals: Meal[], targetRatio: number) {
+  type NaKItem = {
+    name: string;
+    weight: number;
+    sodium: number;
+    potassium: number;
+    localRatio: number;
+    impact: number;
+  };
+
+  const merged = new Map<string, NaKItem>();
+
+  for (const meal of meals) {
+    for (const item of meal.items) {
+      const na = item.nutrients.sodium_mg ?? 0;
+      const k = item.nutrients.potassium_mg ?? 0;
+      // Pomijamy produkty z śladowymi ilościami obu (poniżej 10mg każdy)
+      if (na < 10 && k < 10) continue;
+
+      const existing = merged.get(item.name);
+      if (existing) {
+        existing.weight += item.weight_grams;
+        existing.sodium += na;
+        existing.potassium += k;
+      } else {
+        merged.set(item.name, {
+          name: item.name,
+          weight: item.weight_grams,
+          sodium: na,
+          potassium: k,
+          localRatio: 0,
+          impact: 0,
+        });
+      }
+    }
+  }
+
+  const psuje: NaKItem[] = [];
+  const poprawia: NaKItem[] = [];
+
+  for (const item of merged.values()) {
+    item.localRatio = item.potassium > 0 ? item.sodium / item.potassium : Infinity;
+
+    // Psuje jeśli ratio > target ALBO tylko sód (min 50mg)
+    if (item.localRatio > targetRatio && item.sodium >= 50) {
+      item.impact = item.sodium;
+      psuje.push(item);
+    }
+    // Poprawia jeśli ratio <= target i co najmniej 100mg potasu
+    else if (item.localRatio <= targetRatio && item.potassium >= 100) {
+      item.impact = item.potassium;
+      poprawia.push(item);
+    }
+  }
+
+  psuje.sort((a, b) => b.impact - a.impact);
+  poprawia.sort((a, b) => b.impact - a.impact);
+
+  return { psuje, poprawia };
+}
+
 /** Format wartości nutrientu dla wyświetlenia (różna precyzja w zależności od skali). */
 function fmt(value: number): string {
   if (value === 0) return '0';
@@ -124,10 +339,28 @@ function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKe
     displayUnit = meta?.unit;
   }
 
+  if (nutrientKey === 'ca_p_ratio') {
+    const ca = totals?.calcium_mg ?? 0;
+    const ph = totals?.phosphorus_mg ?? 0;
+    displayValue = ph > 0 ? ca / ph : 0;
+    meta = NUTRIENTS.ca_p_ratio;
+    displayLabel = meta?.label;
+    displayUnit = meta?.unit;
+  }
+
+  if (nutrientKey === 'na_k_ratio') {
+    const na = totals?.sodium_mg ?? 0;
+    const k = totals?.potassium_mg ?? 0;
+    displayValue = k > 0 ? na / k : 0;
+    meta = NUTRIENTS.na_k_ratio;
+    displayLabel = meta?.label;
+    displayUnit = meta?.unit;
+  }
+
   if (nutrientKey === 'effective_sugar') {
     const sugar = totals?.sugar_g ?? 0;
     const fiber = totals?.fiber ?? 0;
-    displayValue = Math.max(0, sugar - fiber / 2);
+    displayValue = Math.max(0, sugar - Math.min(sugar, fiber));
     meta = NUTRIENTS.effective_sugar;
     displayLabel = meta?.label;
     displayUnit = meta?.unit;
@@ -169,7 +402,7 @@ function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKe
     }
   }
 
-  const clickable = !!onPress && displayValue > 0 && nutrientKey !== 'omega_ratio';
+  const clickable = !!onPress && displayValue > 0;
   const showBar = hasRange || rdaPoint > 0;
   const valueStr = displayValue % 1 === 0 ? String(displayValue) : displayValue.toFixed(1);
   const targetStr = hasRange ? `${rdaMin}–${rdaMax}` : String(rdaPoint);
@@ -262,7 +495,18 @@ export default function Dashboard() {
     { key: 'fat', label: 'tłuszcz' },
   ];
 
-  const breakdownData = breakdownKey ? getNutrientBreakdown(todayMeals, breakdownKey) : null;
+  const breakdownData = breakdownKey && breakdownKey !== 'omega_ratio' && breakdownKey !== 'ca_p_ratio' && breakdownKey !== 'na_k_ratio'
+    ? getNutrientBreakdown(todayMeals, breakdownKey)
+    : null;
+  const omegaBreakdown = breakdownKey === 'omega_ratio'
+    ? getOmegaRatioBreakdown(todayMeals, NUTRIENTS.omega_ratio.rda_personal ?? 10)
+    : null;
+  const caPBreakdown = breakdownKey === 'ca_p_ratio'
+    ? getCaPRatioBreakdown(todayMeals, NUTRIENTS.ca_p_ratio.rda_personal ?? 1)
+    : null;
+  const naKBreakdown = breakdownKey === 'na_k_ratio'
+    ? getNaKRatioBreakdown(todayMeals, NUTRIENTS.na_k_ratio.rda_personal ?? 1)
+    : null;
   const breakdownMeta = breakdownKey ? getMeta(breakdownKey, currentMode) : null;
 
   return (
@@ -448,6 +692,222 @@ export default function Dashboard() {
                         ))}
                       </View>
                     ))
+                  )}
+                </ScrollView>
+              </>
+            )}
+
+            {omegaBreakdown && breakdownMeta && (
+              <>
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalTitle}>{breakdownMeta.label}</Text>
+                    <Text style={styles.modalSubtitle}>
+                      Cel: ≤ {breakdownMeta.rda_personal}:1
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setBreakdownKey(null)} style={styles.modalClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
+                  {omegaBreakdown.psuje.length === 0 && omegaBreakdown.poprawia.length === 0 ? (
+                    <Text style={styles.modalEmpty}>Brak istotnych produktów wpływających na proporcję dzisiaj.</Text>
+                  ) : (
+                    <>
+                      {omegaBreakdown.psuje.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#fef2f2', borderLeftColor: '#ef4444', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#991b1b' }]}>🔴 Psuje proporcję</Text>
+                          </View>
+                          {omegaBreakdown.psuje.map((item, i) => (
+                            <View key={`bad-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {item.localRatio === Infinity ? 'tylko ω6' : `${fmt(item.localRatio)}:1`}
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  ω6: {fmt(item.omega6)}g · ω3: {fmt(item.omega3)}g
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {omegaBreakdown.poprawia.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#f0fdf4', borderLeftColor: '#16a34a', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#166534' }]}>🟢 Poprawia proporcję</Text>
+                          </View>
+                          {omegaBreakdown.poprawia.map((item, i) => (
+                            <View key={`good-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {fmt(item.localRatio)}:1
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  ω6: {fmt(item.omega6)}g · ω3: {fmt(item.omega3)}g
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </>
+                  )}
+                </ScrollView>
+              </>
+            )}
+
+            {caPBreakdown && breakdownMeta && (
+              <>
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalTitle}>{breakdownMeta.label}</Text>
+                    <Text style={styles.modalSubtitle}>
+                      Cel: ≥ {breakdownMeta.rda_personal}:1
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setBreakdownKey(null)} style={styles.modalClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
+                  {caPBreakdown.psuje.length === 0 && caPBreakdown.poprawia.length === 0 ? (
+                    <Text style={styles.modalEmpty}>Brak istotnych produktów wpływających na proporcję dzisiaj.</Text>
+                  ) : (
+                    <>
+                      {caPBreakdown.psuje.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#fef2f2', borderLeftColor: '#ef4444', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#991b1b' }]}>🔴 Psuje proporcję (za mało Ca)</Text>
+                          </View>
+                          {caPBreakdown.psuje.map((item, i) => (
+                            <View key={`bad-cap-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {item.calcium === 0 ? 'tylko P' : `${fmt(item.localRatio)}:1`}
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  Ca: {fmt(item.calcium)}mg · P: {fmt(item.phosphorus)}mg
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {caPBreakdown.poprawia.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#f0fdf4', borderLeftColor: '#16a34a', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#166534' }]}>🟢 Poprawia proporcję (dużo Ca)</Text>
+                          </View>
+                          {caPBreakdown.poprawia.map((item, i) => (
+                            <View key={`good-cap-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {item.localRatio === Infinity ? 'tylko Ca' : `${fmt(item.localRatio)}:1`}
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  Ca: {fmt(item.calcium)}mg · P: {fmt(item.phosphorus)}mg
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </>
+                  )}
+                </ScrollView>
+              </>
+            )}
+
+            {naKBreakdown && breakdownMeta && (
+              <>
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalTitle}>{breakdownMeta.label}</Text>
+                    <Text style={styles.modalSubtitle}>
+                      Cel: ≤ {breakdownMeta.rda_personal}:1
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setBreakdownKey(null)} style={styles.modalClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
+                  {naKBreakdown.psuje.length === 0 && naKBreakdown.poprawia.length === 0 ? (
+                    <Text style={styles.modalEmpty}>Brak istotnych produktów wpływających na proporcję dzisiaj.</Text>
+                  ) : (
+                    <>
+                      {naKBreakdown.psuje.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#fef2f2', borderLeftColor: '#ef4444', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#991b1b' }]}>🔴 Psuje proporcję (za dużo Na)</Text>
+                          </View>
+                          {naKBreakdown.psuje.map((item, i) => (
+                            <View key={`bad-nak-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {item.localRatio === Infinity ? 'tylko Na' : `${fmt(item.localRatio)}:1`}
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  Na: {fmt(item.sodium)}mg · K: {fmt(item.potassium)}mg
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {naKBreakdown.poprawia.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#f0fdf4', borderLeftColor: '#16a34a', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#166534' }]}>🟢 Poprawia proporcję (dużo K)</Text>
+                          </View>
+                          {naKBreakdown.poprawia.map((item, i) => (
+                            <View key={`good-nak-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>
+                                  {item.sodium === 0 ? 'tylko K' : `${fmt(item.localRatio)}:1`}
+                                </Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  Na: {fmt(item.sodium)}mg · K: {fmt(item.potassium)}mg
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </>
                   )}
                 </ScrollView>
               </>
