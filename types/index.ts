@@ -57,6 +57,9 @@ export interface NutrientValues {
   carnitine_mg?: number;
   collagen_g?: number;
   creatine_g?: number;
+  l_theanine_mg?: number;
+  gi?: number;                // Indeks glikemiczny (0-100, per produkt)
+  glycemic_load?: number;     // Ładunek glikemiczny (per dzień, virtualne)
 }
 
 // Produkt w bazie danych

@@ -71,12 +71,24 @@ export async function resolveMealItems(parsedFoods: ResolvableFood[]): Promise<M
 
 export function sumNutrientValues(items: MealItem[]): NutrientValues {
   const total: NutrientValues = {};
+  let totalGlycemicLoad = 0;
   for (const item of items) {
     for (const [key, value] of Object.entries(item.nutrients)) {
       if (typeof value === 'number') {
+        // gi nie sumuje się - to wartość per produkt, używamy jej tylko do liczenia GL
+        if (key === 'gi') continue;
         (total as any)[key] = ((total as any)[key] ?? 0) + value;
       }
     }
+    // Glycemic load: gi (per 100g, nieskalowane) × carbs (już przeskalowane do wagi) / 100
+    const gi = (item.nutrients as any).gi;
+    const carbs = (item.nutrients as any).carbs ?? 0;
+    if (typeof gi === 'number' && gi > 0 && carbs > 0) {
+      totalGlycemicLoad += (gi * carbs) / 100;
+    }
+  }
+  if (totalGlycemicLoad > 0) {
+    (total as any).glycemic_load = Math.round(totalGlycemicLoad * 10) / 10;
   }
   return total;
 }

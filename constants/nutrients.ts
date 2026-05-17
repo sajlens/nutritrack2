@@ -34,6 +34,7 @@ export const NUTRIENTS: Record<string, NutrientMeta> = {
   fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 25,   rda_gain: 28, category: 'macro' },
   sugar_g:                { label: 'Cukry (wszystkie)',    unit: 'g',    category: 'macro' },
   effective_sugar:        { label: 'Cukry efektywne',      unit: 'g',    rda_personal: 25,   limit: true, category: 'macro' },
+  glycemic_load:          { label: 'Ładunek glikemiczny',  unit: 'GL',   rda_personal: 80,   limit: true, category: 'macro' },
   // Woda: +500ml przy treningu
   water_g:                { label: 'Woda z posiłków',      unit: 'g',    rda_f: 2700, rda_m: 3700, rda_personal: 1200, category: 'macro' },
 
@@ -121,6 +122,7 @@ export const DASHBOARD_NUTRIENTS = [
   'fiber',
   'sugar_g',
   'effective_sugar',
+  'glycemic_load',
   'water_g',
   'saturated_fat_g',
   'monounsaturated_fat_g',

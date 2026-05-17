@@ -59,7 +59,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "hummus"
@@ -190,7 +191,8 @@
         "chlorogenic_acid_mg": 28,
         "quercetin_mg": 22.6,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "jarmuż"
@@ -255,7 +257,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 75
       },
       "aliases": [
         "krążki cebulowe",
@@ -452,7 +455,8 @@
         "carnitine_mg": 0.8,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 31
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -514,7 +518,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 48
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -576,7 +581,8 @@
         "anthocyanins_mg": 4.8,
         "quercetin_mg": 0.6,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 42
       },
       "aliases": [
         "brzoskwinie"
@@ -642,7 +648,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 130,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 75
       },
       "aliases": [
         "chleb pszenny"
@@ -772,7 +779,8 @@
         "anthocyanins_mg": 4.0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 43
       },
       "aliases": [
         "nektaryny"
@@ -1107,7 +1115,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.6,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "sos do makaronu"
@@ -1303,7 +1312,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 145,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 51
       },
       "aliases": [
         "chleb razowy"
@@ -1560,7 +1570,8 @@
         "anthocyanins_mg": 38,
         "quercetin_mg": 1.0,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 61
       },
       "aliases": [
         "figi"
@@ -1692,7 +1703,8 @@
         "vitamin_k2_ug": 0,
         "creatine_g": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "melon"
@@ -1758,7 +1770,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 43
       },
       "aliases": [
         "pomarańcze"
@@ -1889,7 +1902,8 @@
         "anthocyanins_mg": 0.2,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "gruszki"
@@ -2086,7 +2100,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.0,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "sos salsa"
@@ -2151,7 +2166,8 @@
         "carnitine_mg": 2.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "mleko półtłuste"
@@ -2281,7 +2297,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "cukier"
@@ -2346,7 +2363,8 @@
         "chlorogenic_acid_mg": 21,
         "quercetin_mg": 3.21,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 10
       },
       "aliases": [
         "brokuły"
@@ -2933,7 +2951,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 73,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "mąka razowa"
@@ -2998,7 +3017,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 50,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 85
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -3060,7 +3080,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 95
       },
       "aliases": [
         "mąka ryżowa"
@@ -3125,7 +3146,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 8,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 70
       },
       "aliases": [
         "polenta mąka"
@@ -3190,7 +3212,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 31.8,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "czerwona cebula"
@@ -3255,7 +3278,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.6,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 10
       },
       "aliases": [
         "czosnek surowy"
@@ -3321,7 +3345,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -3383,7 +3408,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -3445,7 +3471,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 75
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -3507,7 +3534,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 51
       },
       "aliases": [
         "banany"
@@ -3769,7 +3797,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 8.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "lion's mane"
@@ -3834,7 +3863,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 8.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "grzyby ostrygi"
@@ -3899,7 +3929,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 9.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "grzyby shiitake"
@@ -4229,7 +4260,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 50,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 85
       },
       "aliases": [
         "mąka włoska"
@@ -4294,7 +4326,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 75,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "mąka orkiszowa"
@@ -4359,7 +4392,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 70,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 64
       },
       "aliases": [
         "kasza manna"
@@ -4424,7 +4458,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 70,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 70
       },
       "aliases": [
         "semolina"
@@ -4489,7 +4524,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 41
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -4551,7 +4587,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "sok pomarańczowy"
@@ -4616,7 +4653,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 48
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -4743,7 +4781,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 8.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "grzyby enoki"
@@ -4939,7 +4978,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "mleko owsiane",
@@ -5007,7 +5047,8 @@
         "chlorogenic_acid_mg": 12,
         "quercetin_mg": 0.04,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 16
       },
       "aliases": [
         "marchewka",
@@ -5139,7 +5180,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.9,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -5201,7 +5243,8 @@
         "vitamin_k2_ug": 0,
         "vitamin_e_mg": 0,
         "choline_mg": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "serving_g": 120,
       "data_origin": "usda_sr",
@@ -5264,7 +5307,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -5327,7 +5371,8 @@
         "carnitine_mg": 1.2,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 32
       },
       "aliases": [
         "maślanka",
@@ -5587,7 +5632,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 30,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "owsiana"
@@ -5652,7 +5698,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 95
       },
       "aliases": [
         "skrobia ziemniaczana"
@@ -6247,7 +6294,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "włoskie"
@@ -6378,7 +6426,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 33,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "owsiane płatki"
@@ -6444,7 +6493,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 33,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "owies steel cut"
@@ -6509,7 +6559,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 66
       },
       "aliases": [
         "ananas surowy"
@@ -6575,7 +6626,8 @@
         "anthocyanins_mg": 30,
         "quercetin_mg": 1.2,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 22
       },
       "aliases": [
         "czereśnie",
@@ -6641,7 +6693,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "fasolka szparagowa"
@@ -6706,7 +6759,8 @@
         "chlorogenic_acid_mg": 5.2,
         "quercetin_mg": 0.05,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 78
       },
       "aliases": [
         "ziemniak",
@@ -6773,7 +6827,8 @@
         "chlorogenic_acid_mg": 24,
         "quercetin_mg": 0.05,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 63
       },
       "aliases": [
         "słodkie ziemniaki",
@@ -6973,7 +7028,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 10
       },
       "aliases": [
         "kapusta"
@@ -7038,7 +7094,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.5,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "kapusta fioletowa"
@@ -7103,7 +7160,8 @@
         "anthocyanins_mg": 35,
         "quercetin_mg": 0.7,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 40
       },
       "aliases": [
         "truskawka"
@@ -7169,7 +7227,8 @@
         "anthocyanins_mg": 65,
         "quercetin_mg": 1.1,
         "betaine_mg": 0.8,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 32
       },
       "aliases": [
         "malina"
@@ -7235,7 +7294,8 @@
         "anthocyanins_mg": 163,
         "quercetin_mg": 7.7,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "jagody",
@@ -7303,7 +7363,8 @@
         "anthocyanins_mg": 27,
         "quercetin_mg": 1.04,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "grona"
@@ -7368,7 +7429,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.7,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "grona"
@@ -7433,7 +7495,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "mus jabłkowy"
@@ -7498,7 +7561,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 1.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "amarantus mąka"
@@ -7563,7 +7627,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 630,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "quinoa mąka"
@@ -7628,7 +7693,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.6,
         "betaine_mg": 30,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "sorgo mąka"
@@ -7693,7 +7759,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 22,
         "betaine_mg": 18,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 54
       },
       "aliases": [
         "gryka mąka"
@@ -7758,7 +7825,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 146,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 51
       },
       "aliases": [
         "żytnia"
@@ -7823,7 +7891,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 90,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "jęczmień mąka"
@@ -7888,7 +7957,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 23,
         "betaine_mg": 20,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 54
       },
       "aliases": [
         "gryka",
@@ -7955,7 +8025,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 6,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 71
       },
       "aliases": [
         "kasza jaglana"
@@ -8020,7 +8091,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "ryż brązowy"
@@ -8085,7 +8157,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 73
       },
       "aliases": [
         "ryż biały"
@@ -8480,7 +8553,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "laskowe"
@@ -8546,7 +8620,8 @@
         "carnitine_mg": 0.55,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 14
       },
       "aliases": [
         "orzeszki ziemne"
@@ -8935,7 +9010,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -8997,7 +9073,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 32
       },
       "aliases": [
         "soczewica"
@@ -9062,7 +9139,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -9124,7 +9202,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 39
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -9186,7 +9265,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -9248,7 +9328,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -9310,7 +9391,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 29
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -9372,7 +9454,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 39
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -10079,7 +10162,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 64
       },
       "aliases": [
         "butternut"
@@ -10277,7 +10361,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.08,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "brukselka surowa"
@@ -10342,7 +10427,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.02,
         "betaine_mg": 128.7,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "buraki"
@@ -10407,7 +10493,8 @@
         "chlorogenic_acid_mg": 156,
         "quercetin_mg": 0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "oberżyna"
@@ -10472,7 +10559,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.1,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [],
       "serving_g": 60,
@@ -10536,7 +10624,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 3.5,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "pasta pomidorowa"
@@ -10602,7 +10691,8 @@
         "anthocyanins_mg": 6,
         "quercetin_mg": 2.5,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 34
       },
       "aliases": [
         "morele"
@@ -10667,7 +10757,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "melon miodowy"
@@ -10732,7 +10823,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "banan mączysty"
@@ -10797,7 +10889,8 @@
         "chlorogenic_acid_mg": 7.1,
         "quercetin_mg": 18.4,
         "betaine_mg": 6,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 1
       },
       "aliases": [
         "chia"
@@ -10863,7 +10956,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 70,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 48
       },
       "aliases": [
         "kasza bulgur"
@@ -10928,7 +11022,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 4.7,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 45
       },
       "aliases": [
         "ryż dziki"
@@ -11124,7 +11219,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 0.7,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "awokado hass"
@@ -11190,7 +11286,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.5,
         "betaine_mg": 5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "czarny ryż"
@@ -11255,7 +11352,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 80,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "einkorn"
@@ -11320,7 +11418,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 75,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "farro"
@@ -11385,7 +11484,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 30,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 49
       },
       "aliases": [
         "kasza fonio"
@@ -11450,7 +11550,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 75,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "kamut"
@@ -11515,7 +11616,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 52
       },
       "aliases": [
         "kiwi"
@@ -11580,7 +11682,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 47
       },
       "aliases": [
         "mandarynki"
@@ -11645,7 +11748,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 51
       },
       "aliases": [
         "mango tommy"
@@ -11711,7 +11815,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 8,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 70
       },
       "aliases": [
         "mąka kukurydziana masa"
@@ -11776,7 +11881,8 @@
         "anthocyanins_mg": 0.1,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "gruszka"
@@ -11841,7 +11947,8 @@
         "anthocyanins_mg": 9.5,
         "quercetin_mg": 1.2,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 39
       },
       "aliases": [
         "śliwki"
@@ -11906,7 +12013,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "czerwony ryż"
@@ -12296,7 +12404,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "asymina trójklapowa"
@@ -12361,7 +12470,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 72
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -12423,7 +12533,8 @@
         "anthocyanins_mg": 245,
         "quercetin_mg": 1.1,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "jeżyna"
@@ -12553,7 +12664,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 32
       },
       "aliases": [
         "pory"
@@ -12684,7 +12796,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 4.0,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "shallot"
@@ -12749,7 +12862,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 43
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -12811,7 +12925,8 @@
         "anthocyanins_mg": 35,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "sok granatowy"
@@ -12876,7 +12991,8 @@
         "anthocyanins_mg": 100,
         "quercetin_mg": 1.0,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "wiśniowy"
@@ -13140,7 +13256,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 19.8,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "koper włoski"
@@ -13335,7 +13452,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 97
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -13397,7 +13515,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.9,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "papryczka jalapeno"
@@ -13662,7 +13781,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -13724,7 +13844,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.05,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 72
       },
       "aliases": [
         "kawon"
@@ -13790,7 +13911,8 @@
         "chlorogenic_acid_mg": 5,
         "creatine_g": 0,
         "vitamin_b7_ug": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "kalarepa",
@@ -13857,7 +13979,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "algi kelp",
@@ -13923,7 +14046,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "laver",
@@ -13989,7 +14113,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.2,
         "betaine_mg": 630,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "aliases": [
         "komosa ryżowa"
@@ -14054,7 +14179,8 @@
         "vitamin_b7_ug": 1.0,
         "creatine_g": 0,
         "vitamin_k2_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "karczoch"
@@ -14119,7 +14245,8 @@
         "vitamin_k2_ug": 0,
         "vitamin_b7_ug": 0.4,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "słonecznik bulwiasty"
@@ -14251,7 +14378,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.5,
         "betaine_mg": 8,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 57
       },
       "aliases": [
         "tef"
@@ -14708,7 +14836,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "spirulina"
@@ -14773,7 +14902,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "algi wakame"
@@ -14903,7 +15033,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.3,
         "betaine_mg": 1.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "amarantus"
@@ -14968,7 +15099,8 @@
         "carnitine_mg": 4.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "data_origin": "usda_sr",
       "needs_review": false
@@ -18331,7 +18463,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "lupin"
@@ -18396,7 +18529,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "pasta miso"
@@ -18925,7 +19059,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "tempeh"
@@ -19790,7 +19925,8 @@
         "betaine_mg": 0.4,
         "vitamin_b7_ug": 0.7,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "marakuja",
@@ -19857,7 +19993,8 @@
         "betaine_mg": 0.3,
         "vitamin_b7_ug": 1.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 40
       },
       "aliases": [
         "poziomki",
@@ -19923,7 +20060,8 @@
         "betaine_mg": 0.4,
         "vitamin_b7_ug": 0.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "agrest",
@@ -19988,7 +20126,8 @@
         "betaine_mg": 0.4,
         "vitamin_b7_ug": 0.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "porzeczki czerwone",
@@ -20054,7 +20193,8 @@
         "betaine_mg": 0.5,
         "vitamin_b7_ug": 0.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "porzeczki czarne",
@@ -20121,7 +20261,8 @@
         "betaine_mg": 0.1,
         "vitamin_b7_ug": 1.0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "czarny czosnek",
@@ -20188,7 +20329,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 0
       },
       "aliases": [
         "erytrytol",
@@ -20255,7 +20397,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 7
       },
       "aliases": [
         "ksylitol",
@@ -20393,7 +20536,8 @@
         "carnitine_mg": 22.0,
         "collagen_g": 2.5,
         "creatine_g": 0.45,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": null
       },
       "aliases": [
         "kabanos cienki",
@@ -20530,7 +20674,8 @@
         "chlorogenic_acid_mg": 12,
         "creatine_g": 0,
         "vitamin_b7_ug": 4.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "five beans",
@@ -20596,7 +20741,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "ketchup zwykły",
@@ -20664,7 +20810,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "ketchup",
@@ -20801,7 +20948,8 @@
         "carnitine_mg": 0.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 45
       },
       "aliases": [
         "czekolada mleczna",
@@ -21003,7 +21151,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 54
       },
       "aliases": [
         "płatki gryczane",
@@ -21068,7 +21217,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "płatki orkiszowe",
@@ -21133,7 +21283,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "płatki żytnie",
@@ -21198,7 +21349,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 40
       },
       "aliases": [
         "zarodki pszenne",
@@ -21264,7 +21416,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "otręby owsiane",
@@ -21329,7 +21482,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 1
       },
       "aliases": [
         "syrop yacon",
@@ -21397,7 +21551,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 3.5,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "kajmak",
@@ -21464,7 +21619,8 @@
         "chlorogenic_acid_mg": 0,
         "vitamin_b7_ug": 0.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 51
       },
       "aliases": [
         "pulpa z mango",
@@ -21934,7 +22090,8 @@
         "chlorogenic_acid_mg": 0,
         "vitamin_b7_ug": 1.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "piwo bezalkoholowe karmi",
@@ -22001,7 +22158,8 @@
         "chlorogenic_acid_mg": 0,
         "vitamin_b7_ug": 1.5,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "piwo bezalkoholowe kozel",
@@ -22068,7 +22226,8 @@
         "chlorogenic_acid_mg": 4,
         "vitamin_b7_ug": 1.0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": null
       },
       "aliases": [
         "korniszony",
@@ -22745,7 +22904,8 @@
         "chlorogenic_acid_mg": 18,
         "vitamin_b7_ug": 0.2,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 47
       },
       "aliases": [
         "sok truskawkowy nfc",
@@ -22813,7 +22973,8 @@
         "chlorogenic_acid_mg": 22,
         "vitamin_b7_ug": 0.2,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "sok malinowy nfc",
@@ -22880,7 +23041,8 @@
         "chlorogenic_acid_mg": 0,
         "vitamin_b7_ug": 0.2,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "sok z marakuji nfc",
@@ -23015,7 +23177,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 45
       },
       "aliases": [
         "sos worcestershire",
@@ -23150,7 +23313,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 5.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "makaron niski ig",
@@ -23287,7 +23451,8 @@
         "chlorogenic_acid_mg": 55,
         "creatine_g": 0,
         "vitamin_b7_ug": 4.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "suszone pomidory",
@@ -23354,7 +23519,8 @@
         "chlorogenic_acid_mg": 35,
         "creatine_g": 0,
         "vitamin_b7_ug": 4.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "passata",
@@ -23557,7 +23723,8 @@
         "chlorogenic_acid_mg": 0,
         "vitamin_b7_ug": 0.2,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "sok z kiszonego buraka",
@@ -23625,7 +23792,8 @@
         "carnitine_mg": 2.0,
         "collagen_g": 6.0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "wafelek nicks",
@@ -23971,7 +24139,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 22.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 10
       },
       "aliases": [
         "cebula"
@@ -24037,7 +24206,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 1.1,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 39
       },
       "aliases": [
         "groszek",
@@ -24307,7 +24477,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 50,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 85
       },
       "aliases": [
         "mąka poznańska",
@@ -24374,7 +24545,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 35,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 85
       },
       "aliases": [
         "mąka tortowa",
@@ -24646,7 +24818,8 @@
         "chlorogenic_acid_mg": 0,
         "creatine_g": 0,
         "vitamin_b7_ug": 4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "czekolada",
@@ -24715,7 +24888,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 56
       },
       "aliases": [
         "kukurydza z puszki",
@@ -25125,7 +25299,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": null
       },
       "aliases": [
         "sok z cytryny",
@@ -25605,7 +25780,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0.4,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": null
       },
       "aliases": [
         "sok z limonki",
@@ -25672,7 +25848,8 @@
         "vitamin_b7_ug": 0.4,
         "creatine_g": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": null
       },
       "aliases": [
         "skórka z limonki",
@@ -26012,7 +26189,8 @@
         "coenzyme_q10_mg": 0,
         "creatine_g": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "granola zwykła",
@@ -26080,7 +26258,8 @@
         "coenzyme_q10_mg": 0,
         "creatine_g": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "granola twarda",
@@ -26148,7 +26327,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "maliny liofilizowane",
@@ -26217,7 +26397,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 38
       },
       "aliases": [
         "fasola jaś",
@@ -26355,7 +26536,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "drożdże nieaktywne",
@@ -26422,7 +26604,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "ćwikła",
@@ -26491,7 +26674,8 @@
         "coenzyme_q10_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "aliases": [
         "miód spadziowy",
@@ -26558,7 +26742,8 @@
         "coenzyme_q10_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 58
       },
       "aliases": [
         "miód wielokwiatowy",
@@ -26827,7 +27012,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 72
       },
       "aliases": [
         "bułka do burgera",
@@ -26895,7 +27081,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "sos cebulowy",
@@ -26963,7 +27150,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 5
       },
       "aliases": [
         "natka pietruszki",
@@ -27031,7 +27219,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 52
       },
       "aliases": [
         "pietruszka",
@@ -27099,7 +27288,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "seler",
@@ -27167,7 +27357,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 88
       },
       "aliases": [
         "opłatek",
@@ -27235,7 +27426,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 0
       },
       "aliases": [
         "inulina",
@@ -27372,7 +27564,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "papryka marynowana",
@@ -27646,7 +27839,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "sok warzywny kwartet",
@@ -27722,7 +27916,8 @@
         "anthocyanins_mg": 525,
         "quercetin_mg": 11,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 53
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -27790,7 +27985,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -27852,7 +28048,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "aliases": [
         "acai",
@@ -27927,7 +28124,8 @@
         "anthocyanins_mg": 480,
         "quercetin_mg": 5.0,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 25
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -27995,7 +28193,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 1.6,
         "betaine_mg": 0.1,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 36
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -28062,7 +28261,8 @@
         "coenzyme_q10_mg": 0,
         "caffeine_mg": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 45
       },
       "data_origin": "usda_sr",
       "needs_review": false
@@ -28128,7 +28328,8 @@
         "coenzyme_q10_mg": 0,
         "caffeine_mg": 0,
         "iodine_ug": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "data_origin": "usda_sr",
       "needs_review": false
@@ -28195,7 +28396,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 1.0,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -28262,7 +28464,8 @@
         "anthocyanins_mg": 800,
         "quercetin_mg": 7.0,
         "betaine_mg": 0.3,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 55
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -28800,7 +29003,8 @@
         "carnitine_mg": 0.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "pesto bazyliowe",
@@ -28873,7 +29077,8 @@
         "chlorogenic_acid_mg": 130,
         "quercetin_mg": 9,
         "betaine_mg": 0.2,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -29003,7 +29208,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 64
       },
       "aliases": [
         "rodzynki",
@@ -29075,7 +29281,8 @@
         "anthocyanins_mg": 0,
         "quercetin_mg": 0,
         "betaine_mg": 0.4,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 42
       },
       "data_origin": "usda_sr",
       "needs_review": false,
@@ -29137,7 +29344,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "popcorn",
@@ -29205,7 +29413,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 54
       },
       "aliases": [
         "syrop klonowy",
@@ -29342,7 +29551,8 @@
         "chlorogenic_acid_mg": 0,
         "quercetin_mg": 0.1,
         "betaine_mg": 60,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 65
       },
       "aliases": [
         "kuskus",
@@ -29614,7 +29824,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 29
       },
       "aliases": [
         "suszona śliwka",
@@ -29896,7 +30107,8 @@
         "collagen_g": 0,
         "creatine_g": 0,
         "sugar_g": 12.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 36
       },
       "aliases": [
         "jabłko ligol",
@@ -29964,7 +30176,8 @@
         "collagen_g": 0,
         "creatine_g": 0,
         "sugar_g": 11.0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 36
       },
       "aliases": [
         "jabłko lobo",
@@ -30031,7 +30244,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 15
       },
       "aliases": [
         "papryka biala",
@@ -30239,7 +30453,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 75
       },
       "aliases": [
         "dynia hokkaido",
@@ -30308,7 +30523,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "fasolka żółta mrożona",
@@ -30588,7 +30804,8 @@
         "carnitine_mg": 1.8,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "jogurt",
@@ -30657,7 +30874,8 @@
         "carnitine_mg": 1.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 11
       },
       "aliases": [
         "jogurt grecki",
@@ -30934,7 +31152,8 @@
         "carnitine_mg": 1.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 33
       },
       "aliases": [
         "cream cheese",
@@ -31150,7 +31369,8 @@
         "carnitine_mg": 2.5,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 30
       },
       "aliases": [
         "mleko bez laktozy",
@@ -31431,7 +31651,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 35
       },
       "aliases": [
         "inka błonnik",
@@ -31501,7 +31722,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 50
       },
       "aliases": [
         "pasta gochujang",
@@ -31569,7 +31791,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 60
       },
       "aliases": [
         "syrop miodowy",
@@ -31637,7 +31860,8 @@
         "carnitine_mg": 1.0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "czekolada ciemna bez cukru",
@@ -31776,7 +32000,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 0
       },
       "aliases": [
         "białko na jajku",
@@ -31984,7 +32209,8 @@
         "vitamin_k1_ug": 2.5,
         "vitamin_k2_ug": 0,
         "polyphenols_mg": 4500,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "kakao surowe",
@@ -32054,7 +32280,8 @@
         "vitamin_k1_ug": 2.5,
         "vitamin_k2_ug": 0,
         "polyphenols_mg": 1700,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 20
       },
       "aliases": [
         "kakao w proszku",
@@ -32616,7 +32843,8 @@
         "carnitine_mg": 0,
         "collagen_g": 0,
         "creatine_g": 0,
-        "l_theanine_mg": 0
+        "l_theanine_mg": 0,
+        "gi": 40
       },
       "aliases": [
         "papryczki",
@@ -32631,6 +32859,152 @@
       "data_origin": "label_plus_estimate",
       "needs_review": false,
       "source": "Etykieta producenta (twarde dane per 100g): 160 kcal, 12g tłuszcz (7g nasyc.), 11g węgl. (10g cukry), 2.4g błonnik, 3g białko, 0.5g sól (200 mg Na). Skład: papryczki czereśniowe 50% (w occie, cukier, sól), serek śmietankowy 33% (mleko, sól, kultury bakterii, podpuszczka, czosnek suszony, zioła liofilizowane), olej rzepakowy. Mikro - estymacje z USDA dla głównych składników proporcjonalnie do %: papryka czerwona konserwowana (50%) i serek śmietankowy (33%). Wit C ~18mg (utrata ~80% w konserwacji). Beta-karoten i likopen z czerwonej papryki. Wapń, fosfor, wit B2 i B12 głównie z serka. Tłuszcze: 7g SFA z etykiety, reszta MUFA/PUFA proporcjonalnie do oleju rzepakowego i tłuszczu mlecznego."
+    },
+    "oscypek": {
+      "name_pl": "oscypek",
+      "name_en": "Oscypek (smoked sheep cheese)",
+      "category": "Dairy and Egg Products",
+      "per_100g": {
+        "calories": 367,
+        "protein": 26.0,
+        "fat": 29.0,
+        "carbs": 1.0,
+        "fiber": 0,
+        "sugar_g": 0.5,
+        "water_g": 38.0,
+        "saturated_fat_g": 19.0,
+        "monounsaturated_fat_g": 7.5,
+        "polyunsaturated_fat_g": 1.5,
+        "omega3_g": 0.4,
+        "omega6_g": 1.0,
+        "sodium_mg": 1100,
+        "potassium_mg": 120,
+        "calcium_mg": 950,
+        "iron_mg": 0.5,
+        "magnesium_mg": 40,
+        "phosphorus_mg": 600,
+        "zinc_mg": 4.0,
+        "copper_mg": 0.05,
+        "manganese_mg": 0,
+        "selenium_ug": 18,
+        "iodine_ug": 30,
+        "vitamin_a_ug": 280,
+        "vitamin_b1_mg": 0.05,
+        "vitamin_b2_mg": 0.4,
+        "vitamin_b3_mg": 0.2,
+        "vitamin_b5_mg": 0.4,
+        "vitamin_b6_mg": 0.08,
+        "vitamin_b7_ug": 0,
+        "vitamin_b9_ug": 20,
+        "vitamin_b12_ug": 1.5,
+        "vitamin_c_mg": 0,
+        "vitamin_d_ug": 0.5,
+        "vitamin_e_mg": 0.7,
+        "vitamin_k1_ug": 0,
+        "vitamin_k2_ug": 12,
+        "beta_carotene_ug": 0,
+        "lutein_zeaxanthin_ug": 0,
+        "lycopene_ug": 0,
+        "choline_mg": 40,
+        "polyphenols_mg": 30,
+        "chlorogenic_acid_mg": 0,
+        "anthocyanins_mg": 0,
+        "quercetin_mg": 0,
+        "betaine_mg": 0,
+        "caffeine_mg": 0,
+        "coenzyme_q10_mg": 0,
+        "carnitine_mg": 0,
+        "collagen_g": 0,
+        "creatine_g": 0,
+        "l_theanine_mg": 0
+      },
+      "aliases": [
+        "oscypek",
+        "ser oscypek",
+        "oscypki",
+        "sheep cheese smoked",
+        "ser owczy wędzony"
+      ],
+      "serving_g": 30,
+      "serving_note": "1 plasterek (~30g)",
+      "data_origin": "estimate",
+      "needs_review": false,
+      "source": "USDA Food Database + Instytut Żywności i Żywienia + literatura nad serami owczymi (kashkaval, halloumi) i oscypkami podhalańskimi. Oscypek tradycyjny: 60% mleko owcze + 40% krowie, sól (~1.5%), wędzenie. Wysoki sód z solanki (~1100mg), bogaty w wapń (~950mg) i fosfor (~600mg). Mleko owcze ma wyższą zawartość omega-3 niż krowie. K2 z fermentacji mleka. Bez węgli (twardy ser dojrzewający)."
+    },
+    "chipsy_lays_klasyczne": {
+      "name_pl": "chipsy Lay's klasyczne",
+      "name_en": "Lay's potato chips, classic salted",
+      "category": "Snacks",
+      "per_100g": {
+        "calories": 535,
+        "protein": 6.5,
+        "fat": 33.0,
+        "carbs": 53.0,
+        "fiber": 4.5,
+        "sugar_g": 0.5,
+        "water_g": 2.5,
+        "saturated_fat_g": 3.0,
+        "monounsaturated_fat_g": 8.0,
+        "polyunsaturated_fat_g": 20.0,
+        "omega3_g": 0.15,
+        "omega6_g": 19.0,
+        "sodium_mg": 530,
+        "potassium_mg": 1270,
+        "calcium_mg": 15,
+        "iron_mg": 1.6,
+        "magnesium_mg": 65,
+        "phosphorus_mg": 165,
+        "zinc_mg": 1.0,
+        "copper_mg": 0.3,
+        "manganese_mg": 0.4,
+        "selenium_ug": 0,
+        "iodine_ug": 0,
+        "vitamin_a_ug": 0,
+        "vitamin_b1_mg": 0.16,
+        "vitamin_b2_mg": 0,
+        "vitamin_b3_mg": 4.0,
+        "vitamin_b5_mg": 0.85,
+        "vitamin_b6_mg": 0.6,
+        "vitamin_b7_ug": 0,
+        "vitamin_b9_ug": 35,
+        "vitamin_b12_ug": 0,
+        "vitamin_c_mg": 12,
+        "vitamin_d_ug": 0,
+        "vitamin_e_mg": 7.0,
+        "vitamin_k1_ug": 4,
+        "vitamin_k2_ug": 0,
+        "beta_carotene_ug": 0,
+        "lutein_zeaxanthin_ug": 0,
+        "lycopene_ug": 0,
+        "choline_mg": 30,
+        "polyphenols_mg": 0,
+        "chlorogenic_acid_mg": 0,
+        "anthocyanins_mg": 0,
+        "quercetin_mg": 0,
+        "betaine_mg": 0,
+        "caffeine_mg": 0,
+        "coenzyme_q10_mg": 0,
+        "carnitine_mg": 0,
+        "collagen_g": 0,
+        "creatine_g": 0,
+        "l_theanine_mg": 0,
+        "gi": 75
+      },
+      "aliases": [
+        "chipsy",
+        "chipsy lays",
+        "chipsy lay's",
+        "lays",
+        "lay's",
+        "potato chips",
+        "chipsy ziemniaczane",
+        "chipsy solone"
+      ],
+      "serving_g": 25,
+      "serving_note": "1 garść (~25g)",
+      "data_origin": "label_plus_estimate",
+      "needs_review": false,
+      "source": "Etykieta Lay's klasyczne (twarde dane): 535 kcal, 33g fat (3g nasyc.), 53g węgl. (0.5g cukier), 4.5g błonnik, 6.5g białko, 1.3g sól (530 mg Na). Skład: ziemniaki, olej słonecznikowy, sól. Tłuszcze szczegółowe: olej słonecznikowy ma ~66% PUFA (głównie omega-6, ~10:1 do 200:1 vs omega-3), ~20% MUFA, ~10% SFA. Stąd 20g PUFA, w tym ~19g omega-6 i ~0.15g omega-3. Mikro z USDA dla potato chips: potas (z ziemniaków), wit C częściowo, wit E z oleju, B6. GI=75 z International GI Tables (chipsy zwykłe: 51-77, średnia ~75)."
     }
   }
 }

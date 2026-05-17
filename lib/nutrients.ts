@@ -213,7 +213,12 @@ export function calculateNutrients(per100g: NutrientValues, weightGrams: number,
   const result: NutrientValues = {};
   for (const [key, value] of Object.entries(per100g)) {
     if (typeof value === 'number') {
-      (result as any)[key] = Math.round(value * factor * 1000) / 1000;
+      // gi (glycemic index) jest procentem, nie wartością bezwzględną - nie skaluje się z wagą
+      if (key === 'gi') {
+        (result as any)[key] = value;
+      } else {
+        (result as any)[key] = Math.round(value * factor * 1000) / 1000;
+      }
     }
   }
   return result;

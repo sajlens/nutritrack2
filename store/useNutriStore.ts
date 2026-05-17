@@ -20,6 +20,7 @@ const VALID_NUTRIENT_COLS = new Set([
   'omega3_g','omega6_g','beta_carotene_ug','lutein_zeaxanthin_ug','lycopene_ug',
   'polyphenols_mg','quercetin_mg','anthocyanins_mg','chlorogenic_acid_mg',
   'betaine_mg','caffeine_mg','coenzyme_q10_mg','carnitine_mg','collagen_g','creatine_g',
+  'l_theanine_mg','gi',
 ]);
 
 const filterNutrients = (nutrients: any) =>

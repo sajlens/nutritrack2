@@ -12,7 +12,8 @@ import { Meal } from '../types';
 /** Zwraca metadane nutrientu, z obsługą wirtualnego klucza 'net_carbs'.
  *  RDA dobierane jest do trybu dnia (maintain/gain). */
 function getMeta(key: string, mode: DayMode = 'maintain') {
-  if (key === 'net_carbs' || key === 'effective_sugar' || key === 'omega_ratio') {
+  if (key === 'net_carbs' || key === 'effective_sugar' || key === 'omega_ratio'
+      || key === 'glycemic_load' || key === 'ca_p_ratio' || key === 'na_k_ratio') {
     const meta = NUTRIENTS[key];
     return {
       label: meta?.label ?? key,
@@ -42,6 +43,12 @@ function nutrientValue(itemNutrients: any, key: string): number {
     const sugar = itemNutrients.sugar_g ?? 0;
     const fiber = itemNutrients.fiber ?? 0;
     return Math.max(0, sugar - Math.min(sugar, fiber));
+  }
+  if (key === 'glycemic_load') {
+    // GL = gi × carbs / 100 (gi jest per 100g/procent, carbs już przeskalowane do wagi)
+    const gi = itemNutrients.gi ?? 0;
+    const carbs = itemNutrients.carbs ?? 0;
+    return (gi * carbs) / 100;
   }
   return itemNutrients[key] ?? 0;
 }
@@ -313,6 +320,66 @@ function getNaKRatioBreakdown(meals: Meal[], targetRatio: number) {
   return { psuje, poprawia };
 }
 
+/** Breakdown dla ładunku glikemicznego (GL).
+ * Inaczej niż dla ratio - tu nie ma "psuje vs poprawia", tylko kto wnosi najwięcej GL.
+ * Grupujemy w 3 kategorie wpływu:
+ *   - wysokie (GL ≥ 10) → 🔴 spory ładunek z jednego produktu
+ *   - średnie (GL 5-10) → 🟡 zauważalny
+ *   - niskie (GL > 0, < 5) → 🟢 pomijalny
+ * Pomijamy produkty bez gi (null/undefined) - nie mamy danych do liczenia.
+ */
+function getGlycemicLoadBreakdown(meals: Meal[]) {
+  type GLItem = {
+    name: string;
+    weight: number;
+    gi: number;
+    carbs: number;
+    gl: number;
+  };
+
+  const merged = new Map<string, GLItem>();
+
+  for (const meal of meals) {
+    for (const item of meal.items) {
+      const gi = (item.nutrients as any).gi;
+      const carbs = item.nutrients.carbs ?? 0;
+      // Pomijamy produkty bez GI (brak danych) lub bez węgli
+      if (typeof gi !== 'number' || gi <= 0 || carbs <= 0) continue;
+
+      const existing = merged.get(item.name);
+      if (existing) {
+        existing.weight += item.weight_grams;
+        existing.carbs += carbs;
+        existing.gl += (gi * carbs) / 100;
+      } else {
+        merged.set(item.name, {
+          name: item.name,
+          weight: item.weight_grams,
+          gi,
+          carbs,
+          gl: (gi * carbs) / 100,
+        });
+      }
+    }
+  }
+
+  const wysokie: GLItem[] = [];
+  const srednie: GLItem[] = [];
+  const niskie: GLItem[] = [];
+
+  for (const item of merged.values()) {
+    if (item.gl >= 10) wysokie.push(item);
+    else if (item.gl >= 5) srednie.push(item);
+    else if (item.gl > 0) niskie.push(item);
+  }
+
+  wysokie.sort((a, b) => b.gl - a.gl);
+  srednie.sort((a, b) => b.gl - a.gl);
+  niskie.sort((a, b) => b.gl - a.gl);
+
+  return { wysokie, srednie, niskie };
+}
+
 /** Format wartości nutrientu dla wyświetlenia (różna precyzja w zależności od skali). */
 function fmt(value: number): string {
   if (value === 0) return '0';
@@ -362,6 +429,14 @@ function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKe
     const fiber = totals?.fiber ?? 0;
     displayValue = Math.max(0, sugar - Math.min(sugar, fiber));
     meta = NUTRIENTS.effective_sugar;
+    displayLabel = meta?.label;
+    displayUnit = meta?.unit;
+  }
+
+  if (nutrientKey === 'glycemic_load') {
+    // GL dnia jest zsumowane w sumNutrientValues (lib/calculations.ts)
+    displayValue = (totals as any)?.glycemic_load ?? 0;
+    meta = NUTRIENTS.glycemic_load;
     displayLabel = meta?.label;
     displayUnit = meta?.unit;
   }
@@ -495,7 +570,7 @@ export default function Dashboard() {
     { key: 'fat', label: 'tłuszcz' },
   ];
 
-  const breakdownData = breakdownKey && breakdownKey !== 'omega_ratio' && breakdownKey !== 'ca_p_ratio' && breakdownKey !== 'na_k_ratio'
+  const breakdownData = breakdownKey && breakdownKey !== 'omega_ratio' && breakdownKey !== 'ca_p_ratio' && breakdownKey !== 'na_k_ratio' && breakdownKey !== 'glycemic_load'
     ? getNutrientBreakdown(todayMeals, breakdownKey)
     : null;
   const omegaBreakdown = breakdownKey === 'omega_ratio'
@@ -506,6 +581,9 @@ export default function Dashboard() {
     : null;
   const naKBreakdown = breakdownKey === 'na_k_ratio'
     ? getNaKRatioBreakdown(todayMeals, NUTRIENTS.na_k_ratio.rda_personal ?? 1)
+    : null;
+  const glBreakdown = breakdownKey === 'glycemic_load'
+    ? getGlycemicLoadBreakdown(todayMeals)
     : null;
   const breakdownMeta = breakdownKey ? getMeta(breakdownKey, currentMode) : null;
 
@@ -901,6 +979,96 @@ export default function Dashboard() {
                                 <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
                                 <Text style={styles.breakdownPct}>
                                   Na: {fmt(item.sodium)}mg · K: {fmt(item.potassium)}mg
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </>
+                  )}
+                </ScrollView>
+              </>
+            )}
+
+            {glBreakdown && breakdownMeta && (
+              <>
+                <View style={styles.modalHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.modalTitle}>{breakdownMeta.label}</Text>
+                    <Text style={styles.modalSubtitle}>
+                      Cel: ≤ {breakdownMeta.rda_personal} GL/dzień
+                    </Text>
+                  </View>
+                  <TouchableOpacity onPress={() => setBreakdownKey(null)} style={styles.modalClose} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={styles.modalCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.modalScroll} contentContainerStyle={{ paddingBottom: 24 }}>
+                  {glBreakdown.wysokie.length === 0 && glBreakdown.srednie.length === 0 && glBreakdown.niskie.length === 0 ? (
+                    <Text style={styles.modalEmpty}>Brak produktów z danymi GI w tym dniu.</Text>
+                  ) : (
+                    <>
+                      {glBreakdown.wysokie.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#fef2f2', borderLeftColor: '#ef4444', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#991b1b' }]}>🔴 Wysokie GL (≥10)</Text>
+                          </View>
+                          {glBreakdown.wysokie.map((item, i) => (
+                            <View key={`high-gl-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>GL {fmt(item.gl)}</Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  IG: {item.gi} · węgle: {fmt(item.carbs)}g
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {glBreakdown.srednie.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#fffbeb', borderLeftColor: '#f59e0b', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#92400e' }]}>🟡 Średnie GL (5–10)</Text>
+                          </View>
+                          {glBreakdown.srednie.map((item, i) => (
+                            <View key={`mid-gl-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>GL {fmt(item.gl)}</Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  IG: {item.gi} · węgle: {fmt(item.carbs)}g
+                                </Text>
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+
+                      {glBreakdown.niskie.length > 0 && (
+                        <View style={styles.breakdownGroup}>
+                          <View style={[styles.breakdownMealHeader, { backgroundColor: '#f0fdf4', borderLeftColor: '#16a34a', borderLeftWidth: 3, paddingLeft: 10 }]}>
+                            <Text style={[styles.breakdownMealName, { color: '#166534' }]}>🟢 Niskie GL (&lt;5)</Text>
+                          </View>
+                          {glBreakdown.niskie.map((item, i) => (
+                            <View key={`low-gl-${i}`} style={styles.breakdownIngredientRow}>
+                              <View style={styles.breakdownTop}>
+                                <Text style={styles.breakdownIngredientName} numberOfLines={2}>↳ {item.name}</Text>
+                                <Text style={styles.breakdownValue}>GL {fmt(item.gl)}</Text>
+                              </View>
+                              <View style={styles.breakdownBottom}>
+                                <Text style={styles.breakdownWeight}>{Math.round(item.weight)}g</Text>
+                                <Text style={styles.breakdownPct}>
+                                  IG: {item.gi} · węgle: {fmt(item.carbs)}g
                                 </Text>
                               </View>
                             </View>
