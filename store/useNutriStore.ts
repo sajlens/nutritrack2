@@ -3,7 +3,7 @@ import { Meal, MealItem, NutrientValues, DailySummary } from '../types';
 import { supabase } from '../lib/supabase';
 import { sumNutrientValues } from '../lib/calculations';
 import { localDateString, localDayRangeUtc } from '../lib/dates';
-import { DayMode } from '../constants/nutrients';
+import { DayMode, TargetOverrides } from '../constants/nutrients';
 
 const EXCLUDED_KEYS = new Set([
   'id', 'meal_id', 'name', 'weight_grams', 'confirmed', 'nutrient_key', 'created_at'
@@ -38,6 +38,7 @@ interface NutriState {
   isLoading: boolean;
   selectedDate: string;
   dayModes: Record<string, DayMode>;  // mapowanie data → tryb (cache)
+  userTargets: TargetOverrides;        // overrides celów z user_targets (Supabase)
   setSelectedDate: (date: string) => void;
   loadTodayMeals: () => Promise<void>;
   loadMealsForDate: (date: string) => Promise<void>;
@@ -48,6 +49,8 @@ interface NutriState {
   loadDayMode: (date: string) => Promise<DayMode>;
   setDayMode: (date: string, mode: DayMode) => Promise<void>;
   getDayMode: (date: string) => DayMode;
+  loadUserTargets: () => Promise<void>;
+  saveUserTargets: (targets: TargetOverrides) => Promise<void>;
 }
 
 export const useNutriStore = create<NutriState>((set, get) => ({
@@ -55,6 +58,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   isLoading: false,
   selectedDate: localDateString(),
   dayModes: {},
+  userTargets: {},
 
   setSelectedDate: (date: string) => {
     set({ selectedDate: date });
@@ -237,5 +241,32 @@ export const useNutriStore = create<NutriState>((set, get) => ({
 
   getDayMode: (date: string) => {
     return get().dayModes[date] ?? 'maintain';
+  },
+
+  loadUserTargets: async () => {
+    try {
+      const { data } = await supabase.from('user_targets').select('*').limit(1).maybeSingle();
+      if (data) {
+        const { id, updated_at, ...targets } = data as any;
+        set({ userTargets: targets });
+      }
+    } catch {
+      // brak tabeli / brak wiersza → puste overrides, fallback do defaults
+    }
+  },
+
+  saveUserTargets: async (targets: TargetOverrides) => {
+    // Optymistyczna aktualizacja UI
+    set({ userTargets: targets });
+    try {
+      const { data: existing } = await supabase.from('user_targets').select('id').limit(1).maybeSingle();
+      if (existing) {
+        await supabase.from('user_targets').update({ ...targets, updated_at: new Date().toISOString() }).eq('id', (existing as any).id);
+      } else {
+        await supabase.from('user_targets').insert(targets);
+      }
+    } catch {
+      // Jeśli nie wyszło - zostaw w lokalnym stanie
+    }
   },
 }));

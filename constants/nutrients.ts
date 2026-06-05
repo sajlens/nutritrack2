@@ -23,13 +23,42 @@ export function getRdaFor(meta: NutrientMeta, mode: DayMode): number | undefined
   return meta.rda_personal;
 }
 
+/** Cele które można edytować z poziomu apki (zapisane w tabeli user_targets w Supabase). */
+export const EDITABLE_TARGETS = ['calories', 'protein', 'fat', 'carbs', 'net_carbs', 'fiber'] as const;
+export type EditableTargetKey = typeof EDITABLE_TARGETS[number];
+
+/** Mapa overridów: 'calories_maintain' → 1800, 'protein_gain' → 130, etc.
+ *  Pole null/undefined = brak override, używaj hard-coded z NUTRIENTS. */
+export type TargetOverrides = Partial<Record<string, number | null>>;
+
+/** Zwraca aktualny cel dla danego nutrientu, biorąc pod uwagę overrides z user_targets.
+ *  Fallback do hard-coded rda_personal/rda_gain z NUTRIENTS. */
+export function getEffectiveTarget(
+  key: string,
+  mode: DayMode,
+  overrides?: TargetOverrides
+): number | undefined {
+  // Override z user_targets (jeśli ustawione i nie-null)
+  if (overrides && EDITABLE_TARGETS.includes(key as EditableTargetKey)) {
+    const overrideKey = `${key}_${mode}`;
+    const overrideVal = overrides[overrideKey];
+    if (typeof overrideVal === 'number' && overrideVal > 0) {
+      return overrideVal;
+    }
+  }
+  // Fallback do hard-coded RDA
+  const meta = NUTRIENTS[key];
+  if (!meta) return undefined;
+  return getRdaFor(meta, mode);
+}
+
 export const NUTRIENTS: Record<string, NutrientMeta> = {
   // Makro
   calories:               { label: 'Kalorie',              unit: 'kcal', rda_personal: 1800, rda_gain: 2200, category: 'macro' },
-  protein:                { label: 'Białko',               unit: 'g',    rda_personal: 110,  rda_gain: 120,  category: 'macro' },
-  fat:                    { label: 'Tłuszcze',             unit: 'g',    rda_personal: 100,  rda_gain: 120,  category: 'macro' },
-  carbs:                  { label: 'Węglowodany',          unit: 'g',    rda_personal: 115,  rda_gain: 130,  category: 'macro' },
-  net_carbs:              { label: 'Net carbs',            unit: 'g',    rda_personal: 90,   rda_gain: 100,  category: 'macro' },
+  protein:                { label: 'Białko',               unit: 'g',    rda_personal: 110,  rda_gain: 130,  category: 'macro' },
+  fat:                    { label: 'Tłuszcze',             unit: 'g',    rda_personal: 75,   rda_gain: 92,   category: 'macro' },
+  carbs:                  { label: 'Węglowodany',          unit: 'g',    rda_personal: 140,  rda_gain: 170,  category: 'macro' },
+  net_carbs:              { label: 'Net carbs',            unit: 'g',    rda_personal: 115,  rda_gain: 140,  category: 'macro' },
   // Błonnik: wyższe zapotrzebowanie przy aktywności fizycznej
   fiber:                  { label: 'Błonnik',              unit: 'g',    rda_f: 25,   rda_m: 38,   rda_personal: 25,   rda_gain: 28, category: 'macro' },
   sugar_g:                { label: 'Cukry (wszystkie)',    unit: 'g',    category: 'macro' },

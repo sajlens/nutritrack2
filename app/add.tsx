@@ -41,7 +41,9 @@ export default function AddMeal() {
   const [templatesModal, setTemplatesModal] = useState(false);
   const [templates, setTemplates] = useState<any[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    () => new Set(TEMPLATE_CATEGORIES.map(c => c.key))
+  );
 
   const [portionsModal, setPortionsModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
@@ -937,7 +939,11 @@ export default function AddMeal() {
         textAlignVertical="top"
       />
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.btnSecondary} onPress={() => { loadTemplates(); setTemplatesModal(true); }}>
+        <TouchableOpacity style={styles.btnSecondary} onPress={() => {
+          loadTemplates();
+          setCollapsedSections(new Set(TEMPLATE_CATEGORIES.map(c => c.key)));
+          setTemplatesModal(true);
+        }}>
           <Text style={styles.btnSecondaryText}>Ulubione</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.btnPrimary, !input.trim() && styles.btnDisabled]} onPress={handleParse} disabled={isLoading || !input.trim()}>
@@ -1098,14 +1104,39 @@ export default function AddMeal() {
             </View>
 
             <Text style={styles.portionsHint}>{portionsMode === 'portions' ? 'Ile porcji?' : 'Ile gramów?'}</Text>
-            <TextInput
-              style={styles.portionsInput}
-              value={portionsInput}
-              onChangeText={setPortionsInput}
-              keyboardType="numeric"
-              selectTextOnFocus
-              autoFocus
-            />
+            <View style={styles.portionsStepperRow}>
+              <TouchableOpacity
+                style={styles.portionsStepperBtn}
+                onPress={() => {
+                  const current = parseFloat(portionsInput.replace(',', '.')) || 0;
+                  const step = portionsMode === 'portions' ? 0.5 : 10;
+                  const min = portionsMode === 'portions' ? 0.1 : 5;
+                  const next = Math.max(min, Math.round((current - step) * 100) / 100);
+                  setPortionsInput(String(next));
+                }}
+              >
+                <Text style={styles.portionsStepperBtnText}>−</Text>
+              </TouchableOpacity>
+              <TextInput
+                style={[styles.portionsInput, { flex: 1, marginBottom: 0 }]}
+                value={portionsInput}
+                onChangeText={setPortionsInput}
+                keyboardType="numeric"
+                selectTextOnFocus
+                autoFocus
+              />
+              <TouchableOpacity
+                style={styles.portionsStepperBtn}
+                onPress={() => {
+                  const current = parseFloat(portionsInput.replace(',', '.')) || 0;
+                  const step = portionsMode === 'portions' ? 0.5 : 10;
+                  const next = Math.round((current + step) * 100) / 100;
+                  setPortionsInput(String(next));
+                }}
+              >
+                <Text style={styles.portionsStepperBtnText}>+</Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={styles.btnSecondary}
@@ -1745,5 +1776,8 @@ const styles = StyleSheet.create({
   portionsBox: { backgroundColor: '#fff', borderRadius: 16, padding: 24, width: '80%' },
   portionsTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 4, textAlign: 'center' },
   portionsHint: { fontSize: 13, color: '#6b7280', marginBottom: 16, textAlign: 'center' },
-  portionsInput: { backgroundColor: '#f9fafb', borderRadius: 10, borderWidth: 1, borderColor: '#d1d5db', padding: 12, fontSize: 28, fontWeight: '700', textAlign: 'center', marginBottom: 16, color: '#111827' },
+  portionsInput: { backgroundColor: '#f9fafb', borderRadius: 10, borderWidth: 1, borderColor: '#d1d5db', padding: 12, fontSize: 24, fontWeight: '700', textAlign: 'center', marginBottom: 16, color: '#111827' },
+  portionsStepperRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginBottom: 16 },
+  portionsStepperBtn: { backgroundColor: '#f0fdf4', borderRadius: 10, borderWidth: 1, borderColor: '#bbf7d0', paddingHorizontal: 18, justifyContent: 'center', alignItems: 'center', minWidth: 50 },
+  portionsStepperBtnText: { fontSize: 26, color: '#15803d', fontWeight: '700', lineHeight: 28 },
 });

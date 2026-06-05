@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
-import { NUTRIENTS, DASHBOARD_NUTRIENTS, getRdaFor, DayMode } from '../constants/nutrients';
+import { NUTRIENTS, DASHBOARD_NUTRIENTS, getEffectiveTarget, TargetOverrides, DayMode } from '../constants/nutrients';
 import { calculateDayScore, getScoreBreakdown, ScoreItem } from '../lib/score';
 import { localDateString, addDays, isToday as isTodayDate } from '../lib/dates';
 import { Meal } from '../types';
@@ -10,21 +10,21 @@ import { Meal } from '../types';
 // ── Pomocnicze ────────────────────────────────────────────────────────────
 
 /** Zwraca metadane nutrientu, z obsługą wirtualnego klucza 'net_carbs'.
- *  RDA dobierane jest do trybu dnia (maintain/gain). */
-function getMeta(key: string, mode: DayMode = 'maintain') {
+ *  RDA dobierane jest do trybu dnia (maintain/gain), z opcjonalnymi overridami z user_targets. */
+function getMeta(key: string, mode: DayMode = 'maintain', overrides?: TargetOverrides) {
   if (key === 'net_carbs' || key === 'effective_sugar' || key === 'omega_ratio'
       || key === 'glycemic_load' || key === 'ca_p_ratio' || key === 'na_k_ratio') {
     const meta = NUTRIENTS[key];
     return {
       label: meta?.label ?? key,
       unit: meta?.unit ?? '',
-      rda_personal: meta ? (getRdaFor(meta, mode) ?? 0) : 0,
+      rda_personal: getEffectiveTarget(key, mode, overrides) ?? 0,
       limit: meta?.limit ?? false,
     };
   }
   const meta = NUTRIENTS[key];
   if (!meta) return null;
-  return { ...meta, rda_personal: getRdaFor(meta, mode) ?? 0 };
+  return { ...meta, rda_personal: getEffectiveTarget(key, mode, overrides) ?? 0 };
 }
 
 /** Wyciąga wartość nutrientu dla pojedynczego itema, z obsługą wirtualnych kluczy. */
@@ -390,7 +390,7 @@ function fmt(value: number): string {
 
 // ── Komponenty ────────────────────────────────────────────────────────────
 
-function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKey: string; value: number; onPress?: () => void; mode: DayMode; totals?: any }) {
+function NutrientBar({ nutrientKey, value, onPress, mode, totals, userTargets }: { nutrientKey: string; value: number; onPress?: () => void; mode: DayMode; totals?: any; userTargets?: TargetOverrides }) {
   // Wirtualny klucz: stosunek omega-6 do omega-3
   let displayValue = value;
   let displayUnit: string | undefined;
@@ -445,8 +445,8 @@ function NutrientBar({ nutrientKey, value, onPress, mode, totals }: { nutrientKe
   const label = displayLabel ?? meta.label;
   const unit = displayUnit ?? meta.unit;
 
-  // Wartość docelowa / zakres
-  const rdaPoint = getRdaFor(meta, mode) ?? meta.rda_f ?? 0;
+  // Wartość docelowa / zakres - bierze override z user_targets jeśli ustawione
+  const rdaPoint = getEffectiveTarget(nutrientKey, mode, userTargets) ?? meta.rda_f ?? 0;
   const rdaMin = meta.rda_min;
   const rdaMax = meta.rda_max;
   const hasRange = rdaMin !== undefined && rdaMax !== undefined;
@@ -520,7 +520,7 @@ function formatDateLabel(dateStr: string): string {
 // ── Główny ekran ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal, loadDayMode, setDayMode, getDayMode } = useNutriStore();
+  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal, loadDayMode, setDayMode, getDayMode, loadUserTargets, userTargets } = useNutriStore();
   const totals = getTodayTotals();
   const [breakdownKey, setBreakdownKey] = useState<string | null>(null);
   const [scoreModal, setScoreModal] = useState(false);
@@ -531,6 +531,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadTodayMeals();
+    loadUserTargets();
   }, []);
 
   // Załaduj tryb dnia gdy zmienia się data
@@ -585,7 +586,7 @@ export default function Dashboard() {
   const glBreakdown = breakdownKey === 'glycemic_load'
     ? getGlycemicLoadBreakdown(todayMeals)
     : null;
-  const breakdownMeta = breakdownKey ? getMeta(breakdownKey, currentMode) : null;
+  const breakdownMeta = breakdownKey ? getMeta(breakdownKey, currentMode, userTargets) : null;
 
   return (
     <>
@@ -607,9 +608,14 @@ export default function Dashboard() {
               <Text style={styles.scoreText}>{dayScore}%</Text>
             </TouchableOpacity>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.dateArrow, isToday && styles.dateArrowDisabled]} onPress={goToNextDay}>
-            <Text style={[styles.dateArrowText, isToday && styles.dateArrowDisabledText]}>›</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity style={[styles.dateArrow, isToday && styles.dateArrowDisabled]} onPress={goToNextDay}>
+              <Text style={[styles.dateArrowText, isToday && styles.dateArrowDisabledText]}>›</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.settingsBtn} onPress={() => router.push('/settings')}>
+              <Text style={styles.settingsIcon}>⚙</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Toggle trybu dnia */}
@@ -631,8 +637,8 @@ export default function Dashboard() {
               ? Math.max(0, Math.round(((totals as any).carbs ?? 0) - ((totals as any).fiber ?? 0)))
               : Math.round((totals as any)[key] ?? 0);
             const rda = isNetCarbs
-              ? (NUTRIENTS.net_carbs ? (getRdaFor(NUTRIENTS.net_carbs, currentMode) ?? 0) : 0)
-              : (meta ? (getRdaFor(meta, currentMode) ?? 0) : 0);
+              ? (getEffectiveTarget('net_carbs', currentMode, userTargets) ?? 0)
+              : (getEffectiveTarget(key, currentMode, userTargets) ?? 0);
             const pct = rda > 0 ? Math.min((val / rda) * 100, 100) : 0;
             const color = pct >= 80 ? '#16a34a' : pct >= 40 ? '#f59e0b' : '#ef4444';
             const clickable = val > 0;
@@ -670,6 +676,7 @@ export default function Dashboard() {
               onPress={() => setBreakdownKey(key)}
               mode={currentMode}
               totals={totals}
+              userTargets={userTargets}
             />
           ))}
         </View>
@@ -1200,6 +1207,8 @@ const styles = StyleSheet.create({
   dateArrowDisabled: { opacity: 0.3 },
   dateArrowText: { fontSize: 28, color: '#16a34a', lineHeight: 30 },
   dateArrowDisabledText: { color: '#9ca3af' },
+  settingsBtn: { padding: 8, marginLeft: 4 },
+  settingsIcon: { fontSize: 20, color: '#6b7280' },
   dateLabel: { fontSize: 17, fontWeight: '600', color: '#111827' },
   modeToggle: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 16, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#e5e7eb' },
   modeToggleLabel: { fontSize: 14, color: '#6b7280' },
