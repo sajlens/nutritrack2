@@ -526,8 +526,8 @@ export default function Dashboard() {
   const [scoreModal, setScoreModal] = useState(false);
 
   const currentMode = getDayMode(selectedDate);
-  const dayScore = calculateDayScore(totals, currentMode);
-  const scoreBreakdown = scoreModal ? getScoreBreakdown(totals, currentMode) : null;
+  const dayScore = calculateDayScore(totals, currentMode, userTargets);
+  const scoreBreakdown = scoreModal ? getScoreBreakdown(totals, currentMode, userTargets) : null;
 
   useEffect(() => {
     loadTodayMeals();

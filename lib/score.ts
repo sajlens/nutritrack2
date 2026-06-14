@@ -1,10 +1,10 @@
-import { NUTRIENTS, getRdaFor, DayMode } from '../constants/nutrients';
+import { NUTRIENTS, getRdaFor, getEffectiveTarget, TargetOverrides, DayMode } from '../constants/nutrients';
 
-// Pomocnik: zwraca cel dla danego klucza w danym trybie, lub fallback gdy brak.
-function target(key: string, mode: DayMode, fallback: number): number {
-  const meta = NUTRIENTS[key];
-  if (!meta) return fallback;
-  return getRdaFor(meta, mode) ?? fallback;
+// Pomocnik: zwraca cel dla danego klucza w danym trybie, z opcjonalnym overridem z user_targets.
+function target(key: string, mode: DayMode, fallback: number, overrides?: TargetOverrides): number {
+  const effective = getEffectiveTarget(key, mode, overrides);
+  if (effective != null) return effective;
+  return fallback;
 }
 
 // Szczegół składowej wyniku — używane do podpowiedzi "co podnieść"
@@ -23,11 +23,11 @@ export type ScoreBreakdown = {
   items: ScoreItem[];
 };
 
-export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): ScoreBreakdown {
+export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain', userTargets?: TargetOverrides): ScoreBreakdown {
   const items: ScoreItem[] = [];
 
   // ── Fundament ───────────────────────────────────────────────────────────
-  const calT = target('calories', mode, 1800);
+  const calT = target('calories', mode, 1800, userTargets);
   const calPct = totals.calories / calT;
   let calPts = 0;
   if (calPct >= 0.85 && calPct <= 1.05) calPts = 15;
@@ -39,7 +39,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     hint: calPct < 0.85 ? 'Zjedz więcej' : calPct > 1.05 ? 'Mniej kalorii' : undefined,
   });
 
-  const protT = target('protein', mode, 110);
+  const protT = target('protein', mode, 110, userTargets);
   const protRatio = Math.min(totals.protein / protT, 1);
   const protPts = Math.round(protRatio * 20);
   items.push({
@@ -47,7 +47,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     hint: protPts < 20 ? 'Dodaj białko' : undefined,
   });
 
-  const carbT = target('carbs', mode, 115);
+  const carbT = target('carbs', mode, 115, userTargets);
   const carbPct = totals.carbs / carbT;
   let carbPts = 0;
   if (carbPct <= 0.80) carbPts = 8;
@@ -59,7 +59,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     hint: carbPct > 1.20 ? 'Mniej węgli' : undefined,
   });
 
-  const fatT = target('fat', mode, 100);
+  const fatT = target('fat', mode, 100, userTargets);
   const fatPct = totals.fat / fatT;
   let fatPts = 0;
   if (fatPct >= 0.70 && fatPct <= 1.30) fatPts = 5;
@@ -70,15 +70,18 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
   });
 
   // ── Kary ────────────────────────────────────────────────────────────────
-  const effSugar = Math.max(0, (totals.sugar_g ?? 0) - (totals.fiber ?? 0) / 2);
-  const sugarTarget = target('effective_sugar', mode, 25);
+  // Effective sugar - zsynchronizowane z resztą apki: sugar - min(sugar, fiber)
+  const sugar = totals.sugar_g ?? 0;
+  const fiber = totals.fiber ?? 0;
+  const effSugar = Math.max(0, sugar - Math.min(sugar, fiber));
+  const sugarTarget = target('effective_sugar', mode, 25, userTargets);
   const sugarPct = effSugar / sugarTarget;
   let sugarPenalty = 0;
   if (sugarPct > 1) sugarPenalty = Math.min(Math.round((sugarPct - 1) * 10), 8);
   if (sugarPenalty > 0) {
     items.push({
       key: 'effective_sugar', label: 'Cukry efektywne', earned: -sugarPenalty, max: 0, pct: sugarPct * 100, kind: 'kara',
-      hint: 'Ogranicz słodycze i napoje',
+      hint: 'Sporo cukrów efektywnych',
     });
   }
 
@@ -101,7 +104,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     });
   }
 
-  const satFatPct = (totals.saturated_fat_g ?? 0) / target('saturated_fat_g', mode, 20);
+  const satFatPct = (totals.saturated_fat_g ?? 0) / target('saturated_fat_g', mode, 20, userTargets);
   let satPenalty = 0;
   if (satFatPct > 1) satPenalty = Math.min(Math.round((satFatPct - 1) * 6), 4);
   if (satPenalty > 0) {
@@ -131,7 +134,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     { key: 'choline_mg',     pts: 4, hint: 'Podnieś cholinę' },
   ];
   for (const { key, pts, hint } of micro) {
-    const rda = target(key, mode, 0);
+    const rda = target(key, mode, 0, userTargets);
     if (rda <= 0) continue;
     const ratio = (totals[key] ?? 0) / rda;
     const earned = Math.round(Math.min(ratio, 1) * pts);
@@ -151,7 +154,7 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
     { key: 'anthocyanins_mg',      pts: 2, hint: 'Podnieś antocyjany (jagody, czarna porzeczka)' },
   ];
   for (const { key, pts, hint } of bonusItems) {
-    const rda = target(key, mode, 0);
+    const rda = target(key, mode, 0, userTargets);
     if (rda <= 0) continue;
     const ratio = (totals[key] ?? 0) / rda;
     const earned = Math.round(Math.min(ratio, 1) * pts);
@@ -170,6 +173,6 @@ export function getScoreBreakdown(totals: any, mode: DayMode = 'maintain'): Scor
   return { total, items };
 }
 
-export function calculateDayScore(totals: any, mode: DayMode = 'maintain'): number {
-  return getScoreBreakdown(totals, mode).total;
+export function calculateDayScore(totals: any, mode: DayMode = 'maintain', userTargets?: TargetOverrides): number {
+  return getScoreBreakdown(totals, mode, userTargets).total;
 }
