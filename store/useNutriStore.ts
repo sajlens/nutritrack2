@@ -42,7 +42,7 @@ interface NutriState {
   setSelectedDate: (date: string) => void;
   loadTodayMeals: () => Promise<void>;
   loadMealsForDate: (date: string) => Promise<void>;
-  addMeal: (rawInput: string, items: MealItem[]) => Promise<void>;
+  addMeal: (rawInput: string, items: MealItem[]) => Promise<string | null>;
   updateMeal: (mealId: string, rawInput: string, items: MealItem[], newEatenAtIso?: string) => Promise<void>;
   deleteMeal: (mealId: string) => Promise<void>;
   getTodayTotals: () => NutrientValues;
@@ -118,7 +118,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
       .select()
       .single();
 
-    if (error || !meal) return;
+    if (error || !meal) return null;
 
     const mealItemsToInsert = items.map(item => ({
       meal_id: meal.id,
@@ -140,6 +140,8 @@ export const useNutriStore = create<NutriState>((set, get) => ({
     };
 
     set(state => ({ todayMeals: [newMeal, ...state.todayMeals] }));
+
+    return meal.id;
   },
 
   updateMeal: async (mealId: string, rawInput: string, items: MealItem[], newEatenAtIso?: string) => {

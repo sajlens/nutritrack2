@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Alert, Modal, FlatList
+  StyleSheet, ActivityIndicator, Alert, Modal, FlatList, Linking
 } from 'react-native';
 import { router } from 'expo-router';
 import { parseMealDescription } from '../lib/claude';
@@ -11,6 +11,30 @@ import { useNutriStore } from '../store/useNutriStore';
 import { MealItem } from '../types';
 import { NUTRIENTS } from '../constants/nutrients';
 import { supabase } from '../lib/supabase';
+
+// === MOST KONSUMPCJA → INWENTARZ ===
+// Wpisz tu swój adres Bazy Domowej (Cloudflare Pages), bez ukośnika na końcu:
+const BD_URL = 'https://baza-domowa.pages.dev';
+
+// Po zapisie posiłku: otwórz ekran rozliczenia w BD, ale TYLKO jeśli
+// któraś pozycja jest zmapowana na produkt w spiżarni (inwentarz_mapowanie).
+async function openRozliczenieIfMapped(mealId: string, items: MealItem[]) {
+  try {
+    const keys = Array.from(new Set(items.map(i => i.nutrient_key).filter(Boolean)));
+    if (keys.length === 0) return;
+    const { data } = await supabase
+      .from('inwentarz_mapowanie')
+      .select('nutrient_key')
+      .in('nutrient_key', keys)
+      .limit(1);
+    if (data && data.length > 0) {
+      await Linking.openURL(`${BD_URL}/?rozlicz=${mealId}`);
+    }
+  } catch (e) {
+    // cicho — rozliczenie jest opcjonalne, nie blokujemy zapisu posiłku
+    console.warn('[rozliczenie] link', e);
+  }
+}
 
 export default function AddMeal() {
   const TEMPLATE_CATEGORIES = [
@@ -738,7 +762,8 @@ export default function AddMeal() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await addMeal(input, items);
+      const mealId = await addMeal(input, items);
+      if (mealId) await openRozliczenieIfMapped(mealId, items);
       setInput(''); setItems([]); setStep('input');
       router.replace('/');
     } catch {
