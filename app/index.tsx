@@ -520,12 +520,13 @@ function formatDateLabel(dateStr: string): string {
 // ── Główny ekran ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal, loadDayMode, setDayMode, getDayMode, loadUserTargets, userTargets } = useNutriStore();
+  const { todayMeals, isLoading, loadTodayMeals, getTodayTotals, selectedDate, setSelectedDate, deleteMeal, loadDayMode, setDayMode, getDayMode, setDayLogged, getDayLogged, loadUserTargets, userTargets } = useNutriStore();
   const totals = getTodayTotals();
   const [breakdownKey, setBreakdownKey] = useState<string | null>(null);
   const [scoreModal, setScoreModal] = useState(false);
 
   const currentMode = getDayMode(selectedDate);
+  const isDayLogged = getDayLogged(selectedDate);
   const dayScore = calculateDayScore(totals, currentMode, userTargets);
   const scoreBreakdown = scoreModal ? getScoreBreakdown(totals, currentMode, userTargets) : null;
 
@@ -542,6 +543,10 @@ export default function Dashboard() {
   const toggleDayMode = () => {
     const newMode: DayMode = currentMode === 'gain' ? 'maintain' : 'gain';
     setDayMode(selectedDate, newMode);
+  };
+
+  const toggleDayLogged = () => {
+    setDayLogged(selectedDate, !isDayLogged);
   };
 
   const goToPrevDay = () => setSelectedDate(addDays(selectedDate, -1));
@@ -624,6 +629,17 @@ export default function Dashboard() {
           <View style={[styles.modeBadge, currentMode === 'gain' ? styles.modeBadgeGain : styles.modeBadgeMaintain]}>
             <Text style={[styles.modeBadgeText, currentMode === 'gain' ? styles.modeBadgeTextGain : styles.modeBadgeTextMaintain]}>
               {currentMode === 'gain' ? '💪 Gain' : '⚖️ Utrzymanie'}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Toggle: czy dzień jest wypełniony — ustawiane ręcznie po dograniu ostatniego posiłku.
+            Domyślnie "niewypełniony", żeby przyszłe analizy mogły pomijać dni bez pełnego logu. */}
+        <TouchableOpacity onPress={toggleDayLogged} style={styles.modeToggle} activeOpacity={0.7}>
+          <Text style={styles.modeToggleLabel}>Dzień wypełniony:</Text>
+          <View style={[styles.modeBadge, isDayLogged ? styles.modeBadgeLogged : styles.modeBadgeNotLogged]}>
+            <Text style={[styles.modeBadgeText, isDayLogged ? styles.modeBadgeTextLogged : styles.modeBadgeTextNotLogged]}>
+              {isDayLogged ? '✅ Tak' : '◻️ Nie'}
             </Text>
           </View>
         </TouchableOpacity>
@@ -1218,6 +1234,10 @@ const styles = StyleSheet.create({
   modeBadgeText: { fontSize: 14, fontWeight: '700' },
   modeBadgeTextMaintain: { color: '#1e40af' },
   modeBadgeTextGain: { color: '#92400e' },
+  modeBadgeLogged: { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' },
+  modeBadgeNotLogged: { backgroundColor: '#f3f4f6', borderColor: '#e5e7eb' },
+  modeBadgeTextLogged: { color: '#15803d' },
+  modeBadgeTextNotLogged: { color: '#6b7280' },
   dateLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   scoreBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
   scoreSection: { fontSize: 14, fontWeight: '700', color: '#374151', marginTop: 16, marginBottom: 8, paddingHorizontal: 4 },

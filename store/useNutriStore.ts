@@ -38,6 +38,7 @@ interface NutriState {
   isLoading: boolean;
   selectedDate: string;
   dayModes: Record<string, DayMode>;  // mapowanie data → tryb (cache)
+  dayLogged: Record<string, boolean>;  // mapowanie data → czy dzień oznaczony jako wypełniony (cache; domyślnie false)
   userTargets: TargetOverrides;        // overrides celów z user_targets (Supabase)
   setSelectedDate: (date: string) => void;
   loadTodayMeals: () => Promise<void>;
@@ -49,6 +50,8 @@ interface NutriState {
   loadDayMode: (date: string) => Promise<DayMode>;
   setDayMode: (date: string, mode: DayMode) => Promise<void>;
   getDayMode: (date: string) => DayMode;
+  setDayLogged: (date: string, isLogged: boolean) => Promise<void>;
+  getDayLogged: (date: string) => boolean;
   loadUserTargets: () => Promise<void>;
   saveUserTargets: (targets: TargetOverrides) => Promise<void>;
 }
@@ -58,6 +61,7 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   isLoading: false,
   selectedDate: localDateString(),
   dayModes: {},
+  dayLogged: {},
   userTargets: {},
 
   setSelectedDate: (date: string) => {
@@ -220,13 +224,21 @@ export const useNutriStore = create<NutriState>((set, get) => ({
 
   loadDayMode: async (date: string) => {
     try {
-      const { data } = await supabase.from('day_modes').select('mode').eq('date', date).single();
+      // Pobieramy tryb i flagę "wypełniony" jednym zapytaniem — obie żyją w tej samej tabeli per-dzień.
+      const { data } = await supabase.from('day_modes').select('mode, is_logged').eq('date', date).single();
       const mode: DayMode = (data?.mode === 'gain') ? 'gain' : 'maintain';
-      set(state => ({ dayModes: { ...state.dayModes, [date]: mode } }));
+      const isLogged: boolean = data?.is_logged === true; // brak wiersza / NULL → domyślnie niewypełniony
+      set(state => ({
+        dayModes: { ...state.dayModes, [date]: mode },
+        dayLogged: { ...state.dayLogged, [date]: isLogged },
+      }));
       return mode;
     } catch {
       const mode: DayMode = 'maintain';
-      set(state => ({ dayModes: { ...state.dayModes, [date]: mode } }));
+      set(state => ({
+        dayModes: { ...state.dayModes, [date]: mode },
+        dayLogged: { ...state.dayLogged, [date]: false },
+      }));
       return mode;
     }
   },
@@ -243,6 +255,22 @@ export const useNutriStore = create<NutriState>((set, get) => ({
 
   getDayMode: (date: string) => {
     return get().dayModes[date] ?? 'maintain';
+  },
+
+  setDayLogged: async (date: string, isLogged: boolean) => {
+    // Optymistyczna aktualizacja UI
+    set(state => ({ dayLogged: { ...state.dayLogged, [date]: isLogged } }));
+    try {
+      // Dołączamy aktualny tryb dnia, żeby upsert nie ubił wartości `mode` przy tworzeniu nowego wiersza.
+      const mode = get().dayModes[date] ?? 'maintain';
+      await supabase.from('day_modes').upsert({ date, mode, is_logged: isLogged }, { onConflict: 'date' });
+    } catch {
+      // Jeśli zapis nie wyszedł, zostawiamy lokalny stan — można spróbować ponownie
+    }
+  },
+
+  getDayLogged: (date: string) => {
+    return get().dayLogged[date] ?? false;
   },
 
   loadUserTargets: async () => {
