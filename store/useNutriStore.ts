@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { Meal, MealItem, NutrientValues, DailySummary } from '../types';
 import { supabase } from '../lib/supabase';
 import { sumNutrientValues } from '../lib/calculations';
-import { localDateString, localDayRangeUtc } from '../lib/dates';
+import { localDateString, localDayRangeUtc, isToday } from '../lib/dates';
 import { DayMode, TargetOverrides } from '../constants/nutrients';
 
 const EXCLUDED_KEYS = new Set([
@@ -116,9 +116,18 @@ export const useNutriStore = create<NutriState>((set, get) => ({
   addMeal: async (rawInput: string, items: MealItem[]) => {
     const total = sumNutrientValues(items);
 
+    // Zapisujemy posiłek w dniu, który jest wybrany na ekranie "Dziś".
+    // Dla innego dnia: ta sama godzina co teraz, ale w wybranym dniu (czas lokalny).
+    const { selectedDate } = get();
+    const now = new Date();
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const eatenAt = isToday(selectedDate)
+      ? now
+      : new Date(y, m - 1, d, now.getHours(), now.getMinutes(), now.getSeconds());
+
     const { data: meal, error } = await supabase
       .from('meals')
-      .insert({ raw_input: rawInput })
+      .insert({ raw_input: rawInput, eaten_at: eatenAt.toISOString() })
       .select()
       .single();
 

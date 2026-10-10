@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
+import { supabase } from '../lib/supabase';
 import { NUTRIENTS, EDITABLE_TARGETS, EditableTargetKey, getRdaFor } from '../constants/nutrients';
 
 type Mode = 'maintain' | 'gain';
@@ -253,6 +255,16 @@ export default function Settings() {
 
         <TouchableOpacity style={styles.btnReset} onPress={handleResetAll}>
           <Text style={styles.btnResetText}>Reset do defaultów</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.btnReset}
+          onPress={() => Alert.alert('Wyloguj', 'Na pewno się wylogować?', [
+            { text: 'Anuluj', style: 'cancel' },
+            { text: 'Wyloguj', style: 'destructive', onPress: () => supabase.auth.signOut() },
+          ])}
+        >
+          <Text style={[styles.btnResetText, { color: '#dc2626' }]}>Wyloguj</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

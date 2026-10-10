@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, Alert, Modal } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, Modal } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router } from 'expo-router';
 import { useNutriStore } from '../store/useNutriStore';
 import { NUTRIENTS, DASHBOARD_NUTRIENTS, getEffectiveTarget, TargetOverrides, DayMode } from '../constants/nutrients';
@@ -628,7 +629,7 @@ export default function Dashboard() {
           <Text style={styles.modeToggleLabel}>Tryb dnia:</Text>
           <View style={[styles.modeBadge, currentMode === 'gain' ? styles.modeBadgeGain : styles.modeBadgeMaintain]}>
             <Text style={[styles.modeBadgeText, currentMode === 'gain' ? styles.modeBadgeTextGain : styles.modeBadgeTextMaintain]}>
-              {currentMode === 'gain' ? '💪 Gain' : '⚖️ Utrzymanie'}
+              {currentMode === 'gain' ? '💪 Masa' : '⚖️ Rzeźba'}
             </Text>
           </View>
         </TouchableOpacity>

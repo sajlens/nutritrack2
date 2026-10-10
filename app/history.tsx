@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, TouchableOpacity } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { useNutriStore } from '../store/useNutriStore';

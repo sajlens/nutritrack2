@@ -1,19 +1,24 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Alert, Modal, FlatList
+  StyleSheet, ActivityIndicator, Modal, FlatList, Image
 } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router } from 'expo-router';
-import { parseMealDescription } from '../lib/claude';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import { parseMealDescription, estimateRestaurantMeal, estimateMealFromPhotos, MealPhoto } from '../lib/claude';
 import { resolveMealItems } from '../lib/calculations';
 import { searchFoodAll, searchFood, getFoodByKey, getFoodByKeyAll, calculateNutrients, isSupplementKey, setProductOverride, deleteProductOverride } from '../lib/nutrients';
 import { useNutriStore } from '../store/useNutriStore';
-import { MealItem } from '../types';
+import { MealItem, NutrientValues } from '../types';
 import { NUTRIENTS } from '../constants/nutrients';
 import { supabase } from '../lib/supabase';
 
 
 export default function AddMeal() {
+  const insets = useSafeAreaInsets();
+
   const TEMPLATE_CATEGORIES = [
     { key: 'sniadania', label: 'Śniadania' },
     { key: 'napoje', label: 'Napoje' },
@@ -77,7 +82,11 @@ export default function AddMeal() {
   const [addExtraResults, setAddExtraResults] = useState<any[]>([]);
   const [addExtraSelected, setAddExtraSelected] = useState<any | null>(null);
   const [addExtraWeight, setAddExtraWeight] = useState('');
-  const [restMode, setRestMode] = useState<'choose' | 'manual' | 'ai'>('choose');
+  const [restMode, setRestMode] = useState<'choose' | 'manual' | 'ai' | 'photo'>('choose');
+  const [restPhotos, setRestPhotos] = useState<{ uri: string; base64: string; mimeType: string }[]>([]);
+  const [restPhotoDishName, setRestPhotoDishName] = useState('');
+  const [restPercent, setRestPercent] = useState('100');
+  const [restPhotoNote, setRestPhotoNote] = useState('');
   const [restName, setRestName] = useState('');
   const [restWeight, setRestWeight] = useState('');
   const [restCalories, setRestCalories] = useState('');
@@ -88,6 +97,16 @@ export default function AddMeal() {
   const [restSugar, setRestSugar] = useState('');
   const [restSodium, setRestSodium] = useState('');
   const [restDesc, setRestDesc] = useState('');
+
+  const [editValuesModal, setEditValuesModal] = useState(false);
+  const [editValuesItemId, setEditValuesItemId] = useState('');
+  const [evCalories, setEvCalories] = useState('');
+  const [evProtein, setEvProtein] = useState('');
+  const [evCarbs, setEvCarbs] = useState('');
+  const [evFat, setEvFat] = useState('');
+  const [evFiber, setEvFiber] = useState('');
+  const [evSugar, setEvSugar] = useState('');
+  const [evSodium, setEvSodium] = useState('');
 
   const [manageSuppModal, setManageSuppModal] = useState(false);
   const [editSuppModal, setEditSuppModal] = useState(false);
@@ -192,6 +211,7 @@ export default function AddMeal() {
     setRestName(''); setRestWeight(''); setRestCalories(''); setRestProtein('');
     setRestCarbs(''); setRestFat(''); setRestFiber(''); setRestSugar('');
     setRestSodium(''); setRestDesc('');
+    setRestPhotos([]); setRestPhotoDishName(''); setRestPercent('100'); setRestPhotoNote('');
   };
 
   const handleRestaurantManualSave = async () => {
@@ -232,22 +252,89 @@ export default function AddMeal() {
     resetRestaurantModal();
   };
 
+  const pickRestaurantPhotos = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Brak dostępu', 'Zezwól na dostęp do galerii, żeby dodać zdjęcia.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
+      allowsMultipleSelection: true,
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets.length > 0) {
+      const newPhotos = result.assets
+        .filter(a => a.base64)
+        .map(a => ({
+          uri: a.uri,
+          base64: a.base64!,
+          mimeType: a.mimeType?.startsWith('image/') ? a.mimeType : 'image/jpeg',
+        }));
+      setRestPhotos(prev => [...prev, ...newPhotos]);
+    }
+  };
+
+  const removeRestaurantPhoto = (index: number) => {
+    setRestPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRestaurantPhotoAI = async () => {
+    if (restPhotos.length === 0) { Alert.alert('Błąd', 'Dodaj przynajmniej jedno zdjęcie.'); return; }
+    const dishName = restPhotoDishName.trim();
+    if (!dishName) { Alert.alert('Błąd', 'Podaj nazwę dania (tak jak w menu) — inaczej AI nie będzie wiedziało, którą pozycję liczyć, jeśli na zdjęciu jest cała karta.'); return; }
+    const percent = parseFloat(restPercent.replace(',', '.'));
+    if (isNaN(percent) || percent <= 0 || percent > 100) {
+      Alert.alert('Błąd', 'Podaj procent zjedzonej porcji (1-100).');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const photosPayload: MealPhoto[] = restPhotos.map(p => ({ base64: p.base64, mimeType: p.mimeType }));
+      const estimate = await estimateMealFromPhotos(photosPayload, percent, dishName, restPhotoNote);
+      const mealItem: MealItem = {
+        id: Math.random().toString(36).slice(2),
+        name: estimate.name,
+        weight_grams: estimate.weight_grams,
+        nutrients: estimate.nutrients,
+        confirmed: true,
+      };
+      setInput(`${estimate.name} (${percent}% porcji, ze zdjęcia)`);
+      setItems([mealItem]);
+      setWeightInputs({ [mealItem.id]: String(estimate.weight_grams) });
+      setStep('confirm');
+      resetRestaurantModal();
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się oszacować wartości ze zdjęć. Spróbuj ponownie lub wpisz ręcznie.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRestaurantAI = async () => {
     const desc = restDesc.trim();
     if (!desc) { Alert.alert('Błąd', 'Opisz danie.'); return; }
     setIsLoading(true);
     try {
-      const parsed = await parseMealDescription(desc);
-      const resolved = await resolveMealItems(parsed);
-      const weights: Record<string, string> = {};
-      resolved.forEach(i => { weights[i.id] = String(i.weight_grams); });
+      // Dla dań z restauracji NIE dopasowujemy do lokalnej bazy produktów —
+      // to dawało fatalne dopasowania dla dań, których w bazie po prostu nie ma.
+      // Zamiast tego jedno zapytanie do AI o łączne makro całej porcji.
+      const estimate = await estimateRestaurantMeal(desc);
+      const mealItem: MealItem = {
+        id: Math.random().toString(36).slice(2),
+        name: estimate.name,
+        weight_grams: estimate.weight_grams,
+        nutrients: estimate.nutrients,
+        confirmed: true,
+      };
       setInput(desc);
-      setItems(resolved);
-      setWeightInputs(weights);
+      setItems([mealItem]);
+      setWeightInputs({ [mealItem.id]: String(estimate.weight_grams) });
       setStep('confirm');
       resetRestaurantModal();
     } catch {
-      Alert.alert('Błąd', 'Nie udało się przeanalizować.');
+      Alert.alert('Błąd', 'Nie udało się oszacować wartości. Spróbuj ponownie lub wpisz ręcznie.');
     } finally {
       setIsLoading(false);
     }
@@ -328,10 +415,19 @@ export default function AddMeal() {
     const reordered = [...supplements];
     [reordered[idx], reordered[targetIdx]] = [reordered[targetIdx], reordered[idx]];
     // Optymistyczna aktualizacja UI
-    setSupplements(reordered);
-    // Zapisz nowe sort_order dla wszystkich (proste i niezawodne)
-    const updates = reordered.map((s, i) => supabase.from('supplements').update({ sort_order: i }).eq('id', s.id));
-    await Promise.all(updates);
+    setSupplements(reordered.map((s, i) => ({ ...s, sort_order: i })));
+    // Zapisz tylko wiersze, których sort_order faktycznie się zmienił (zwykle 2),
+    // i sprawdź błędy — wcześniej nieudane zapisy przechodziły po cichu.
+    const changed = reordered
+      .map((s, i) => ({ s, i }))
+      .filter(({ s, i }) => s.sort_order !== i);
+    const results = await Promise.all(
+      changed.map(({ s, i }) => supabase.from('supplements').update({ sort_order: i }).eq('id', s.id))
+    );
+    if (results.some(r => r.error)) {
+      Alert.alert('Błąd', 'Nie udało się zapisać kolejności. Odświeżam listę.');
+      await loadSupplements();
+    }
   };
 
   const handleParse = async () => {
@@ -483,9 +579,24 @@ export default function AddMeal() {
     setEditSuppModal(true);
   };
 
+  // Próg ostrzeżenia: porcja suplementu powyżej 1 kg to prawie na pewno literówka
+  const SUPP_MAX_SANE_GRAMS = 1000;
+
+  const confirmAsync = (title: string, message: string) =>
+    new Promise<boolean>(resolve => {
+      Alert.alert(title, message, [
+        { text: 'Anuluj', style: 'cancel', onPress: () => resolve(false) },
+        { text: 'Zapisz mimo to', style: 'destructive', onPress: () => resolve(true) },
+      ], { cancelable: true, onDismiss: () => resolve(false) });
+    });
+
+  const nextSuppSortOrder = () =>
+    supplements.reduce((max, s) => Math.max(max, typeof s.sort_order === 'number' ? s.sort_order : -1), -1) + 1;
+
   const handleSaveSupp = async () => {
     const name = editSuppName.trim();
     if (!name) { Alert.alert('Błąd', 'Podaj nazwę.'); return; }
+    let error: any = null;
 
     if (editSuppMode === 'composite') {
       if (editSuppItems.length === 0) {
@@ -501,14 +612,17 @@ export default function AddMeal() {
       // jako pierwszy składnik (gdyby coś poszło nie tak z items, fallback zadziała).
       const fallbackKey = itemsPayload[0].nutrient_key;
       const fallbackWeight = itemsPayload[0].weight_grams;
+      const tooHeavy = itemsPayload.find(it => it.weight_grams > SUPP_MAX_SANE_GRAMS);
+      if (tooHeavy && !(await confirmAsync('Duża waga', `Składnik "${tooHeavy.name}" ma ${tooHeavy.weight_grams} g. Na pewno?`))) return;
       if (editSupp) {
-        await supabase.from('supplements').update({
+        ({ error } = await supabase.from('supplements').update({
           name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
-        }).eq('id', editSupp.id);
+        }).eq('id', editSupp.id));
       } else {
-        await supabase.from('supplements').insert({
+        ({ error } = await supabase.from('supplements').insert({
           name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
-        });
+          sort_order: nextSuppSortOrder(),
+        }));
       }
     } else {
       const key = editSuppKey.trim();
@@ -517,11 +631,18 @@ export default function AddMeal() {
         Alert.alert('Błąd', 'Wypełnij wszystkie pola poprawnie.');
         return;
       }
+      if (!(await getFoodByKeyAll(key)) &&
+          !(await confirmAsync('Nieznany klucz', `Nie ma produktu "${key}" w bazie — wartości odżywcze nie będą liczone.`))) return;
+      if (w > SUPP_MAX_SANE_GRAMS && !(await confirmAsync('Duża waga', `Porcja ${w} g. Na pewno?`))) return;
       if (editSupp) {
-        await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null }).eq('id', editSupp.id);
+        ({ error } = await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null }).eq('id', editSupp.id));
       } else {
-        await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w });
+        ({ error } = await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w, sort_order: nextSuppSortOrder() }));
       }
+    }
+    if (error) {
+      Alert.alert('Błąd', 'Nie udało się zapisać suplementu: ' + error.message);
+      return;
     }
     setEditSuppModal(false);
     await loadSupplements();
@@ -565,7 +686,8 @@ export default function AddMeal() {
       { text: 'Anuluj', style: 'cancel' },
       {
         text: 'Usuń', style: 'destructive', onPress: async () => {
-          await supabase.from('supplements').delete().eq('id', supp.id);
+          const { error } = await supabase.from('supplements').delete().eq('id', supp.id);
+          if (error) Alert.alert('Błąd', 'Nie udało się usunąć: ' + error.message);
           loadSupplements();
         }
       }
@@ -652,6 +774,38 @@ export default function AddMeal() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const openEditValues = (item: MealItem) => {
+    setEditValuesItemId(item.id);
+    setEvCalories(String(Math.round(item.nutrients.calories ?? 0)));
+    setEvProtein(String(Math.round(item.nutrients.protein ?? 0)));
+    setEvCarbs(String(Math.round(item.nutrients.carbs ?? 0)));
+    setEvFat(String(Math.round(item.nutrients.fat ?? 0)));
+    setEvFiber(String(Math.round(item.nutrients.fiber ?? 0)));
+    setEvSugar(String(Math.round(item.nutrients.sugar_g ?? 0)));
+    setEvSodium(String(Math.round((item.nutrients as any).sodium_mg ?? 0)));
+    setEditValuesModal(true);
+  };
+
+  const handleSaveEditValues = () => {
+    const cal = parseFloat(evCalories.replace(',', '.'));
+    if (isNaN(cal) || cal < 0) { Alert.alert('Błąd', 'Podaj prawidłowe kalorie.'); return; }
+    const num = (v: string) => {
+      const n = parseFloat(v.replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    };
+    const nutrients: NutrientValues = {
+      calories: cal,
+      protein: num(evProtein),
+      carbs: num(evCarbs),
+      fat: num(evFat),
+      fiber: num(evFiber),
+      sugar_g: num(evSugar),
+      sodium_mg: num(evSodium),
+    } as any;
+    setItems(prev => prev.map(i => i.id === editValuesItemId ? { ...i, nutrients } : i));
+    setEditValuesModal(false);
   };
 
   const updateWeight = (id: string, newWeight: string) => {
@@ -760,6 +914,11 @@ export default function AddMeal() {
             <View style={styles.itemHeader}>
               <Text style={styles.itemName}>{item.name}</Text>
               <View style={{ flexDirection: 'row', gap: 8 }}>
+                {!item.nutrient_key && (
+                  <TouchableOpacity style={styles.changeBtn} onPress={() => openEditValues(item)}>
+                    <Text style={styles.changeBtnText}>popraw</Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity style={styles.changeBtn} onPress={() => openSearch(item.id, item.name)}>
                   <Text style={styles.changeBtnText}>zmień</Text>
                 </TouchableOpacity>
@@ -781,7 +940,10 @@ export default function AddMeal() {
               <Text style={styles.weightUnit}>g</Text>
             </View>
             <View style={styles.itemNutrients}>
-              {(['calories', 'protein', 'fat', 'carbs'] as const).map(key => (
+              {(item.nutrient_key
+                ? (['calories', 'protein', 'fat', 'carbs'] as const)
+                : (['calories', 'protein', 'fat', 'carbs', 'fiber', 'sugar_g', 'sodium_mg'] as const)
+              ).map(key => (
                 <Text key={key} style={styles.itemNutrient}>
                   {NUTRIENTS[key].label}: {Math.round((item.nutrients as any)[key] ?? 0)}{NUTRIENTS[key].unit}
                 </Text>
@@ -810,7 +972,7 @@ export default function AddMeal() {
         {/* Modal: dodaj extra składnik */}
         <Modal visible={addExtraModal} animationType="slide" presentationStyle="pageSheet">
           <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
+            <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
               <Text style={styles.modalTitle}>Dodaj składnik</Text>
               <TouchableOpacity onPress={() => { setAddExtraModal(false); setAddExtraSelected(null); setAddExtraQuery(''); setAddExtraResults([]); }}>
                 <Text style={styles.modalClose}>Anuluj</Text>
@@ -860,7 +1022,7 @@ export default function AddMeal() {
 
         <Modal visible={searchModal.visible} animationType="slide" presentationStyle="pageSheet">
           <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
+            <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
               <Text style={styles.modalTitle}>Zmień składnik</Text>
               <TouchableOpacity onPress={() => setSearchModal({ visible: false, itemId: '' })}>
                 <Text style={styles.modalClose}>Anuluj</Text>
@@ -895,7 +1057,7 @@ export default function AddMeal() {
 
         <Modal visible={saveTemplateModal} animationType="slide" presentationStyle="pageSheet">
           <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
+            <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
               <Text style={styles.modalTitle}>Zapisz do ulubionych</Text>
               <TouchableOpacity onPress={() => setSaveTemplateModal(false)}>
                 <Text style={styles.modalClose}>Anuluj</Text>
@@ -920,6 +1082,55 @@ export default function AddMeal() {
                 <Text style={styles.btnPrimaryText}>Zapisz</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </Modal>
+
+        <Modal visible={editValuesModal} animationType="slide" presentationStyle="pageSheet">
+          <View style={styles.modalContainer}>
+            <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
+              <Text style={styles.modalTitle}>Popraw wartości</Text>
+              <TouchableOpacity onPress={() => setEditValuesModal(false)}>
+                <Text style={styles.modalClose}>Anuluj</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
+              <Text style={styles.fieldLabel}>Kalorie (kcal) *</Text>
+              <TextInput style={styles.searchInputPadded} value={evCalories} onChangeText={setEvCalories} keyboardType="numeric" selectTextOnFocus autoFocus />
+
+              <View style={styles.restRow}>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Białko (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evProtein} onChangeText={setEvProtein} keyboardType="numeric" selectTextOnFocus />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Węgle (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evCarbs} onChangeText={setEvCarbs} keyboardType="numeric" selectTextOnFocus />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Tłuszcz (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evFat} onChangeText={setEvFat} keyboardType="numeric" selectTextOnFocus />
+                </View>
+              </View>
+
+              <View style={styles.restRow}>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Błonnik (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evFiber} onChangeText={setEvFiber} keyboardType="numeric" selectTextOnFocus />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Cukry (g)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evSugar} onChangeText={setEvSugar} keyboardType="numeric" selectTextOnFocus />
+                </View>
+                <View style={styles.restField}>
+                  <Text style={styles.fieldLabel}>Sód (mg)</Text>
+                  <TextInput style={styles.searchInputPadded} value={evSodium} onChangeText={setEvSodium} keyboardType="numeric" selectTextOnFocus />
+                </View>
+              </View>
+
+              <TouchableOpacity style={[styles.btnBlock, styles.btnBlockMargin]} onPress={handleSaveEditValues}>
+                <Text style={styles.btnPrimaryText}>Zapisz</Text>
+              </TouchableOpacity>
+            </ScrollView>
           </View>
         </Modal>
       </ScrollView>
@@ -971,7 +1182,7 @@ export default function AddMeal() {
       {/* Modal: ulubione */}
       <Modal visible={templatesModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>Ulubione posiłki</Text>
             <TouchableOpacity onPress={() => setTemplatesModal(false)}>
               <Text style={styles.modalClose}>Zamknij</Text>
@@ -987,7 +1198,9 @@ export default function AddMeal() {
                 .map(cat => ({
                   key: cat.key,
                   label: cat.label,
-                  data: templates.filter(t => (t.category || 'inne') === cat.key),
+                  data: templates
+                    .filter(t => (t.category || 'inne') === cat.key)
+                    .sort((a, b) => a.name.localeCompare(b.name, 'pl', { sensitivity: 'base' })),
                 }))
                 .filter(s => s.data.length > 0)
                 .map(section => {
@@ -1169,7 +1382,7 @@ export default function AddMeal() {
       {/* Modal: posiłek z restauracji */}
       <Modal visible={restaurantModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>Posiłek z restauracji</Text>
             <TouchableOpacity onPress={resetRestaurantModal}>
               <Text style={styles.modalClose}>Anuluj</Text>
@@ -1186,6 +1399,10 @@ export default function AddMeal() {
               <TouchableOpacity style={styles.restModeBtn} onPress={() => setRestMode('ai')}>
                 <Text style={styles.restModeBtnTitle}>Oszacuj przez AI</Text>
                 <Text style={styles.restModeBtnDesc}>Opisz danie i składniki, Claude oszacuje wartości</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.restModeBtn} onPress={() => setRestMode('photo')}>
+                <Text style={styles.restModeBtnTitle}>Dodaj zdjęcie(a)</Text>
+                <Text style={styles.restModeBtnDesc}>Zdjęcie karty menu i/lub dania + ile % zjadłaś</Text>
               </TouchableOpacity>
             </View>
           ) : restMode === 'manual' ? (
@@ -1233,7 +1450,7 @@ export default function AddMeal() {
                 {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Zapisz</Text>}
               </TouchableOpacity>
             </ScrollView>
-          ) : (
+          ) : restMode === 'ai' ? (
             <View style={styles.modalBody}>
               <Text style={styles.fieldLabel}>Opisz danie i składniki</Text>
               <TextInput
@@ -1250,6 +1467,66 @@ export default function AddMeal() {
                 {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Analizuj przez AI</Text>}
               </TouchableOpacity>
             </View>
+          ) : (
+            <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
+              <Text style={styles.fieldLabel}>Zdjęcia (karta menu i/lub danie na talerzu)</Text>
+              {restPhotos.length > 0 && (
+                <View style={styles.photoGrid}>
+                  {restPhotos.map((photo, idx) => (
+                    <View key={photo.uri + idx} style={styles.photoThumbWrap}>
+                      <Image source={{ uri: photo.uri }} style={styles.photoThumb} />
+                      <TouchableOpacity
+                        style={styles.photoRemoveBtn}
+                        onPress={() => removeRestaurantPhoto(idx)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.photoRemoveBtnText}>✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+              <TouchableOpacity style={styles.btnAddExtra} onPress={pickRestaurantPhotos}>
+                <Text style={styles.btnAddExtraText}>📷 {restPhotos.length > 0 ? 'Dodaj kolejne zdjęcie' : 'Wybierz zdjęcia z galerii'}</Text>
+              </TouchableOpacity>
+
+              <Text style={[styles.fieldLabel, { marginTop: 8 }]}>Nazwa dania (tak jak w menu) *</Text>
+              <TextInput
+                style={styles.searchInputPadded}
+                value={restPhotoDishName}
+                onChangeText={setRestPhotoDishName}
+                placeholder="np. Pad Thai z krewetkami"
+              />
+              <Text style={[styles.restModeBtnDesc, { marginTop: -4, marginBottom: 8 }]}>
+                Ważne, jeśli na zdjęciu jest cała karta menu — AI wybierze tylko tę pozycję.
+              </Text>
+
+              <Text style={styles.fieldLabel}>Ile % porcji zjadłaś? *</Text>
+              <TextInput
+                style={styles.searchInputPadded}
+                value={restPercent}
+                onChangeText={setRestPercent}
+                keyboardType="numeric"
+                placeholder="np. 100"
+                selectTextOnFocus
+              />
+
+              <Text style={styles.fieldLabel}>Dodatkowe informacje (opcjonalnie)</Text>
+              <TextInput
+                style={styles.searchInputPadded}
+                value={restPhotoNote}
+                onChangeText={setRestPhotoNote}
+                placeholder="np. bez sosu, poprosiłam o dodatkowy ser"
+              />
+
+              <TouchableOpacity
+                style={[styles.btnBlock, styles.btnBlockMargin, (isLoading || restPhotos.length === 0 || !restPhotoDishName.trim()) && styles.btnDisabled]}
+                onPress={handleRestaurantPhotoAI}
+                disabled={isLoading || restPhotos.length === 0 || !restPhotoDishName.trim()}
+              >
+                {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnPrimaryText}>Analizuj przez AI</Text>}
+              </TouchableOpacity>
+            </ScrollView>
           )}
         </View>
       </Modal>
@@ -1257,7 +1534,7 @@ export default function AddMeal() {
       {/* Modal: szybkie dodanie z bazy */}
       <Modal visible={quickAddModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>Szybkie dodanie</Text>
             <TouchableOpacity onPress={() => { setQuickAddModal(false); setQuickAddSelected(null); setQuickAddQuery(''); setQuickAddResults([]); setQuickAddItems([]); setQuickAddServingCount(null); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
@@ -1390,7 +1667,7 @@ export default function AddMeal() {
       {/* Modal: suplementy */}
       <Modal visible={supplementsModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>Suplementy</Text>
             <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Map()); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
@@ -1460,7 +1737,7 @@ export default function AddMeal() {
       {/* Modal: zarządzanie suplementami */}
       <Modal visible={manageSuppModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>Zarządzaj suplementami</Text>
             <TouchableOpacity onPress={() => { setManageSuppModal(false); openSupplementsModal(); }}>
               <Text style={styles.modalClose}>Wróć</Text>
@@ -1560,7 +1837,7 @@ export default function AddMeal() {
       {/* Modal: edycja suplementu */}
       <Modal visible={editSuppModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>{editSupp ? 'Edytuj suplement' : 'Nowy suplement'}</Text>
             <TouchableOpacity onPress={() => { setEditSuppModal(false); setManageSuppModal(true); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
@@ -1756,6 +2033,11 @@ const styles = StyleSheet.create({
   restModeBtn: { backgroundColor: '#f9fafb', borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#e5e7eb' },
   restModeBtnTitle: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
   restModeBtnDesc: { fontSize: 13, color: '#6b7280' },
+  photoGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
+  photoThumbWrap: { position: 'relative' },
+  photoThumb: { width: 88, height: 88, borderRadius: 10, backgroundColor: '#e5e7eb' },
+  photoRemoveBtn: { position: 'absolute', top: -6, right: -6, width: 22, height: 22, borderRadius: 11, backgroundColor: '#ef4444', justifyContent: 'center', alignItems: 'center' },
+  photoRemoveBtnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   restRow: { flexDirection: 'row', gap: 10, marginBottom: 4 },
   restField: { flex: 1 },
   quickSelectedName: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },

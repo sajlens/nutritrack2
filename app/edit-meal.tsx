@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Alert, Modal, FlatList
+  StyleSheet, ActivityIndicator, Modal, FlatList
 } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router, useLocalSearchParams } from 'expo-router';
 import { searchFoodAll, calculateNutrients, setProductOverride, deleteProductOverride } from '../lib/nutrients';
 import { useNutriStore } from '../store/useNutriStore';

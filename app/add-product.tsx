@@ -1,18 +1,18 @@
 import { useState, useCallback } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Alert, Image,
+  StyleSheet, ActivityIndicator, Image,
 } from 'react-native';
+import { Alert } from '../lib/alert';
 import { router, useFocusEffect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 import { supabase } from '../lib/supabase';
 import { NUTRIENTS } from '../constants/nutrients';
 import nutrientsDB from '../data/nutrients_db.json';
+import { claudeFetch } from '../lib/claude';
 
 const LOCAL_DB_KEYS = new Set(Object.keys((nutrientsDB as any).items));
 
-const ANTHROPIC_API_KEY = Constants.expoConfig?.extra?.anthropicApiKey ?? '';
 
 const MANUAL_FIELDS = [
   'calories', 'protein', 'fat', 'carbs', 'fiber', 'sugar_g',
@@ -40,13 +40,7 @@ async function analyzePhotos(
     },
   }));
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
+  const response = await claudeFetch({
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
       max_tokens: 2048,
@@ -89,13 +83,7 @@ Odpowiedz TYLKO w formacie JSON bez żadnego tekstu przed ani po:
 
 async function estimateFromName(productName: string): Promise<Record<string, number>> {
   const fieldList = MANUAL_FIELDS.map(k => `"${k}": 0`).join(',\n  ');
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
+  const response = await claudeFetch({
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
       max_tokens: 1024,
