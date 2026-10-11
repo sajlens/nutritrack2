@@ -16,6 +16,24 @@ import { NUTRIENTS } from '../constants/nutrients';
 import { supabase } from '../lib/supabase';
 
 
+
+type SuppKind = 'suplement' | 'codzienne';
+const SUPP_KIND_LABELS: Record<SuppKind, {
+  title: string; hint: string; manageTitle: string; addNew: string; editTitle: string; newTitle: string;
+  namePlaceholder: string; deleteTitle: string; mealPrefix: string;
+}> = {
+  suplement: {
+    title: 'Suplementy', hint: 'Zaznacz co dzisiaj wzięłaś:', manageTitle: 'Zarządzaj suplementami',
+    addNew: '+ Dodaj nowy suplement', editTitle: 'Edytuj suplement', newTitle: 'Nowy suplement',
+    namePlaceholder: 'np. Witamina C', deleteTitle: 'Usuń suplement', mealPrefix: 'Suplementy: ',
+  },
+  codzienne: {
+    title: 'Codzienne', hint: 'Zaznacz co dzisiaj zjadłaś lub wypiłaś:', manageTitle: 'Zarządzaj codziennymi',
+    addNew: '+ Dodaj nową pozycję', editTitle: 'Edytuj pozycję', newTitle: 'Nowa pozycja',
+    namePlaceholder: 'np. Kawa z mlekiem', deleteTitle: 'Usuń pozycję', mealPrefix: 'Codzienne: ',
+  },
+};
+
 export default function AddMeal() {
   const insets = useSafeAreaInsets();
 
@@ -66,6 +84,9 @@ export default function AddMeal() {
   const [supplementsModal, setSupplementsModal] = useState(false);
   const [supplements, setSupplements] = useState<any[]>([]);
   const [suppLoading, setSuppLoading] = useState(false);
+  // Ta sama tabela i ten sam mechanizm obsługuje dwie listy: suplementy i rzeczy jedzone codziennie.
+  const [suppKind, setSuppKind] = useState<SuppKind>('suplement');
+  const KL = SUPP_KIND_LABELS[suppKind];
   const [selectedSupplements, setSelectedSupplements] = useState<Map<string, number>>(new Map());
 
   const [quickAddModal, setQuickAddModal] = useState(false);
@@ -400,9 +421,9 @@ export default function AddMeal() {
     setTemplatesLoading(false);
   };
 
-  const loadSupplements = async () => {
+  const loadSupplements = async (kind: SuppKind = suppKind) => {
     setSuppLoading(true);
-    const { data } = await supabase.from('supplements').select('*').order('sort_order', { ascending: true, nullsFirst: false }).order('created_at');
+    const { data } = await supabase.from('supplements').select('*').eq('kind', kind).order('sort_order', { ascending: true, nullsFirst: false }).order('created_at');
     if (data) setSupplements(data);
     setSuppLoading(false);
   };
@@ -542,8 +563,10 @@ export default function AddMeal() {
     }
   };
 
-  const openSupplementsModal = () => {
-    loadSupplements();
+  const openSupplementsModal = (kind: SuppKind = suppKind) => {
+    if (kind !== suppKind) { setSupplements([]); setSelectedSupplements(new Map()); }
+    setSuppKind(kind);
+    loadSupplements(kind);
     setSupplementsModal(true);
   };
 
@@ -621,7 +644,7 @@ export default function AddMeal() {
       } else {
         ({ error } = await supabase.from('supplements').insert({
           name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
-          sort_order: nextSuppSortOrder(),
+          sort_order: nextSuppSortOrder(), kind: suppKind,
         }));
       }
     } else {
@@ -637,11 +660,11 @@ export default function AddMeal() {
       if (editSupp) {
         ({ error } = await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null }).eq('id', editSupp.id));
       } else {
-        ({ error } = await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w, sort_order: nextSuppSortOrder() }));
+        ({ error } = await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w, sort_order: nextSuppSortOrder(), kind: suppKind }));
       }
     }
     if (error) {
-      Alert.alert('Błąd', 'Nie udało się zapisać suplementu: ' + error.message);
+      Alert.alert('Błąd', 'Nie udało się zapisać: ' + error.message);
       return;
     }
     setEditSuppModal(false);
@@ -682,7 +705,7 @@ export default function AddMeal() {
   };
 
   const handleDeleteSupp = (supp: any) => {
-    Alert.alert('Usuń suplement', 'Usunąć "' + supp.name + '"?', [
+    Alert.alert(KL.deleteTitle, 'Usunąć "' + supp.name + '"?', [
       { text: 'Anuluj', style: 'cancel' },
       {
         text: 'Usuń', style: 'destructive', onPress: async () => {
@@ -743,7 +766,7 @@ export default function AddMeal() {
           }
         } else {
           // Suplement prosty
-          const foodItem = getFoodByKey(supp.nutrient_key);
+          const foodItem = await getFoodByKeyAll(supp.nutrient_key);
           if (!foodItem) continue;
           const totalWeight = supp.weight_grams * portionsCount;
           const nutrients = calculateNutrients(foodItem.per_100g, totalWeight);
@@ -765,12 +788,12 @@ export default function AddMeal() {
         })
         .filter(Boolean)
         .join(', ');
-      await addMeal('Suplementy: ' + label, mealItems);
+      await addMeal(KL.mealPrefix + label, mealItems);
       setSelectedSupplements(new Map());
       setSupplementsModal(false);
       router.replace('/');
     } catch {
-      Alert.alert('Błąd', 'Nie udało się zapisać suplementów.');
+      Alert.alert('Błąd', 'Nie udało się zapisać.');
     } finally {
       setIsLoading(false);
     }
@@ -1163,8 +1186,12 @@ export default function AddMeal() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.btnSupplements} onPress={openSupplementsModal}>
+      <TouchableOpacity style={styles.btnSupplements} onPress={() => openSupplementsModal('suplement')}>
         <Text style={styles.btnSupplementsText}>💊 Dodaj suplementy</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.btnDaily} onPress={() => openSupplementsModal('codzienne')}>
+        <Text style={styles.btnDailyText}>☕ Dodaj codzienne</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.btnQuickAdd} onPress={() => setQuickAddModal(true)}>
@@ -1668,13 +1695,13 @@ export default function AddMeal() {
       <Modal visible={supplementsModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
           <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
-            <Text style={styles.modalTitle}>Suplementy</Text>
+            <Text style={styles.modalTitle}>{KL.title}</Text>
             <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Map()); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.suppTopRow}>
-            <Text style={styles.supplementHint}>Zaznacz co dzisiaj wzięłaś:</Text>
+            <Text style={styles.supplementHint}>{KL.hint}</Text>
             <TouchableOpacity onPress={openManageSupplements}>
               <Text style={styles.manageSuppBtn}>Zarządzaj</Text>
             </TouchableOpacity>
@@ -1738,7 +1765,7 @@ export default function AddMeal() {
       <Modal visible={manageSuppModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
           <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
-            <Text style={styles.modalTitle}>Zarządzaj suplementami</Text>
+            <Text style={styles.modalTitle}>{KL.manageTitle}</Text>
             <TouchableOpacity onPress={() => { setManageSuppModal(false); openSupplementsModal(); }}>
               <Text style={styles.modalClose}>Wróć</Text>
             </TouchableOpacity>
@@ -1785,7 +1812,7 @@ export default function AddMeal() {
               )}
               ListFooterComponent={
                 <TouchableOpacity style={styles.addSuppBtn} onPress={() => openEditSupp(null)}>
-                  <Text style={styles.addSuppBtnText}>+ Dodaj nowy suplement</Text>
+                  <Text style={styles.addSuppBtnText}>{KL.addNew}</Text>
                 </TouchableOpacity>
               }
             />
@@ -1838,14 +1865,14 @@ export default function AddMeal() {
       <Modal visible={editSuppModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
           <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
-            <Text style={styles.modalTitle}>{editSupp ? 'Edytuj suplement' : 'Nowy suplement'}</Text>
+            <Text style={styles.modalTitle}>{editSupp ? KL.editTitle : KL.newTitle}</Text>
             <TouchableOpacity onPress={() => { setEditSuppModal(false); setManageSuppModal(true); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
             <Text style={styles.fieldLabel}>Nazwa wyświetlana:</Text>
-            <TextInput style={styles.searchInputPadded} value={editSuppName} onChangeText={setEditSuppName} placeholder="np. Witamina C" />
+            <TextInput style={styles.searchInputPadded} value={editSuppName} onChangeText={setEditSuppName} placeholder={KL.namePlaceholder} />
 
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 12, marginBottom: 12 }}>
               <TouchableOpacity
@@ -1980,6 +2007,8 @@ const styles = StyleSheet.create({
   btnDisabled: { opacity: 0.5 },
   btnSupplements: { backgroundColor: '#eff6ff', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#bfdbfe' },
   btnSupplementsText: { color: '#1d4ed8', fontSize: 16, fontWeight: '600' },
+  btnDaily: { backgroundColor: '#fffbeb', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#fde68a' },
+  btnDailyText: { color: '#b45309', fontSize: 16, fontWeight: '600' },
   modalContainer: { flex: 1, backgroundColor: '#f9fafb' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
   modalTitle: { fontSize: 17, fontWeight: '600', color: '#111827' },
