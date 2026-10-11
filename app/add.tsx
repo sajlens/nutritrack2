@@ -18,6 +18,10 @@ import { supabase } from '../lib/supabase';
 
 
 type SuppKind = 'suplement' | 'codzienne';
+// Jednorazowa podmiana pozycji z listy Codzienne (tylko w tym wpisie, nic nie zmienia w bazie).
+type DailySwap =
+  | { type: 'template'; templateId: string; name: string }
+  | { type: 'product'; key: string; name: string; grams: number };
 const SUPP_KIND_LABELS: Record<SuppKind, {
   title: string; hint: string; manageTitle: string; addNew: string; editTitle: string; newTitle: string;
   namePlaceholder: string; deleteTitle: string; mealPrefix: string;
@@ -135,7 +139,16 @@ export default function AddMeal() {
   const [editSuppName, setEditSuppName] = useState('');
   const [editSuppKey, setEditSuppKey] = useState('');
   const [editSuppWeight, setEditSuppWeight] = useState('');
-  const [editSuppMode, setEditSuppMode] = useState<'simple' | 'composite'>('simple');
+  const [editSuppMode, setEditSuppMode] = useState<'simple' | 'composite' | 'template'>('simple');
+  const [editSuppKeyLabel, setEditSuppKeyLabel] = useState('');
+  const [editSuppTemplateId, setEditSuppTemplateId] = useState<string | null>(null);
+  const [tplQuery, setTplQuery] = useState('');
+  const [swaps, setSwaps] = useState<Map<string, DailySwap>>(new Map());
+  const [swapModal, setSwapModal] = useState<{ visible: boolean; suppId: string }>({ visible: false, suppId: '' });
+  const [swapQuery, setSwapQuery] = useState('');
+  const [swapResults, setSwapResults] = useState<any[]>([]);
+  const [swapProduct, setSwapProduct] = useState<any | null>(null);
+  const [swapWeight, setSwapWeight] = useState('');
   const [editSuppItems, setEditSuppItems] = useState<{ id: string; nutrient_key: string; name: string; weight_grams: number }[]>([]);
   const [suppIngrQuery, setSuppIngrQuery] = useState('');
   const [suppIngrResults, setSuppIngrResults] = useState<any[]>([]);
@@ -482,26 +495,30 @@ export default function AddMeal() {
     return template.items.reduce((sum: number, it: any) => sum + (it.weight_grams ?? 0), 0);
   };
 
+  const scaleTemplateItems = (template: any, portions: number) =>
+    (template.items || []).map((item: any) => {
+      // Custom_nutrients (np. dania restauracyjne) skalują się proporcjonalnie
+      // do liczby porcji, podobnie jak weight_grams.
+      let scaledCustom: any = undefined;
+      if (item.custom_nutrients) {
+        scaledCustom = {};
+        for (const [k, v] of Object.entries(item.custom_nutrients)) {
+          if (typeof v === 'number') scaledCustom[k] = v * portions;
+        }
+      }
+      return { ...item, weight_grams: (item.weight_grams ?? 0) * portions, custom_nutrients: scaledCustom };
+    });
+
+  const filterTemplates = (q: string) => {
+    const t = q.trim().toLowerCase();
+    return templates.filter((tpl: any) => !t || (tpl.name || '').toLowerCase().includes(t));
+  };
+
   const handleLoadTemplate = async (template: any, portions: number) => {
     setPortionsModal(false);
     setIsLoading(true);
     try {
-      const itemsWithPortions = template.items.map((item: any) => {
-        // Custom_nutrients (np. dania restauracyjne) skalują się proporcjonalnie
-        // do liczby porcji, podobnie jak weight_grams.
-        let scaledCustom: any = undefined;
-        if (item.custom_nutrients) {
-          scaledCustom = {};
-          for (const [k, v] of Object.entries(item.custom_nutrients)) {
-            if (typeof v === 'number') scaledCustom[k] = v * portions;
-          }
-        }
-        return {
-          ...item,
-          weight_grams: (item.weight_grams ?? 0) * portions,
-          custom_nutrients: scaledCustom,
-        };
-      });
+      const itemsWithPortions = scaleTemplateItems(template, portions);
       const resolved = await resolveMealItems(itemsWithPortions);
       const weights: Record<string, string> = {};
       resolved.forEach(i => { weights[i.id] = String(i.weight_grams); });
@@ -564,7 +581,7 @@ export default function AddMeal() {
   };
 
   const openSupplementsModal = (kind: SuppKind = suppKind) => {
-    if (kind !== suppKind) { setSupplements([]); setSelectedSupplements(new Map()); }
+    if (kind !== suppKind) { setSupplements([]); setSelectedSupplements(new Map()); setSwaps(new Map()); }
     setSuppKind(kind);
     loadSupplements(kind);
     setSupplementsModal(true);
@@ -578,7 +595,17 @@ export default function AddMeal() {
   const openEditSupp = (supp: any | null) => {
     setEditSupp(supp);
     setEditSuppName(supp?.name ?? '');
-    if (supp?.items && Array.isArray(supp.items) && supp.items.length > 0) {
+    setEditSuppTemplateId(null);
+    setTplQuery('');
+    setEditSuppKeyLabel('');
+    if (supp?.template_id) {
+      setEditSuppMode('template');
+      setEditSuppTemplateId(supp.template_id);
+      setEditSuppItems([]);
+      setEditSuppKey('');
+      setEditSuppWeight('');
+      loadTemplates();
+    } else if (supp?.items && Array.isArray(supp.items) && supp.items.length > 0) {
       setEditSuppMode('composite');
       setEditSuppItems(supp.items.map((it: any) => ({
         id: Math.random().toString(36).slice(2),
@@ -593,6 +620,10 @@ export default function AddMeal() {
       setEditSuppItems([]);
       setEditSuppKey(supp?.nutrient_key ?? '');
       setEditSuppWeight(supp ? String(supp.weight_grams) : '');
+      if (supp?.nutrient_key) {
+        getFoodByKeyAll(supp.nutrient_key).then(f =>
+          setEditSuppKeyLabel(f ? f.name_pl : supp.nutrient_key + ' (nie ma w bazie)'));
+      }
     }
     setSuppIngrQuery('');
     setSuppIngrResults([]);
@@ -621,7 +652,21 @@ export default function AddMeal() {
     if (!name) { Alert.alert('Błąd', 'Podaj nazwę.'); return; }
     let error: any = null;
 
-    if (editSuppMode === 'composite') {
+    if (editSuppMode === 'template') {
+      const tpl = templates.find((t: any) => t.id === editSuppTemplateId);
+      if (!tpl) { Alert.alert('Błąd', 'Wybierz pozycję z ulubionych.'); return; }
+      const first = (tpl.items || [])[0] || {};
+      const payload = {
+        name, template_id: tpl.id, items: null,
+        nutrient_key: first.nutrient_key ?? first.name ?? '',
+        weight_grams: getTemplateTotalWeight(tpl) || 1,
+      };
+      if (editSupp) {
+        ({ error } = await supabase.from('supplements').update(payload).eq('id', editSupp.id));
+      } else {
+        ({ error } = await supabase.from('supplements').insert({ ...payload, sort_order: nextSuppSortOrder(), kind: suppKind }));
+      }
+    } else if (editSuppMode === 'composite') {
       if (editSuppItems.length === 0) {
         Alert.alert('Błąd', 'Dodaj przynajmniej jeden składnik.');
         return;
@@ -639,7 +684,7 @@ export default function AddMeal() {
       if (tooHeavy && !(await confirmAsync('Duża waga', `Składnik "${tooHeavy.name}" ma ${tooHeavy.weight_grams} g. Na pewno?`))) return;
       if (editSupp) {
         ({ error } = await supabase.from('supplements').update({
-          name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload,
+          name, nutrient_key: fallbackKey, weight_grams: fallbackWeight, items: itemsPayload, template_id: null,
         }).eq('id', editSupp.id));
       } else {
         ({ error } = await supabase.from('supplements').insert({
@@ -651,14 +696,14 @@ export default function AddMeal() {
       const key = editSuppKey.trim();
       const w = parseFloat(editSuppWeight);
       if (!key || isNaN(w) || w <= 0) {
-        Alert.alert('Błąd', 'Wypełnij wszystkie pola poprawnie.');
+        Alert.alert('Błąd', 'Wybierz produkt i podaj wagę porcji.');
         return;
       }
       if (!(await getFoodByKeyAll(key)) &&
           !(await confirmAsync('Nieznany klucz', `Nie ma produktu "${key}" w bazie — wartości odżywcze nie będą liczone.`))) return;
       if (w > SUPP_MAX_SANE_GRAMS && !(await confirmAsync('Duża waga', `Porcja ${w} g. Na pewno?`))) return;
       if (editSupp) {
-        ({ error } = await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null }).eq('id', editSupp.id));
+        ({ error } = await supabase.from('supplements').update({ name, nutrient_key: key, weight_grams: w, items: null, template_id: null }).eq('id', editSupp.id));
       } else {
         ({ error } = await supabase.from('supplements').insert({ name, nutrient_key: key, weight_grams: w, sort_order: nextSuppSortOrder(), kind: suppKind }));
       }
@@ -683,6 +728,49 @@ export default function AddMeal() {
     })();
     return () => { cancelled = true; };
   }, [suppIngrQuery]);
+
+  useEffect(() => {
+    const q = swapQuery.trim();
+    if (q.length < 2) { setSwapResults([]); return; }
+    let cancelled = false;
+    (async () => {
+      const results = await searchFoodAll(q);
+      if (!cancelled) setSwapResults(results);
+    })();
+    return () => { cancelled = true; };
+  }, [swapQuery]);
+
+  const openSwap = (suppId: string) => {
+    // Podmiana oznacza, że to dziś jem — zaznaczamy pozycję, jeśli nie była.
+    setSelectedSupplements(prev => {
+      if (prev.has(suppId)) return prev;
+      const next = new Map(prev);
+      next.set(suppId, 1);
+      return next;
+    });
+    setSwapQuery('');
+    setSwapResults([]);
+    setSwapProduct(null);
+    setSwapWeight('');
+    loadTemplates();
+    setSupplementsModal(false);
+    setSwapModal({ visible: true, suppId });
+  };
+
+  const closeSwap = () => {
+    setSwapModal({ visible: false, suppId: '' });
+    setSupplementsModal(true);
+  };
+
+  const applySwap = (swap: DailySwap | null) => {
+    const id = swapModal.suppId;
+    setSwaps(prev => {
+      const next = new Map(prev);
+      if (swap) next.set(id, swap); else next.delete(id);
+      return next;
+    });
+    closeSwap();
+  };
 
   const handleAddSuppIngredient = () => {
     if (!suppIngrSelected) { Alert.alert('Błąd', 'Wybierz produkt.'); return; }
@@ -748,6 +836,32 @@ export default function AddMeal() {
         if (!supp) continue;
         const portionsCount = portions || 1;
 
+        // Podmieniony na produkt (tylko ten wpis)
+        const swap = swaps.get(suppId);
+        if (swap?.type === 'product') {
+          const foodItem = await getFoodByKeyAll(swap.key);
+          if (!foodItem) continue;
+          const totalWeight = swap.grams * portionsCount;
+          mealItems.push({
+            id: Math.random().toString(36).slice(2),
+            name: portionsCount > 1 ? `${swap.name} (×${portionsCount})` : swap.name,
+            weight_grams: totalWeight,
+            nutrients: calculateNutrients(foodItem.per_100g, totalWeight),
+            confirmed: true,
+            nutrient_key: swap.key,
+          });
+          continue;
+        }
+
+        // Pozycja z ulubionych (zapisana na liście albo podmieniona) — zawsze aktualna wersja ulubionego
+        const templateId = swap?.type === 'template' ? swap.templateId : supp.template_id;
+        if (templateId) {
+          const { data: tpl } = await supabase.from('meal_templates').select('*').eq('id', templateId).single();
+          if (!tpl) continue;
+          mealItems.push(...(await resolveMealItems(scaleTemplateItems(tpl, portionsCount))));
+          continue;
+        }
+
         // Suplement kompozytowy — dodaj każdy składnik osobno
         if (supp.items && Array.isArray(supp.items) && supp.items.length > 0) {
           for (const ingr of supp.items) {
@@ -784,12 +898,14 @@ export default function AddMeal() {
         .map(([id, portions]) => {
           const supp = supplements.find((s: any) => s.id === id);
           if (!supp) return null;
-          return portions > 1 ? `${supp.name} ×${portions}` : supp.name;
+          const nm = swaps.get(id)?.name ?? supp.name;
+          return portions > 1 ? `${nm} ×${portions}` : nm;
         })
         .filter(Boolean)
         .join(', ');
       await addMeal(KL.mealPrefix + label, mealItems);
       setSelectedSupplements(new Map());
+      setSwaps(new Map());
       setSupplementsModal(false);
       router.replace('/');
     } catch {
@@ -1696,7 +1812,7 @@ export default function AddMeal() {
         <View style={styles.modalContainer}>
           <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
             <Text style={styles.modalTitle}>{KL.title}</Text>
-            <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Map()); }}>
+            <TouchableOpacity onPress={() => { setSupplementsModal(false); setSelectedSupplements(new Map()); setSwaps(new Map()); }}>
               <Text style={styles.modalClose}>Anuluj</Text>
             </TouchableOpacity>
           </View>
@@ -1725,8 +1841,16 @@ export default function AddMeal() {
                     <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
                       {selected && <Text style={styles.checkboxTick}>✓</Text>}
                     </View>
-                    <Text style={[styles.supplementName, selected && styles.supplementNameSelected]}>{supp.name}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[styles.supplementName, selected && styles.supplementNameSelected]}>{supp.name}</Text>
+                      {swaps.has(supp.id) && <Text style={styles.swapNote}>→ {swaps.get(supp.id)!.name}</Text>}
+                    </View>
                   </TouchableOpacity>
+                  {suppKind === 'codzienne' && (
+                    <TouchableOpacity onPress={() => openSwap(supp.id)} style={{ marginRight: 10 }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <Text style={styles.swapBtn}>zmień</Text>
+                    </TouchableOpacity>
+                  )}
                   {selected && (
                     <View style={styles.portionsControl}>
                       <TouchableOpacity
@@ -1781,7 +1905,9 @@ export default function AddMeal() {
                   <View style={{ flex: 1 }}>
                     <Text style={styles.supplementName}>{item.name}</Text>
                     <Text style={styles.templateMeta}>
-                      {item.items && Array.isArray(item.items) && item.items.length > 0
+                      {item.template_id
+                        ? '⭐ z ulubionych'
+                        : item.items && Array.isArray(item.items) && item.items.length > 0
                         ? `${item.items.length} składnik${item.items.length === 1 ? '' : item.items.length < 5 ? 'i' : 'ów'}`
                         : `${item.weight_grams}g · ${item.nutrient_key}`}
                     </Text>
@@ -1887,12 +2013,84 @@ export default function AddMeal() {
               >
                 <Text style={[styles.categoryChipText, editSuppMode === 'composite' && styles.categoryChipTextSelected]}>Kilka składników</Text>
               </TouchableOpacity>
+              {suppKind === 'codzienne' && (
+                <TouchableOpacity
+                  style={[styles.categoryChip, editSuppMode === 'template' && styles.categoryChipSelected, { flex: 1, justifyContent: 'center' }]}
+                  onPress={() => { setEditSuppMode('template'); loadTemplates(); }}
+                >
+                  <Text style={[styles.categoryChipText, editSuppMode === 'template' && styles.categoryChipTextSelected]}>Z ulubionych</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
-            {editSuppMode === 'simple' ? (
+            {editSuppMode === 'template' ? (
               <>
-                <Text style={styles.fieldLabel}>Klucz produktu z bazy (nutrient_key):</Text>
-                <TextInput style={styles.searchInputPadded} value={editSuppKey} onChangeText={setEditSuppKey} placeholder="np. witamina_c" autoCapitalize="none" />
+                <Text style={styles.fieldLabel}>Wybierz z ulubionych:</Text>
+                <TextInput style={styles.searchInputPadded} value={tplQuery} onChangeText={setTplQuery} placeholder="Szukaj w ulubionych..." autoCapitalize="none" />
+                {templatesLoading ? (
+                  <ActivityIndicator style={{ marginTop: 12 }} color="#16a34a" />
+                ) : (
+                  filterTemplates(tplQuery).slice(0, 40).map((t: any) => {
+                    const sel = editSuppTemplateId === t.id;
+                    return (
+                      <TouchableOpacity
+                        key={t.id}
+                        style={[styles.suppManageItem, sel && styles.supplementItemSelected]}
+                        onPress={() => { setEditSuppTemplateId(t.id); if (!editSuppName.trim()) setEditSuppName(t.name); }}
+                      >
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.supplementName}>{t.name}</Text>
+                          {t._totals && <Text style={styles.templateMeta}>{Math.round(t._totals.calories)} kcal · {Math.round(t._totals.protein)} g białka</Text>}
+                        </View>
+                        {sel && <Text style={{ fontSize: 16, color: '#16a34a' }}>✓</Text>}
+                      </TouchableOpacity>
+                    );
+                  })
+                )}
+              </>
+            ) : editSuppMode === 'simple' ? (
+              <>
+                <Text style={styles.fieldLabel}>Produkt z bazy:</Text>
+                {editSuppKey ? (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <Text style={[styles.supplementName, { flex: 1 }]}>{editSuppKeyLabel || editSuppKey}</Text>
+                    <TouchableOpacity onPress={() => { setEditSuppKey(''); setEditSuppKeyLabel(''); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                      <Text style={{ fontSize: 14, color: '#6b7280' }}>Zmień</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={{ marginBottom: 8 }}>
+                    <TextInput
+                      style={styles.searchInputPadded}
+                      value={suppIngrQuery}
+                      onChangeText={setSuppIngrQuery}
+                      placeholder="Szukaj produktu..."
+                      autoCapitalize="none"
+                    />
+                    {suppIngrResults.length > 0 && (
+                      <View style={{ maxHeight: 260, backgroundColor: '#fff', borderRadius: 8, borderWidth: 1, borderColor: '#e5e7eb' }}>
+                        <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+                          {suppIngrResults.slice(0, 10).map((r: any) => (
+                            <TouchableOpacity
+                              key={r.key}
+                              style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}
+                              onPress={() => {
+                                setEditSuppKey(r.key);
+                                setEditSuppKeyLabel(r.item.name_pl);
+                                if (!editSuppName.trim()) setEditSuppName(r.item.name_pl);
+                                if (!editSuppWeight && r.item.serving_g) setEditSuppWeight(String(r.item.serving_g));
+                                setSuppIngrQuery('');
+                                setSuppIngrResults([]);
+                              }}
+                            >
+                              <Text style={{ fontSize: 14, color: '#111827' }}>{r.item.name_pl}</Text>
+                            </TouchableOpacity>
+                          ))}
+                        </ScrollView>
+                      </View>
+                    )}
+                  </View>
+                )}
                 <Text style={styles.fieldLabel}>Waga porcji (g):</Text>
                 <TextInput style={styles.searchInputPadded} value={editSuppWeight} onChangeText={setEditSuppWeight} keyboardType="numeric" placeholder="np. 5" />
               </>
@@ -1973,6 +2171,84 @@ export default function AddMeal() {
           </ScrollView>
         </View>
       </Modal>
+
+      {/* Modal: jednorazowa podmiana pozycji z Codziennych (np. kawa → kawa w pracy) */}
+      <Modal visible={swapModal.visible} animationType="slide" presentationStyle="pageSheet">
+        <View style={styles.modalContainer}>
+          <View style={[styles.modalHeader, { paddingTop: insets.top + 16 }]}>
+            <Text style={styles.modalTitle}>Zamień: {supplements.find((x: any) => x.id === swapModal.suppId)?.name}</Text>
+            <TouchableOpacity onPress={closeSwap}>
+              <Text style={styles.modalClose}>Anuluj</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalBody} keyboardShouldPersistTaps="handled">
+            <Text style={styles.hint}>Zamiana dotyczy tylko tego wpisu. Pozycja na liście zostaje bez zmian.</Text>
+            {swaps.has(swapModal.suppId) && (
+              <TouchableOpacity style={styles.addSuppBtn} onPress={() => applySwap(null)}>
+                <Text style={styles.addSuppBtnText}>↺ Przywróć: {supplements.find((x: any) => x.id === swapModal.suppId)?.name}</Text>
+              </TouchableOpacity>
+            )}
+            {swapProduct ? (
+              <View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <Text style={[styles.supplementName, { flex: 1 }]}>{swapProduct.item.name_pl}</Text>
+                  <TouchableOpacity onPress={() => { setSwapProduct(null); setSwapWeight(''); }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Text style={{ fontSize: 14, color: '#6b7280' }}>Zmień</Text>
+                  </TouchableOpacity>
+                </View>
+                <TextInput style={styles.searchInputPadded} value={swapWeight} onChangeText={setSwapWeight} keyboardType="numeric" placeholder="Waga w gramach" />
+                <TouchableOpacity
+                  style={[styles.btnBlock, { marginTop: 8 }]}
+                  onPress={() => {
+                    const w = parseFloat(swapWeight);
+                    if (isNaN(w) || w <= 0) { Alert.alert('Błąd', 'Podaj poprawną wagę.'); return; }
+                    applySwap({ type: 'product', key: swapProduct.key, name: swapProduct.item.name_pl, grams: w });
+                  }}
+                >
+                  <Text style={styles.btnPrimaryText}>Wybierz</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <TextInput style={styles.searchInputPadded} value={swapQuery} onChangeText={setSwapQuery} placeholder="Szukaj w ulubionych i w bazie..." autoCapitalize="none" />
+                <Text style={styles.fieldLabel}>Ulubione</Text>
+                {templatesLoading ? (
+                  <ActivityIndicator style={{ marginTop: 12 }} color="#16a34a" />
+                ) : filterTemplates(swapQuery).length === 0 ? (
+                  <Text style={styles.searchEmpty}>Brak pasujących ulubionych.</Text>
+                ) : (
+                  filterTemplates(swapQuery).slice(0, 30).map((t: any) => (
+                    <TouchableOpacity key={t.id} style={styles.suppManageItem} onPress={() => applySwap({ type: 'template', templateId: t.id, name: t.name })}>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.supplementName}>{t.name}</Text>
+                        {t._totals && <Text style={styles.templateMeta}>{Math.round(t._totals.calories)} kcal</Text>}
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                )}
+                {swapQuery.trim().length >= 2 && (
+                  <>
+                    <Text style={styles.fieldLabel}>Produkty z bazy</Text>
+                    {swapResults.length === 0 ? (
+                      <Text style={styles.searchEmpty}>Brak wyników.</Text>
+                    ) : (
+                      swapResults.slice(0, 10).map((r: any) => (
+                        <TouchableOpacity
+                          key={r.key}
+                          style={styles.suppManageItem}
+                          onPress={() => { setSwapProduct(r); setSwapWeight(r.item.serving_g ? String(r.item.serving_g) : ''); }}
+                        >
+                          <Text style={styles.supplementName}>{r.item.name_pl}</Text>
+                        </TouchableOpacity>
+                      ))
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -2009,6 +2285,8 @@ const styles = StyleSheet.create({
   btnSupplementsText: { color: '#1d4ed8', fontSize: 16, fontWeight: '600' },
   btnDaily: { backgroundColor: '#fffbeb', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#fde68a' },
   btnDailyText: { color: '#b45309', fontSize: 16, fontWeight: '600' },
+  swapBtn: { fontSize: 14, color: '#b45309', fontWeight: '600' },
+  swapNote: { fontSize: 13, color: '#b45309', marginTop: 2 },
   modalContainer: { flex: 1, backgroundColor: '#f9fafb' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
   modalTitle: { fontSize: 17, fontWeight: '600', color: '#111827' },
